@@ -1,7 +1,7 @@
 .DS_Store
 node_modules
 /dist
-ca
+
 
 # local env files
 .env.local
@@ -15,8 +15,6 @@ pnpm-debug.log*
 
 # Editor directories and files
 .idea
-.vscode
-.vite
 *.suo
 *.ntvs*
 *.njsproj
@@ -25,7 +23,5 @@ pnpm-debug.log*
 
 .husky
 npm-lock.json
-yarn.lock
 pnpm-lock.yaml
-.stylelintcache
-qodana.yaml
+eslint.config.js

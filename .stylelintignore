@@ -1,0 +1,5 @@
+dist
+node_modules
+ca
+.husky
+src/components/custom/KmlViewer.vue
