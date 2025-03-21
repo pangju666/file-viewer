@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "vite --host",
         "build": "vite build",
-        "preview": "vite preview --mode dev",
+        "preview": "vite preview",
         "prettier": "prettier --write ./**/*.{html,vue,js,json,md}",
         "eslint": "eslint . --fix",
         "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix",
