@@ -24,8 +24,5 @@ pnpm-debug.log*
 *.sw?
 
 .husky
-npm-lock.json
-yarn.lock
-pnpm-lock.yaml
 .stylelintcache
 qodana.yaml

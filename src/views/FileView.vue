@@ -19,13 +19,6 @@ import axios from "axios";
 
 const route = useRoute();
 
-const unSupportMimeTypes = [
-    "image/vnd.dwg",
-    "image/tiff",
-    "image/x-raw-nikon",
-    "image/x-raw-adobe",
-    "model/fbx",
-];
 const officeMimeTypes = [
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -40,6 +33,14 @@ const audioMimeTypes = [
     "audio/ogg",
     "audio/x-aac",
     "audio/x-flac",
+];
+const sphereImageMimeTypes = ["image/jpeg", "image/png"];
+const imageMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
 ];
 const videoMimeTypes = ["video/mp4", "video/ogg", "video/webm"];
 const modelMimeTypes = ["model/obj", "model/gltf-binary", "model/x.stl-binary"];
@@ -77,9 +78,6 @@ onMounted(async () => {
     }
 
     sphere.value = route.query?.sphere ?? false;
-    if (unSupportMimeTypes.includes(mimeType.value)) {
-        loading.value = false;
-    }
 
     // 需要自己部署pdfjs服务
     /*if (mimeType.value === "application/pdf") {
@@ -101,12 +99,8 @@ onMounted(async () => {
             v-if="StringUtils.isNoneEmpty(fileUrl, mimeType)"
             class="viewer full-size"
         >
-            <unknown-viewer
-                v-if="unSupportMimeTypes.includes(mimeType)"
-                @finished="loading = false"
-            />
             <kml-viewer
-                v-else-if="mimeType === 'application/vnd.google-earth.kml+xml'"
+                v-if="mimeType === 'application/vnd.google-earth.kml+xml'"
                 :file-url="fileUrl"
                 @finished="loading = false"
             />
@@ -131,12 +125,12 @@ onMounted(async () => {
                 @finished="loading = false"
             />
             <sphere-image-viewer
-                v-else-if="mimeType.startsWith('image/') && sphere"
+                v-else-if="sphereImageMimeTypes.includes(mimeType) && sphere"
                 :file-url="fileUrl"
                 @finished="loading = false"
             />
             <image-viewer
-                v-else-if="mimeType.startsWith('image/')"
+                v-else-if="imageMimeTypes.includes(mimeType)"
                 :file-url="fileUrl"
                 @finished="loading = false"
             />
