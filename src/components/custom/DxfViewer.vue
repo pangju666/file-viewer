@@ -2,10 +2,10 @@
 import { ref, toRaw, onMounted } from "vue";
 import { DxfViewer } from "dxf-viewer";
 import * as THREE from "three";
-import { FileApi } from "@/apis/FileApi.js";
+import SimFangFont from "@/assets/fonts/simfang.ttf";
 
 const props = defineProps({
-    fileMd5: {
+    fileUrl: {
         type: String,
         required: true,
     },
@@ -23,6 +23,7 @@ onMounted(() => {
         clearColor: new THREE.Color("white"),
         autoResize: true,
         colorCorrection: true,
+        // 一般是用gbk，也可以换成别的，比如：utf-8
         fileEncoding: "gbk",
         sceneOptions: {
             wireframeMesh: true,
@@ -37,8 +38,8 @@ onMounted(() => {
     }
     toRaw(dxfViewer.value)
         .Load({
-            url: FileApi.getDownloadUrl(props.fileMd5),
-            fonts: ["https://assets.changtech.cn/font/simfang.ttf"],
+            url: props.fileUrl,
+            fonts: [SimFangFont],
         })
         .then(() => emits("finished"));
 });

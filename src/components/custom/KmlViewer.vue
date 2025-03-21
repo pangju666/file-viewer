@@ -1,20 +1,10 @@
 <script setup>
-import {
-    Ellipsoid,
-    ImageryLayer,
-    Ion,
-    KmlDataSource,
-    SceneMode,
-    UrlTemplateImageryProvider,
-    Viewer,
-} from "cesium";
+import { Ellipsoid, Ion, KmlDataSource, Viewer } from "cesium";
 import { onMounted } from "vue";
-import { FileApi } from "@/apis/FileApi.js";
-
-Ion.defaultAccessToken = import.meta.env.VITE_BASE_CESIUM_TOKEN;
+import "cesium/Build/Cesium/Widgets/widgets.css";
 
 const props = defineProps({
-    fileMd5: {
+    fileUrl: {
         type: String,
         required: true,
     },
@@ -23,6 +13,7 @@ const props = defineProps({
 const emits = defineEmits(["finished"]);
 
 onMounted(() => {
+    Ion.defaultAccessToken = import.meta.env.VITE_CESIUM_TOKEN;
     const viewer = new Viewer("cesium-container", {
         animation: false, //左下角的动画仪表盘
         baseLayerPicker: false, //右上角的图层选择按钮
@@ -34,25 +25,13 @@ onMounted(() => {
         fullscreenButton: false, //右下角的全屏按钮
         selectionIndicator: false, //原生自带绿色选择框，双击显示的绿框
         infoBox: false, //点击要素之后显示的信息窗口
-        sceneMode: SceneMode.SCENE2D,
-        a: Ellipsoid.WGS84,
-        baseLayer: new ImageryLayer(
-            new UrlTemplateImageryProvider({
-                url: `${
-                    import.meta.env.VITE_TMS_TILE_BASE_URL
-                }/tile/world2022/tms/{z}/{x}/{reverseY}?v=v4&token=Bearer%20${
-                    import.meta.env.VITE_TMS_TILE_TOKEN
-                }`,
-                minimumLevel: 5,
-                maximumLevel: 18,
-            }),
-            {},
-        ),
+        //sceneMode: SceneMode.SCENE2D,
+        ellipsoid: Ellipsoid.WGS84,
     });
 
     viewer.dataSources
         .add(
-            KmlDataSource.load(FileApi.getDownloadUrl(props.fileMd5), {
+            KmlDataSource.load(props.fileUrl, {
                 camera: viewer.scene.camera,
                 canvas: viewer.scene.canvas,
                 screenOverlayContainer: viewer.container,

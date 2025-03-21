@@ -1,8 +1,8 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
     {
-        path: "/:fileMd5",
+        path: "/",
         name: "FileView",
         props: true,
         component: () => import("@/views/FileView.vue"),
@@ -10,7 +10,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHashHistory(),
+    history: createWebHistory(),
     routes,
 });
 

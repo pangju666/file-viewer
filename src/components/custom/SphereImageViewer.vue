@@ -2,10 +2,11 @@
 import { onMounted } from "vue";
 import { Viewer } from "@photo-sphere-viewer/core";
 import { CubemapAdapter } from "@photo-sphere-viewer/cubemap-adapter";
-import { FileApi } from "@/apis/FileApi.js";
+import LoaderGif from "@/assets/images/loader.gif";
+import "@photo-sphere-viewer/core/index.css";
 
 const props = defineProps({
-    fileMd5: {
+    fileUrl: {
         type: String,
         required: true,
     },
@@ -15,22 +16,23 @@ const emits = defineEmits(["finished"]);
 
 onMounted(async () => {
     emits("finished");
+    const sliceUrls = props.fileUrl.split(props.fileUrl, ",");
     const config = {
         container: document.getElementById("viewer"),
         adapter: CubemapAdapter,
         panorama: {
             type: "separate",
             paths: {
-                left: FileApi.getSphereCubeUrl(props.fileMd5, "left"),
-                front: FileApi.getSphereCubeUrl(props.fileMd5, "front"),
-                right: FileApi.getSphereCubeUrl(props.fileMd5, "right"),
-                back: FileApi.getSphereCubeUrl(props.fileMd5, "back"),
-                top: FileApi.getSphereCubeUrl(props.fileMd5, "top"),
-                bottom: FileApi.getSphereCubeUrl(props.fileMd5, "bottom"),
+                left: sliceUrls[0],
+                front: sliceUrls[1],
+                right: sliceUrls[2],
+                back: sliceUrls[3],
+                top: sliceUrls[4],
+                bottom: sliceUrls[5],
             },
             flipTopBottom: true,
         },
-        loadingImg: "https://assets.changtech.cn/image/gis-map/loader.gif",
+        loadingImg: LoaderGif,
         touchmoveTwoFingers: false,
         navbar: ["zoom", "move", "caption", "fullscreen"],
     };

@@ -1,9 +1,7 @@
 <script setup>
 import { VideoPlayer } from "@videojs-player/vue";
-import { FileApi } from "@/apis/FileApi.js";
-import { onMounted, ref } from "vue";
 import videojs from "video.js";
-import { get } from "@/apis/base.js";
+import "video.js/dist/video-js.css";
 
 videojs.addLanguage("zh-CN", {
     Play: "播放",
@@ -103,27 +101,20 @@ videojs.addLanguage("zh-CN", {
     "No content": "无内容",
 });
 
-const props = defineProps({
-    fileMd5: {
+defineProps({
+    fileUrl: {
         type: String,
         required: true,
     },
 });
 
 defineEmits(["finished"]);
-
-const videoUrl = ref(null);
-
-onMounted(async () => {
-    videoUrl.value = await get(FileApi.getDownloadUrl(props.fileMd5, false));
-});
 </script>
 
 <template>
     <div class="video-viewer">
         <video-player
-            v-if="videoUrl !== null"
-            :src="videoUrl"
+            :src="fileUrl"
             playsinline
             controls
             class="video-player vjs-big-play-centered"

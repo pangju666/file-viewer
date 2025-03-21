@@ -1,27 +1,22 @@
 <script setup>
-import { FileApi } from "@/apis/FileApi.js";
-import { onMounted, ref } from "vue";
-
-const props = defineProps({
-    fileMd5: {
+defineProps({
+    fileUrl: {
         type: String,
         required: true,
     },
 });
 
-const emits = defineEmits(["finished"]);
-
-const fileUrl = ref(null);
-
-onMounted(async () => {
-    fileUrl.value = FileApi.getDownloadUrl(props.fileMd5);
-    emits("finished");
-});
+defineEmits(["finished"]);
 </script>
 
 <template>
     <div class="audio-viewer">
-        <audio controls autoplay :src="fileUrl"></audio>
+        <audio
+            controls
+            autoplay
+            :src="fileUrl"
+            @loadeddata="$emit('finished')"
+        ></audio>
     </div>
 </template>
 

@@ -10,10 +10,7 @@ onMounted(() => {
 
 <template>
     <div class="not-support flex-center full-size">
-        <img
-            src="https://assets.changtech.cn/image/not-support-preview.png"
-            alt=""
-        />
+        <img src="@/assets/images/not-support-preview.png" alt="" />
     </div>
 </template>
 

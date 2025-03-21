@@ -1,8 +1,6 @@
 <script setup>
-import { FileApi } from "@/apis/FileApi.js";
-
-const props = defineProps({
-    fileMd5: {
+defineProps({
+    fileUrl: {
         type: String,
         required: true,
     },
@@ -14,8 +12,7 @@ const emits = defineEmits(["finished"]);
 <template>
     <div class="image-viewer">
         <n-image
-            :src="FileApi.getImagePreviewUrl(props.fileMd5)"
-            :preview-src="FileApi.getDownloadUrl(props.fileMd5)"
+            :src="fileUrl"
             object-fit="scale-down"
             :on-load="emits('finished')"
         />

@@ -15,6 +15,7 @@
 
 <script setup>
 import { dateZhCN, zhCN } from "naive-ui";
+import "@/assets/css/pangju.less";
 </script>
 
 <style lang="less"></style>

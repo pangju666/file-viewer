@@ -4,9 +4,8 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite --host --mode dev",
-        "test-build": "vite build --mode test",
-        "prod-build": "vite build --mode prod",
+        "dev": "vite --host",
+        "build": "vite build",
         "preview": "vite preview --mode dev",
         "prettier": "prettier --write ./**/*.{html,vue,js,json,md}",
         "eslint": "eslint . --fix",
@@ -22,17 +21,16 @@
         "babylonjs": "^7.43.0",
         "babylonjs-loaders": "^7.43.0",
         "cesium": "^1.125.0",
-        "core-js": "^3.39.0",
-        "crypto-js": "^4.2.0",
         "dxf-viewer": "^1.0.37",
+        "file-type": "^20.4.1",
         "mavon-editor": "^3.0.1",
         "naive-ui": "^2.40.4",
         "pangju-utils": "^2.3.2",
         "three": "^0.169",
         "video.js": "^7.21.6",
         "vue": "^3.5.13",
-        "vue-router": "^4.5.0",
-        "vue3-json-viewer": "^2.2.2"
+        "vue-json-viewer": "^3.0.4",
+        "vue-router": "^4.5.0"
     },
     "devDependencies": {
         "@eslint/compat": "^1.2.4",

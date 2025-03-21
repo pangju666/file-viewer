@@ -1,11 +1,11 @@
 <script setup>
 import { mavonEditor } from "mavon-editor";
-import { FileApi } from "@/apis/FileApi.js";
 import { onMounted, ref } from "vue";
-import { get, getDownload } from "@/apis/base.js";
+import axios from "axios";
+import "mavon-editor/dist/css/index.css";
 
 const props = defineProps({
-    fileMd5: {
+    fileUrl: {
         type: String,
         required: true,
     },
@@ -16,14 +16,12 @@ const emits = defineEmits(["finished"]);
 const content = ref(null);
 
 onMounted(async () => {
-    const fileUrl = await get(FileApi.getDownloadUrl(props.fileMd5, false));
-    const data = (await getDownload(fileUrl)).data;
-    const reader = new FileReader();
-    reader.readAsText(data, "utf-8");
-    reader.onload = () => {
-        content.value = reader.result;
-        emits("finished");
-    };
+    content.value = (
+        await axios.get(props.fileUrl, {
+            responseType: "text",
+        })
+    ).data;
+    emits("finished");
 });
 </script>
 
