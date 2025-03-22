@@ -12,43 +12,43 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(three@0.169.0)
       '@photo-sphere-viewer/core':
-        specifier: ^5.11.1
-        version: 5.11.5
+        specifier: ^5.12.1
+        version: 5.12.1
       '@photo-sphere-viewer/cubemap-adapter':
-        specifier: ^5.11.1
-        version: 5.11.5(@photo-sphere-viewer/core@5.11.5)
+        specifier: ^5.12.1
+        version: 5.12.1(@photo-sphere-viewer/core@5.12.1)
       '@videojs-player/vue':
         specifier: ^1.0.0
         version: 1.0.0(@types/video.js@7.3.58)(video.js@7.21.6)(vue@3.5.13)
       axios:
-        specifier: ^1.7.9
-        version: 1.7.9
+        specifier: ^1.8.4
+        version: 1.8.4
       babylonjs:
-        specifier: ^7.43.0
-        version: 7.43.0
+        specifier: ^7.54.0
+        version: 7.54.0
       babylonjs-loaders:
-        specifier: ^7.43.0
-        version: 7.43.0
+        specifier: ^7.54.0
+        version: 7.54.0
       cesium:
-        specifier: ^1.125.0
-        version: 1.125.0
+        specifier: ^1.127.0
+        version: 1.127.0
       dxf-viewer:
-        specifier: ^1.0.37
-        version: 1.0.37
+        specifier: ^1.0.42
+        version: 1.0.42
       file-type:
         specifier: ^20.4.1
         version: 20.4.1
       mavon-editor:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^3.0.2
+        version: 3.0.2
       naive-ui:
-        specifier: ^2.40.4
+        specifier: ^2.41.0
         version: 2.41.0(vue@3.5.13)
       pangju-utils:
         specifier: ^2.3.2
         version: 2.3.2
       three:
-        specifier: ^0.169
+        specifier: ^0.169.0
         version: 0.169.0
       video.js:
         specifier: ^7.21.6
@@ -137,7 +137,7 @@ importers:
         version: 6.0.7(@types/node@20.12.12)(less@4.2.1)(terser@5.31.0)(yaml@2.6.1)
       vite-plugin-cesium:
         specifier: ^1.2.23
-        version: 1.2.23(cesium@1.125.0)(rollup@4.30.1)(vite@6.0.7(@types/node@20.12.12)(less@4.2.1)(terser@5.31.0)(yaml@2.6.1))
+        version: 1.2.23(cesium@1.127.0)(rollup@4.30.1)(vite@6.0.7(@types/node@20.12.12)(less@4.2.1)(terser@5.31.0)(yaml@2.6.1))
       vite-plugin-compression:
         specifier: ^0.5.1
         version: 0.5.1(vite@6.0.7(@types/node@20.12.12)(less@4.2.1)(terser@5.31.0)(yaml@2.6.1))
@@ -181,12 +181,12 @@ packages:
     resolution: {integrity: sha512-vN5p+1kl59GVKMvTHt55NzzmYVxprfJD+ql7U9NFIfKCBkYE55LYtS+WtPlaYOyzydrKI8Nezd+aZextrd+FMA==}
     engines: {node: '>=6.9.0'}
 
-  '@cesium/engine@13.1.0':
-    resolution: {integrity: sha512-1PX7sMhtgBgaSOtyQ0lTPvG35bMfR1ngtgBZqzNnR67lp+tVv9lNyAg/byBSnijL2b2NJNC2Iec6A6Z/Rj12OA==}
+  '@cesium/engine@15.0.0':
+    resolution: {integrity: sha512-jimj7khIf/mBkejsMZ+n6Y9PPvXh4QmWKkz2ekFz59icDCeGj8ZJrzl5p0caqiK/372mnHOwmYFWYEwThEw2ew==}
     engines: {node: '>=14.0.0'}
 
-  '@cesium/widgets@10.1.0':
-    resolution: {integrity: sha512-IWT+8cCsnJo1Mtr+xrkdVEZrP88/UqF5oDyDPVmlOJ47MPjUauu93k6LeAwxQQ2CYqqgpFIZbIX19mMfQMwSfA==}
+  '@cesium/widgets@11.0.0':
+    resolution: {integrity: sha512-4ELgFuU2uwkvD6NI9MHIWNFKjmyI9wlDzZ9NuoPFSnUhf9XfVBI8sJekGx5dijxjK2S3aCuxB3dtUkdDZEsQmA==}
     engines: {node: '>=14.0.0'}
 
   '@css-render/plugin-bem@0.15.14':
@@ -494,13 +494,13 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@photo-sphere-viewer/core@5.11.5':
-    resolution: {integrity: sha512-aCo+zsWR0m0qSlNQpkacnQoSfc0An0zujBpQJ5l9LSvZixeC85FTWm9OZs1yaXvE5bM+TsdqfPDojjy9xT8qzQ==}
+  '@photo-sphere-viewer/core@5.12.1':
+    resolution: {integrity: sha512-aK+SueXdKOr5FQAMwjxswHaa2OZcpWi4tx5P4fjq1vWEDa8PtdaoSdQaAp3Csmthvd9DlfNDUb6c21fTudzM/w==}
 
-  '@photo-sphere-viewer/cubemap-adapter@5.11.5':
-    resolution: {integrity: sha512-fMMA7IA5qmWr3zrQ/yAULK0z1/5BqMB1yGdQdoP/7iWySQeb/ojc8xzwSpUJBTeQ+dMUrWkWosNgBYiL+vEHOQ==}
+  '@photo-sphere-viewer/cubemap-adapter@5.12.1':
+    resolution: {integrity: sha512-NpUOmTtd/cWZFKiJErXA4FgMTYqH1J3cbGDNH/zmdqWlOJYZjCTMKkfQGc8ZoZmOIxdYRax8WtFQmRGTyKEauw==}
     peerDependencies:
-      '@photo-sphere-viewer/core': 5.11.5
+      '@photo-sphere-viewer/core': 5.12.1
 
   '@pkgr/core@0.1.1':
     resolution: {integrity: sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==}
@@ -824,17 +824,17 @@ packages:
   autolinker@4.0.0:
     resolution: {integrity: sha512-fl5Kh6BmEEZx+IWBfEirnRUU5+cOiV0OK7PEt0RBKvJMJ8GaRseIOeDU3FKf4j3CE5HVefcjHmhYPOcaVt0bZw==}
 
-  axios@1.7.9:
-    resolution: {integrity: sha512-LhLcE7Hbiryz8oMDdDptSrWowmB4Bl6RCt6sIJKpRB4XtVf0iEgewX3au/pJqm+Py1kCASkb/FFKjxQaLtxJvw==}
+  axios@1.8.4:
+    resolution: {integrity: sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==}
 
-  babylonjs-gltf2interface@7.43.0:
-    resolution: {integrity: sha512-/I8nyrsEV7ihpiuqNadT9eZxVLdfnIL5wTGovotmoMCUScR+5/Ibm31gD/U2ND8W0JfQxGKEI+aUETlfOceJ1w==}
+  babylonjs-gltf2interface@7.54.0:
+    resolution: {integrity: sha512-RxuRDjbzDsg43ItUdZZf5pgx9E6Pcb4YuEW/potc2+9oJvvKguwItE3DXereMs+q5ATYcdiQw2TEOtVgESOodg==}
 
-  babylonjs-loaders@7.43.0:
-    resolution: {integrity: sha512-IxET+ANgv+nxSXvEwSt38AQZrfZMLgv3IidcRzO3sWXA/maVB9fQY6pNxLeEFJso0R4sXYqCTlJ5g2OjkJ6EaQ==}
+  babylonjs-loaders@7.54.0:
+    resolution: {integrity: sha512-TIvxVNC3hMVvBU4iNEGe8N1IVpK8SU5dvQa0sn6eH4G4sl5p1nkAJUBFu2T+5YQcKkmaWi3e/rQ8+xlcEgm+Pg==}
 
-  babylonjs@7.43.0:
-    resolution: {integrity: sha512-8CzxGM6PevdsJcWObJg6tlRN6akkKlN3ad5ZziiQ+BnKowDrfjKZ+qvF1TN7wML3T2+nASExzvTf5Znx0QhJhA==}
+  babylonjs@7.54.0:
+    resolution: {integrity: sha512-7uZb/9ISxDASlcZi9Cw49PPgkrvnrdsaYYzvha80O52p72ScTkkMz4EiS+xZuZpIOj7CkxMfWpgeIdDByZXSWw==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -873,8 +873,8 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  cesium@1.125.0:
-    resolution: {integrity: sha512-T6V1xKFQOxydJJtG6ammyDOwKMerkGLdxQJLJSLHhhh6VKqpUyp+GXSKjnzlAmpLDjQLF1UkhbJ98WC59am/fA==}
+  cesium@1.127.0:
+    resolution: {integrity: sha512-MRGkPb3ClEkAI9viZxxdD3LCu7ydOzOKdJ6/iPtBx1GUsPCZNbgB0IH7wmhwgbxA5sjv4/a90+mvR9CoLP1PWQ==}
     engines: {node: '>=18.18.0'}
 
   chalk@2.4.2:
@@ -1070,8 +1070,8 @@ packages:
   draco3d@1.5.7:
     resolution: {integrity: sha512-m6WCKt/erDXcw+70IJXnG7M3awwQPAsZvJGX5zY7beBqpELw6RDGkYVU0W43AFxye4pDZ5i2Lbyc/NNGqwjUVQ==}
 
-  dxf-viewer@1.0.37:
-    resolution: {integrity: sha512-WSpDP3qOjGO9ma16B/eSBAD2L99Ftt0YiSfZn1ypJdHWEIoEITbcIhdjKwU/gFrh9e0Tqcq6ywXbNnK4qFNPtA==}
+  dxf-viewer@1.0.42:
+    resolution: {integrity: sha512-vZGX5cGoM2KyojhGoghMBwmhrKSUZ0LME7VZeCp+n9/g0aZa7t6OnpkjrvmniffO6ws3zbKn1gIDXoKe6OXupQ==}
 
   earcut@3.0.1:
     resolution: {integrity: sha512-0l1/0gOjESMeQyYaK5IDiPNvFeu93Z/cO0TjZh9eZ1vyCtZnA7KMZ8rQggpsJHIbGSdrqYq9OhuveadOVHCshw==}
@@ -1544,8 +1544,8 @@ packages:
   known-css-properties@0.35.0:
     resolution: {integrity: sha512-a/RAk2BfKk+WFGhhOCAYqSiFLc34k8Mt/6NWRI4joER0EYUzXIcFivjjnoD3+XU1DggLn/tZc3DOAgke7l8a4A==}
 
-  ktx-parse@0.7.0:
-    resolution: {integrity: sha512-naezun/2iiWrantwoRI9mw6E4iN41ggYzJSR9XAZzf6+rv+2Tb1yYN8VJhGsA0uptBexE0m4GDh+iiQhYpW+Qw==}
+  ktx-parse@1.0.0:
+    resolution: {integrity: sha512-Z31kVizz4DF/6vo9YiSYVBhuXAfyQy9bGxlW3+mB5OELoZjfXVZQpRoctsx8IEDKxBd6SagXKo7qRvu38i8Jfg==}
 
   lerc@2.0.0:
     resolution: {integrity: sha512-7qo1Mq8ZNmaR4USHHm615nEW2lPeeWJ3bTyoqFbd35DLx0LUH7C6ptt5FDCTAlbIzs3+WKrk5SkJvw8AFDE2hg==}
@@ -1634,8 +1634,8 @@ packages:
   mathml-tag-names@2.1.3:
     resolution: {integrity: sha512-APMBEanjybaPzUrfqU0IMU5I0AswKMH7k8OTLs0vvV4KZpExkTkY87nR/zpbuTPj+gARop7aGUbl11pnDfW6xg==}
 
-  mavon-editor@3.0.1:
-    resolution: {integrity: sha512-973cYCwv+AB+fcecsU6Ua6UXATxDMaY0Q7QzKQ/GmRW1sg+3DolZDnCGXth7XHDgrmqKTO57N42fVYujt0wfFw==}
+  mavon-editor@3.0.2:
+    resolution: {integrity: sha512-QmmsypznEkru3Gj9u/i3OLs7uWOwrAUDyLAiQnl7bj2lvZZ++J7MPA+Al0G26cQZ8GwzyC69T5l6NQjZ2z1Nuw==}
 
   mdn-data@2.12.2:
     resolution: {integrity: sha512-IEn+pegP1aManZuckezWCO+XZQDplx1366JoVhTpMpBB1sPey/SbveZQUosKiKiGYjg1wH4pMlNgXbCiYgihQA==}
@@ -2208,6 +2208,9 @@ packages:
   three@0.169.0:
     resolution: {integrity: sha512-Ed906MA3dR4TS5riErd4QBsRGPcx+HBDX2O5yYE5GqJeFQTPU+M56Va/f/Oph9X7uZo3W3o4l2ZhBZ6f6qUv0w==}
 
+  three@0.173.0:
+    resolution: {integrity: sha512-AUwVmViIEUgBwxJJ7stnF0NkPpZxx1aZ6WiAbQ/Qq61h6I9UR4grXtZDmO8mnlaNORhHnIBlXJ1uBxILEKuVyw==}
+
   tiny-emitter@2.1.0:
     resolution: {integrity: sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==}
 
@@ -2495,7 +2498,7 @@ snapshots:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
 
-  '@cesium/engine@13.1.0':
+  '@cesium/engine@15.0.0':
     dependencies:
       '@tweenjs/tween.js': 25.0.0
       '@zip.js/zip.js': 2.7.44
@@ -2507,7 +2510,7 @@ snapshots:
       grapheme-splitter: 1.0.4
       jsep: 1.3.8
       kdbush: 4.0.2
-      ktx-parse: 0.7.0
+      ktx-parse: 1.0.0
       lerc: 2.0.0
       mersenne-twister: 1.1.0
       meshoptimizer: 0.22.0
@@ -2517,9 +2520,9 @@ snapshots:
       topojson-client: 3.1.0
       urijs: 1.19.11
 
-  '@cesium/widgets@10.1.0':
+  '@cesium/widgets@11.0.0':
     dependencies:
-      '@cesium/engine': 13.1.0
+      '@cesium/engine': 15.0.0
       nosleep.js: 0.12.0
 
   '@css-render/plugin-bem@0.15.14(css-render@0.15.14)':
@@ -2740,13 +2743,13 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@photo-sphere-viewer/core@5.11.5':
+  '@photo-sphere-viewer/core@5.12.1':
     dependencies:
-      three: 0.169.0
+      three: 0.173.0
 
-  '@photo-sphere-viewer/cubemap-adapter@5.11.5(@photo-sphere-viewer/core@5.11.5)':
+  '@photo-sphere-viewer/cubemap-adapter@5.12.1(@photo-sphere-viewer/core@5.12.1)':
     dependencies:
-      '@photo-sphere-viewer/core': 5.11.5
+      '@photo-sphere-viewer/core': 5.12.1
 
   '@pkgr/core@0.1.1': {}
 
@@ -3043,7 +3046,7 @@ snapshots:
     dependencies:
       tslib: 2.6.2
 
-  axios@1.7.9:
+  axios@1.8.4:
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -3051,14 +3054,14 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  babylonjs-gltf2interface@7.43.0: {}
+  babylonjs-gltf2interface@7.54.0: {}
 
-  babylonjs-loaders@7.43.0:
+  babylonjs-loaders@7.54.0:
     dependencies:
-      babylonjs: 7.43.0
-      babylonjs-gltf2interface: 7.43.0
+      babylonjs: 7.54.0
+      babylonjs-gltf2interface: 7.54.0
 
-  babylonjs@7.43.0: {}
+  babylonjs@7.54.0: {}
 
   balanced-match@1.0.2: {}
 
@@ -3092,10 +3095,10 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  cesium@1.125.0:
+  cesium@1.127.0:
     dependencies:
-      '@cesium/engine': 13.1.0
-      '@cesium/widgets': 10.1.0
+      '@cesium/engine': 15.0.0
+      '@cesium/widgets': 11.0.0
 
   chalk@2.4.2:
     dependencies:
@@ -3270,7 +3273,7 @@ snapshots:
 
   draco3d@1.5.7: {}
 
-  dxf-viewer@1.0.37:
+  dxf-viewer@1.0.42:
     dependencies:
       earcut: 3.0.1
       loglevel: 1.9.1
@@ -3744,7 +3747,7 @@ snapshots:
 
   known-css-properties@0.35.0: {}
 
-  ktx-parse@0.7.0: {}
+  ktx-parse@1.0.0: {}
 
   lerc@2.0.0: {}
 
@@ -3866,7 +3869,7 @@ snapshots:
 
   mathml-tag-names@2.1.3: {}
 
-  mavon-editor@3.0.1:
+  mavon-editor@3.0.2:
     dependencies:
       xss: 1.0.15
 
@@ -4491,6 +4494,8 @@ snapshots:
 
   three@0.169.0: {}
 
+  three@0.173.0: {}
+
   tiny-emitter@2.1.0: {}
 
   tiny-inflate@1.0.3: {}
@@ -4621,9 +4626,9 @@ snapshots:
     dependencies:
       global: 4.4.0
 
-  vite-plugin-cesium@1.2.23(cesium@1.125.0)(rollup@4.30.1)(vite@6.0.7(@types/node@20.12.12)(less@4.2.1)(terser@5.31.0)(yaml@2.6.1)):
+  vite-plugin-cesium@1.2.23(cesium@1.127.0)(rollup@4.30.1)(vite@6.0.7(@types/node@20.12.12)(less@4.2.1)(terser@5.31.0)(yaml@2.6.1)):
     dependencies:
-      cesium: 1.125.0
+      cesium: 1.127.0
       fs-extra: 9.1.0
       rollup-plugin-external-globals: 0.6.1(rollup@4.30.1)
       serve-static: 1.15.0
