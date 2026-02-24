@@ -1,29 +1,47 @@
 import eslint from "@eslint/js";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import vue from "eslint-plugin-vue";
+import tseslint from "typescript-eslint";
+import prettier from "eslint-config-prettier";
 import globals from "globals";
-import eslintPluginVue from "eslint-plugin-vue";
-import {includeIgnoreFile} from "@eslint/compat";
-import path from "node:path";
-import {fileURLToPath} from "node:url";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const gitignorePath = path.resolve(__dirname, ".eslintignore");
-
-export default [
-  includeIgnoreFile(gitignorePath),
+export default tseslint.config(
   eslint.configs.recommended,
-  ...eslintPluginVue.configs["flat/recommended"],
-  eslintPluginPrettierRecommended,
+  ...tseslint.configs.recommended,
+  ...vue.configs["flat/recommended"],
+  prettier,
   {
-    files: ["**/*.js", "**/*.vue"],
+    ignores: ["dist/**", "node_modules/**"],
+  },
+  {
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
       globals: {
         ...globals.browser,
-        Cesium: true,
+        //...globals.node,
+      },
+      parserOptions: {
+        ecmaFeatures: { jsx: false },
+        warnOnUnsupportedTypeScriptVersion: true,
+      },
+    },
+    linterOptions: {
+      reportUnusedDisableDirectives: true,
+    },
+    ignores: ["dist/**", "node_modules/**"],
+  },
+  {
+    files: ["**/*.vue"],
+    languageOptions: {
+      parser: vue.parser,
+      parserOptions: {
+        parser: tseslint.parser,
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: false,
+        },
       },
     },
   },
-];
+);

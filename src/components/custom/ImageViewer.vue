@@ -1,30 +1,76 @@
-<script setup>
-defineProps({
-    fileUrl: {
-        type: String,
-        required: true,
+<script lang="ts" setup>
+import Viewer from "viewerjs";
+import "viewerjs/dist/viewer.css";
+import { onMounted, onUnmounted } from "vue";
+
+const props = withDefaults(
+  defineProps<{
+    url: string;
+    filename?: string | null;
+  }>(),
+  {
+    filename: null,
+  },
+);
+
+const emits = defineEmits<{
+  (e: "finished"): void;
+}>();
+
+onMounted(() => {
+  const imageElement = document.getElementById("image");
+  if (!imageElement) return;
+  viewer = new Viewer(imageElement, {
+    inline: true,
+    backdrop: true,
+    button: true,
+    focus: true,
+    fullscreen: true,
+    loading: true,
+    loop: false,
+    keyboard: false,
+    movable: true,
+    navbar: false,
+    rotatable: true,
+    scalable: true,
+    slideOnTouch: true,
+    title: (_image: HTMLImageElement, imageData: Viewer.ImageData) =>
+      `(${props.filename ?? ""} ${imageData.naturalWidth} × ${imageData.naturalHeight})`,
+    toolbar: {
+      flipHorizontal: true,
+      flipVertical: true,
+      next: false,
+      oneToOne: true,
+      play: false,
+      prev: false,
+      reset: true,
+      rotateLeft: true,
+      rotateRight: true,
+      zoomIn: true,
+      zoomOut: true,
     },
+    tooltip: true,
+    transition: true,
+    zoomable: true,
+    zoomOnTouch: true,
+    zoomOnWheel: true,
+    viewed: () => {
+      emits("finished");
+    },
+  });
+});
+onUnmounted(() => {
+  viewer?.destroy();
+  viewer = null;
 });
 
-const emits = defineEmits(["finished"]);
+let viewer: Viewer | null = null;
 </script>
 
 <template>
-    <div class="image-viewer">
-        <n-image
-            :src="fileUrl"
-            object-fit="scale-down"
-            :on-load="emits('finished')"
-        />
-    </div>
+  <div class="full-size">
+    <img id="image" class="display-none" :src="url" />
+  </div>
 </template>
 
-<style scoped lang="less">
-.image-viewer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-</style>
+<style scoped lang="less"></style>
