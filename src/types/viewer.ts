@@ -1,0 +1,65 @@
+export type AudioViewerOption = {
+  canvasFillColor?: string;
+  line: {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    lineWidth?: number;
+    lineColor?: string | string[];
+    fftSize?: number;
+  };
+  bars: {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    barWidth?: number;
+    barSpace?: number;
+    barColor?: string | string[];
+    capsHeight?: number;
+    capsDropSpeed?: number;
+    capsColor?: string;
+    brickHeight?: number;
+    brickSpace?: number;
+    symmetric?: boolean;
+    fftSize?: number;
+  };
+  circle: {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    radius?: number;
+    lineWidth?: number;
+    lineSpace?: number;
+    outlineColor?: string;
+    outlineWidth?: number;
+    barWidth?: number;
+    barLength?: number;
+    barColor?: string | string[];
+    progress?: boolean;
+    progressWidth?: number;
+    progressColor?: string;
+    progressClockwise?: boolean;
+    outlineMeterSpace?: number;
+    playtime?: boolean;
+    playtimeFont?: string;
+    playtimeColor?: string;
+    rotateGraph?: boolean;
+    rotateSpeed?: number;
+    fftSize?: number;
+  };
+  waveform: {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    playedLineWidth?: number;
+    playedLineColor?: string;
+    noplayedLineWidth?: number;
+    noplayedLineColor?: string;
+    playtime?: boolean;
+    playtimeWithMs?: boolean;
+    playtimeFontSize?: number;
+    playtimeFontFamily?: string;
+    playtimeFontColor?: string;
+    playtimeTextBottom?: boolean;
+    playtimeSlider?: boolean;
+    playtimeSliderColor?: string;
+    playtimeSliderWidth?: number;
+    playtimeClickable?: boolean;
+  };
+};

@@ -1,14 +1,7 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
-import MarkdownViewer from "@/components/custom/MarkdownViewer.vue";
-import DxfViewer from "@/components/custom/DxfViewer.vue";
-import PlainTextViewer from "@/components/custom/PlainTextViewer.vue";
-import JsonViewer from "@/components/custom/JsonViewer.vue";
-import ImageViewer from "@/components/custom/ImageViewer.vue";
-import VideoViewer from "@/components/custom/VideoViewer.vue";
-import AudioViewer from "@/components/custom/AudioViewer.vue";
-import BabylonModelViewer from "@/components/custom/BabylonModelViewer.vue";
-import OfficeViewer from "@/components/custom/OfficeViewer.vue";
+import { computed, h, ref } from "vue";
+import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
+import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import FileCardList from "@/components/FileCardList.vue";
 import {
   audioMimeTypes,
@@ -24,29 +17,126 @@ import {
   videoMimeTypes,
 } from "@/utils/constants.ts";
 import { useLoadingBar } from "naive-ui";
-import UnknownViewer from "@/components/custom/UnknownViewer.vue";
+import type { FileItem } from "@/types/file.ts";
+import PlainTextViewer from "@/components/viewer/PlainTextViewer.vue";
+import JsonViewer from "@/components/viewer/JsonViewer.vue";
+import ImageViewer from "@/components/viewer/ImageViewer.vue";
+import VideoViewer from "@/components/viewer/VideoViewer.vue";
+import AudioViewer from "@/components/viewer/AudioViewer.vue";
+import BabylonModelViewer from "@/components/viewer/BabylonModelViewer.vue";
+import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
+import UnknownViewer from "@/components/viewer/UnknownViewer.vue";
+import PdfViewer from "@/components/viewer/PdfViewer.vue";
+import { getMimeTypeCharset } from "@/utils/utils.ts";
 
 const loadingBar = useLoadingBar();
 
-defineProps<{
-  onLoad: (page?: number, pageSize?: number) => Promise<any> | any;
-}>();
+withDefaults(
+  defineProps<{
+    fileTypes?: string[];
+    onLoad: (
+      page: number,
+      types?: string[],
+      keyword?: string,
+    ) => Promise<FileItem[]> | FileItem[];
+    noMore: boolean;
+  }>(),
+  {
+    fileTypes: () => [],
+  },
+);
 
-onMounted(() => {});
+const currentFile = ref<FileItem>();
 
-const currentFile = ref<any>(null);
+const currentFileViewer = computed(() => {
+  if (!currentFile.value?.mimeType) {
+    return h(UnknownViewer, { onReady: handleFileReady });
+  } else if (currentFile.value.mimeType.startsWith(markdownMimType)) {
+    return h(MarkdownViewer, {
+      src: currentFile.value.url,
+      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
+      onReady: handleFileReady,
+    });
+  } else if (currentFile.value.mimeType === dxfMimeType) {
+    return h(DxfViewer, {
+      src: currentFile.value.url,
+      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
+      onReady: handleFileReady,
+    });
+  } else if (currentFile.value.mimeType === pdfMimeType) {
+    return h(PdfViewer, {
+      src: currentFile.value.url,
+      onReady: handleFileReady,
+    });
+  } else if (currentFile.value.mimeType.startsWith(textMimeTypePrefix)) {
+    return h(PlainTextViewer, {
+      src: currentFile.value.url,
+      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
+      onReady: handleFileReady,
+    });
+  } else if (currentFile.value.mimeType.startsWith(jsonMimeTypePrefix)) {
+    return h(JsonViewer, {
+      src: currentFile.value.url,
+      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
+      onReady: handleFileReady,
+    });
+  } else if (imageMimeTypes.includes(currentFile.value.mimeType)) {
+    return h(ImageViewer, {
+      src: currentFile.value.url,
+      filename: currentFile.value?.name,
+      onReady: handleFileReady,
+    });
+  } else if (videoMimeTypes.includes(currentFile.value.mimeType)) {
+    return h(VideoViewer, {
+      src: currentFile.value.url,
+      mimeType: currentFile.value.mimeType,
+      onReady: handleFileReady,
+    });
+  } else if (audioMimeTypes.includes(currentFile.value.mimeType)) {
+    return h(AudioViewer, {
+      src: currentFile.value.url,
+      title: currentFile.value?.name,
+      cover: currentFile.value?.cover,
+      onReady: handleFileReady,
+    });
+  } else if (modelViewerSupportedTypes.includes(currentFile.value.mimeType)) {
+    return h("model-viewer", {
+      src: currentFile.value.url,
+      class: "full-size",
+      cameraControls: true,
+      touchAction: "pan-y",
+      onLoad: handleFileReady,
+    });
+  } else if (babylonSupportedTypes.includes(currentFile.value.mimeType)) {
+    return h(BabylonModelViewer, {
+      src: currentFile.value.url,
+      mimeType: currentFile.value.mimeType,
+      onReady: handleFileReady,
+    });
+  } else if (officeMimeTypes.includes(currentFile.value.mimeType)) {
+    return h(OfficeViewer, {
+      src: currentFile.value.url,
+      filename: currentFile.value?.name,
+      mimeType: currentFile.value.mimeType,
+      onReady: handleFileReady,
+    });
+  } else {
+    return h(UnknownViewer, { onReady: handleFileReady });
+  }
+});
 
-const onClickFile = (file: any) => {
+const handleClickFile = (file: FileItem) => {
   currentFile.value = file;
   loadingBar.start();
 };
-const onFileFinished = () => {
+
+const handleFileReady = () => {
   loadingBar.finish();
 };
 </script>
 
 <template>
-  <div class="full-size file-viewer">
+  <div class="full-size display-flex">
     <n-split
       direction="horizontal"
       style="z-index: 100"
@@ -57,93 +147,21 @@ const onFileFinished = () => {
     >
       <template #1>
         <div class="full-size">
-          <markdown-viewer
-            v-if="currentFile?.mimeType === markdownMimType"
-            :url="currentFile?.url"
-            @finished="onFileFinished"
-          />
-          <dxf-viewer
-            v-else-if="currentFile?.mimeType === dxfMimeType"
-            :url="currentFile?.url"
-            @finished="onFileFinished"
-          />
-          <iframe
-            v-else-if="currentFile?.mimeType === pdfMimeType"
-            :src="`/viewer.html?file=${encodeURIComponent(currentFile?.url)}`"
-            width="100%"
-            height="100%"
-            style="border: none"
-          />
-          <plain-text-viewer
-            v-else-if="currentFile?.mimeType.startsWith(textMimeTypePrefix)"
-            :url="currentFile?.url"
-            @finished="onFileFinished"
-          />
-          <json-viewer
-            v-else-if="currentFile?.mimeType.startsWith(jsonMimeTypePrefix)"
-            :url="currentFile?.url"
-            @finished="onFileFinished"
-          />
-          <!--                    <sphere-image-viewer
-                    v-else-if="
-                        sphereImageMimeTypes.includes(mimeType) && sphere
-                    "
-                    :file-url="fileUrl"
-                    @finished="loading = false"
-                />-->
-          <image-viewer
-            v-else-if="imageMimeTypes.includes(currentFile?.mimeType)"
-            :url="currentFile?.url"
-            @finished="onFileFinished"
-          />
-          <video-viewer
-            v-else-if="videoMimeTypes.includes(currentFile?.mimeType)"
-            :url="currentFile?.url"
-            :mime-type="currentFile?.mimeType"
-            @finished="onFileFinished"
-          />
-          <audio-viewer
-            v-else-if="audioMimeTypes.includes(currentFile?.mimeType)"
-            :url="currentFile?.url"
-            :filename="currentFile?.filename"
-            @finished="onFileFinished"
-          />
-          <model-viewer
-            v-else-if="
-              modelViewerSupportedTypes.includes(currentFile?.mimeType)
-            "
-            class="full-size"
-            :src="currentFile?.url"
-            camera-controls
-            touch-action="pan-y"
-            @load="onFileFinished"
-          ></model-viewer>
-          <babylon-model-viewer
-            v-else-if="babylonSupportedTypes.includes(currentFile?.mimeType)"
-            :url="currentFile?.url"
-            :filename="currentFile?.filename"
-            :mime-type="currentFile?.mimeType"
-            @finished="onFileFinished"
-          />
-          <office-viewer
-            v-else-if="officeMimeTypes.includes(currentFile?.mimeType)"
-            :url="currentFile?.url"
-            :mime-type="currentFile?.mimeType"
-            :filename="currentFile?.filename"
-            @finished="onFileFinished"
-          />
-          <unknown-viewer v-else @finished="onFileFinished" />
+          <slot name="viewer" :current-file="currentFile">
+            <component :is="currentFileViewer" />
+          </slot>
         </div>
       </template>
       <template #2>
-        <file-card-list :on-load="onLoad" @click-file="onClickFile" />
+        <slot name="fileList">
+          <file-card-list
+            :file-types="fileTypes"
+            :no-more="noMore"
+            :on-load="onLoad"
+            @click-file="handleClickFile"
+          />
+        </slot>
       </template>
     </n-split>
   </div>
 </template>
-
-<style scoped lang="less">
-.file-viewer {
-  display: flex;
-}
-</style>

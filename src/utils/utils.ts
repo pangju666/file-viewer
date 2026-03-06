@@ -9,11 +9,14 @@ import {
   officeMimeTypes,
   pdfMimeType,
   textMimeTypePrefix,
+  utf8Charset,
   videoMimeTypes,
 } from "@/utils/constants";
 import { format } from "date-fns";
 
-export const DEFAULT_TEXT = "暂无";
+const mimeTypeCharsetRegex = /charset\s*=\s*"?([^"\s;]+)"?/i;
+
+export const NOE_EXIST_TEXT = "暂无";
 
 export function convertDecimalToDMS(decimal: number) {
   const degrees = Math.floor(decimal);
@@ -91,20 +94,20 @@ export function downloadFile(url: string, filename: string) {
   a.remove();
 }
 
-export function defaultTextIfBlank(text: string, defaultText = DEFAULT_TEXT) {
+export function defaultTextIfBlank(text: string, defaultText = NOE_EXIST_TEXT) {
   return (text ?? "").trim() || defaultText;
 }
 
 export function formatDateTime(date: string | number | Date) {
   if (date == null) {
-    return DEFAULT_TEXT;
+    return NOE_EXIST_TEXT;
   }
   return format(date, "yyyy-MM-dd HH:mm::ss");
 }
 
 export function formatDate(date: string | number | Date) {
   if (date == null) {
-    return DEFAULT_TEXT;
+    return NOE_EXIST_TEXT;
   }
   return format(date, "yyyy-MM-dd");
 }
@@ -202,4 +205,9 @@ export function toTree<T extends Record<string, unknown>>(
   }
 
   return tree;
+}
+
+export function getMimeTypeCharset(mimeType: string) {
+  const match = mimeType.match(mimeTypeCharsetRegex);
+  return match ? match[1] : utf8Charset;
 }

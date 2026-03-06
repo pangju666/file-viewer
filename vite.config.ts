@@ -42,7 +42,7 @@ export default defineConfig({
   plugins: [
     vue(),
     AutoImport({
-      dts: "src/types/auto-imports.d.ts",
+      dts: "~/types/auto-imports.d.ts",
       imports: [
         "vue",
         {
@@ -56,7 +56,7 @@ export default defineConfig({
       ],
     }),
     Components({
-      dts: "src/types/components.d.ts",
+      dts: "~/types/components.d.ts",
       resolvers: [NaiveUiResolver()],
     }),
     removeConsole(),

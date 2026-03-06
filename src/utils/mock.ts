@@ -16,27 +16,32 @@ import TestXlsFile from "@/assets/file/test.xls";
 import TestPptxFile from "@/assets/file/test.pptx";
 import TestPptFile from "@/assets/file/test.ppt";
 import TestPdfFile from "@/assets/file/test.pdf";
+import type { FileItem } from "@/types/file.ts";
 
-export interface FileItem {
-  filename: string;
-  type?: string;
-  mimeType: string;
-  url: string;
-  createTime: Date;
-  fileSize: number;
-  description: Record<string, unknown>[];
-}
+export const supportFileTypes = [
+  "kml",
+  "MD文档",
+  "工程矢量图",
+  "PDF文档",
+  "图片",
+  "视频",
+  "音频",
+  "模型",
+  "OFFICE文档",
+  "文本",
+  "JSON",
+  "未知",
+];
 
 export const testFiles: FileItem[] = [
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "application/pdf",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestPdfFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -48,15 +53,14 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType:
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestDocxFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -68,14 +72,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "application/msword",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestDocFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -87,15 +90,14 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestXlsxFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -107,14 +109,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "application/vnd.ms-excel",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestXlsFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -126,15 +127,14 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType:
       "iapplication/vnd.openxmlformats-officedocument.presentationml.presentation",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestPptxFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -146,14 +146,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "application/vnd.ms-powerpoint",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestPptFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -165,14 +164,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "image/jpeg",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestJpgFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -184,14 +182,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "image/vnd.dxf",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestDxfFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -203,14 +200,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "model/gltf-binary",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestGlbFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -222,14 +218,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "image/vnd.dxf",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: Test2DxfFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -241,15 +236,14 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     type: "STL模型",
     mimeType: "model/x.stl-binary",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestStlFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -261,15 +255,14 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     type: "Obj模型",
     mimeType: "model/obj",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestObjFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -281,14 +274,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "text/x-web-markdown",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestMdFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -300,14 +292,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "text/plain",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestTxtFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -319,14 +310,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "application/json",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestJsonFile,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -338,14 +328,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "audio/mpeg",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestMp3File,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -357,14 +346,13 @@ export const testFiles: FileItem[] = [
     ],
   },
   {
-    filename:
-      "测试文件22222222222222222222222222222222222222222222222222222222222222222",
+    name: "测试文件22222222222222222222222222222222222222222222222222222222222222222",
     mimeType: "video/mp4",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: TestMp4File,
     createTime: new Date(),
-    fileSize: 10000000,
-    description: [
+    size: 10000000,
+    descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
