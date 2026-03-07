@@ -16,9 +16,7 @@ export default defineConfig({
   },
   assetsInclude: [
     "**/*.md",
-    "**/*.dxf",
     "**/*.glb",
-    "**/*.fbx",
     "**/*.stl",
     "**/*.obj",
     "**/*.txt",

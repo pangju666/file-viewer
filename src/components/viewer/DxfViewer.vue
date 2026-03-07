@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, watch } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { DxfViewer, type DxfViewerOptions, type LayerInfo } from "dxf-viewer";
 import * as THREE from "three";
 import HanaMinAFont from "@/assets/fonts/HanaMinA.ttf";
@@ -38,6 +38,7 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: Error): void;
 }>();
 
 let dxfViewer: DxfViewer | null = null;
@@ -79,12 +80,12 @@ onUnmounted(() => {
   dxfViewer = null;
 });
 
-watch(
+/*watch(
   () => props.src,
   (newVal: string) => {
     loadDxf(newVal);
   },
-);
+);*/
 
 const handleToggleLayer = (layer: LayerInfo, newState: boolean) => {
   layer.isVisible = newState;
@@ -104,20 +105,24 @@ const handleToggleAll = (newState: boolean) => {
 
 const loadDxf = (dxfUrl: string) => {
   if (dxfViewer) {
-    dxfViewer.Load({
-      url: dxfUrl,
-      fonts: props.fonts,
-      progressCbk: (
-        phase: string,
-        processedSize: number,
-        totalSize: number,
-      ) => {
-        if (phase === "fetch") {
-          props.onProgress?.(processedSize, totalSize);
-        }
-      },
-      //workerFactory: DxfViewer.SetupWorker()
-    });
+    dxfViewer
+      .Load({
+        url: dxfUrl,
+        fonts: props.fonts,
+        progressCbk: (
+          phase: string,
+          processedSize: number,
+          totalSize: number,
+        ) => {
+          if (phase === "fetch") {
+            props.onProgress?.(processedSize, totalSize);
+          }
+        },
+        //workerFactory: DxfViewer.SetupWorker()
+      })
+      .catch((e) => {
+        emits("error", e);
+      });
   }
 };
 </script>

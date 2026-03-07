@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import {
-  AbstractMesh,
   ArcRotateCamera,
   Engine,
   HemisphericLight,
@@ -9,9 +8,10 @@ import {
   Scene,
   StandardMaterial,
   Vector3,
+  Color4,
 } from "babylonjs";
 import "babylonjs-loaders";
-import { stlMimeType } from "@/utils/constants.ts";
+import { modelViewerSupportedTypes, stlMimeType } from "@/utils/constants.ts";
 import type {
   ISceneLoaderAsyncResult,
   ISceneLoaderProgressEvent,
@@ -20,16 +20,20 @@ import type {
 const props = withDefaults(
   defineProps<{
     src: string;
-    mimeType: string;
+    mimeType?: string;
+    backgroundColor?: string;
     onProgress?: (loaded: number, total: number) => void;
   }>(),
   {
     onProgress: () => {},
+    mimeType: undefined,
+    backgroundColor: "#FF000000",
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: Error): void;
 }>();
 
 const canvasRef = ref<HTMLCanvasElement | null>(null);
@@ -37,25 +41,34 @@ const canvasRef = ref<HTMLCanvasElement | null>(null);
 let engine: Engine | null = null;
 let scene: Scene | null = null;
 let camera: ArcRotateCamera | null = null;
-let currentMeshes: AbstractMesh[] = [];
-let backLight: HemisphericLight | null = null;
+/*let currentMeshes: AbstractMesh[] = [];
+let backLight: HemisphericLight | null = null;*/
 
 onMounted(() => {
+  if (modelViewerSupportedTypes.includes(props.mimeType)) {
+    return;
+  }
+
   initBabylon();
   if (props.mimeType !== stlMimeType && scene) {
     // 从下方补光
-    backLight = new HemisphericLight("back", new Vector3(0, -1, 0), scene);
+    new HemisphericLight("back", new Vector3(0, -1, 0), scene);
   }
-  window.addEventListener("resize", onResize);
+  window.addEventListener("resize", resizeEngine);
 
   loadMesh(props.src);
 });
+
 onUnmounted(() => {
-  window.removeEventListener("resize", onResize);
+  if (modelViewerSupportedTypes.includes(props.mimeType)) {
+    return;
+  }
+
+  window.removeEventListener("resize", resizeEngine);
   destroyBabylon();
 });
 
-watch(
+/*watch(
   () => props.src,
   (newVal: string) => {
     currentMeshes.forEach((mesh) => mesh.dispose());
@@ -64,9 +77,10 @@ watch(
     loadMesh(newVal);
   },
 );
+
 watch(
   () => props.mimeType,
-  (newVal: string) => {
+  (newVal?: string) => {
     if (newVal === stlMimeType) {
       backLight?.dispose();
     } else if (scene) {
@@ -74,15 +88,18 @@ watch(
       backLight = new HemisphericLight("back", new Vector3(0, -1, 0), scene);
     }
   },
-);
+);*/
 
 const initBabylon = () => {
   // 获取画布元素
   const canvas = canvasRef.value;
-  if (!canvas) return;
+  if (!canvas) {
+    return;
+  }
   // 创建引擎
   engine = new Engine(canvas, true);
   scene = new Scene(engine);
+  scene.clearColor = Color4.FromHexString(props.backgroundColor);
 
   // 创建相机和灯光
   camera = new ArcRotateCamera(
@@ -121,42 +138,55 @@ const loadMesh = (url: string) => {
     onProgress: (event: ISceneLoaderProgressEvent) => {
       props.onProgress?.(event.loaded, event.total);
     },
-  }).then((result: ISceneLoaderAsyncResult) => {
-    result.meshes.forEach((mesh) => {
-      // 如果没有材质（或 .mtl 缺失），手动添加一个默认材质
-      if (mesh.material == null) {
-        mesh.material = new StandardMaterial("objFallbackMat", scene!);
+  })
+    .then((result: ISceneLoaderAsyncResult) => {
+      result.meshes.forEach((mesh) => {
+        // 如果没有材质（或 .mtl 缺失），手动添加一个默认材质
+        if (mesh.material == null) {
+          mesh.material = new StandardMaterial("objFallbackMat", scene!);
+        }
+        if (mesh.material) {
+          mesh.material.backFaceCulling = false; // 关闭剔除
+        }
+      });
+
+      // 可选：调整模型位置/缩放（OBJ 单位可能很大或很小）
+      const worldExtends = scene!.getWorldExtends();
+      const size = Vector3.Distance(worldExtends.min, worldExtends.max);
+      if (size > 0 && camera) {
+        // 自动聚焦到模型
+        const center = worldExtends.min.add(worldExtends.max).scaleInPlace(0.5);
+        camera.setTarget(center);
+        camera.radius = size * 2;
       }
-      if (mesh.material) {
-        mesh.material.backFaceCulling = false; // 关闭剔除
-      }
+
+      /* currentMeshes = result.meshes;*/
+
+      const observer = scene!.onAfterRenderObservable.add(() => {
+        emits("ready");
+        scene!.onAfterRenderObservable.remove(observer);
+      });
+    })
+    .catch((e: Error) => {
+      emits("error", e);
     });
-
-    // 可选：调整模型位置/缩放（OBJ 单位可能很大或很小）
-    const worldExtends = scene!.getWorldExtends();
-    const size = Vector3.Distance(worldExtends.min, worldExtends.max);
-    if (size > 0 && camera) {
-      // 自动聚焦到模型
-      const center = worldExtends.min.add(worldExtends.max).scaleInPlace(0.5);
-      camera.setTarget(center);
-      camera.radius = size * 2;
-    }
-
-    currentMeshes = result.meshes;
-
-    scene!.onAfterRenderObservable.addOnce(() => {
-      emits("ready");
-    });
-  });
 };
 
-const onResize = () => {
+const resizeEngine = () => {
   engine?.resize();
 };
 </script>
 
 <template>
-  <div class="full-size">
+  <model-viewer
+    v-if="modelViewerSupportedTypes.includes(mimeType as string)"
+    :src="src"
+    class="full-size"
+    camera-controls
+    touch-action="pan-y"
+    @load="$emit('ready')"
+  />
+  <div v-else class="full-size">
     <canvas ref="canvasRef" class="full-size"></canvas>
   </div>
 </template>

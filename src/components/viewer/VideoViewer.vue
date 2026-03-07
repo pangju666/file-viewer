@@ -24,6 +24,7 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: Error): void;
 }>();
 
 const videoPlayRef = ref<HTMLVideoElement | null>(null);
@@ -52,12 +53,12 @@ onMounted(() => {
       emits("ready");
     },
   );
-  /*videoPlayer.value.on("error", () => {
-    if (videoPlayer.value?.error()) {
-      //const error = player.error();
-      emits("error");
+  videoPlayer.value?.on("error", () => {
+    const error = videoPlayer.value?.error();
+    if (error) {
+      emits("error", error);
     }
-  });*/
+  });
 });
 
 onUnmounted(() => {

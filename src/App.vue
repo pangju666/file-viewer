@@ -21,18 +21,17 @@
 import { dateZhCN, zhCN } from "naive-ui";
 import "@/assets/css/pangju.less";
 import FileViewer from "@/components/FileViewer.vue";
-import { supportFileTypes, testFiles } from "@/utils/mock";
+import { testFiles } from "@/utils/mock";
 import { onMounted, ref } from "vue";
-import { formatFileType } from "@/utils/utils.ts";
 import type { FileItem } from "@/types/file.ts";
 
 const noMore = ref(false);
 const fileTypes = ref<string[]>([]);
 
 onMounted(() => {
-  setTimeout(() => {
-    fileTypes.value = supportFileTypes;
-  }, 3000);
+  fileTypes.value = Array.from(
+    new Set(testFiles.map((item) => item.type)).values(),
+  );
 });
 
 const onLoad = (
@@ -40,30 +39,28 @@ const onLoad = (
   types?: string[],
   keyword?: string,
 ): Promise<FileItem[]> => {
+  console.log(1);
   return new Promise((resolve) => {
     if (noMore.value) {
       resolve([]);
       return;
     }
     setTimeout(() => {
+      console.log(types);
       let result = testFiles.filter(
-        (item: FileItem) =>
-          types?.length === 0 ||
-          types?.includes(formatFileType(item?.mimeType as string)),
+        (item: FileItem) => types?.length === 0 || types?.includes(item.type),
       );
       if (keyword) {
         result = result.filter((item: FileItem) =>
           item.name?.includes(keyword),
         );
       }
-      result.forEach(
-        (item) => (item.type = formatFileType(item?.mimeType as string)),
-      );
       resolve(result);
+      console.log(result);
       if (page === 10) {
         noMore.value = true;
       }
-    }, 3000);
+    }, 1000);
   });
 };
 </script>

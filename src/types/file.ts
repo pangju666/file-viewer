@@ -7,6 +7,7 @@ export type FileItem = {
   id?: string;
   name?: string;
   type?: string;
+  filename?: string;
   mimeType?: string;
   url: string;
   cover?: string;

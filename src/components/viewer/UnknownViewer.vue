@@ -1,25 +1,31 @@
 <script lang="ts" setup>
-import { onMounted } from "vue";
+import { computed } from "vue";
 
-const emits = defineEmits<{
-  (e: "ready"): void;
-}>();
+const props = withDefaults(
+  defineProps<{
+    filename?: string;
+  }>(),
+  {
+    filename: undefined,
+    src: undefined,
+  },
+);
 
-onMounted(() => {
-  emits("ready");
-});
+const description = computed(() =>
+  props.filename ? `文件：${props.filename}` : "",
+);
 </script>
 
 <template>
-  <div class="not-support flex-center full-size">
-    <img src="@/assets/images/not-support-preview.png" alt="" />
+  <div class="flex-center full-size">
+    <n-result
+      status="500"
+      size="huge"
+      title="文件不支持预览"
+      :description="description"
+    >
+    </n-result>
   </div>
 </template>
 
-<style scoped lang="less">
-.not-support {
-  > img {
-    height: 100%;
-  }
-}
-</style>
+<style scoped lang="less"></style>

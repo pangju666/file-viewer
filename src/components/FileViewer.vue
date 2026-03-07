@@ -10,7 +10,6 @@ import {
   imageMimeTypes,
   jsonMimeTypePrefix,
   markdownMimType,
-  modelViewerSupportedTypes,
   officeMimeTypes,
   pdfMimeType,
   textMimeTypePrefix,
@@ -23,7 +22,7 @@ import JsonViewer from "@/components/viewer/JsonViewer.vue";
 import ImageViewer from "@/components/viewer/ImageViewer.vue";
 import VideoViewer from "@/components/viewer/VideoViewer.vue";
 import AudioViewer from "@/components/viewer/AudioViewer.vue";
-import BabylonModelViewer from "@/components/viewer/BabylonModelViewer.vue";
+import ModelViewer from "@/components/viewer/ModelViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
 import UnknownViewer from "@/components/viewer/UnknownViewer.vue";
 import PdfViewer from "@/components/viewer/PdfViewer.vue";
@@ -99,16 +98,8 @@ const currentFileViewer = computed(() => {
       cover: currentFile.value?.cover,
       onReady: handleFileReady,
     });
-  } else if (modelViewerSupportedTypes.includes(currentFile.value.mimeType)) {
-    return h("model-viewer", {
-      src: currentFile.value.url,
-      class: "full-size",
-      cameraControls: true,
-      touchAction: "pan-y",
-      onLoad: handleFileReady,
-    });
   } else if (babylonSupportedTypes.includes(currentFile.value.mimeType)) {
-    return h(BabylonModelViewer, {
+    return h(ModelViewer, {
       src: currentFile.value.url,
       mimeType: currentFile.value.mimeType,
       onReady: handleFileReady,
@@ -118,11 +109,27 @@ const currentFileViewer = computed(() => {
       src: currentFile.value.url,
       filename: currentFile.value?.name,
       mimeType: currentFile.value.mimeType,
+      mode: "onlyOffice",
+      onlyOfficeApiJsUrl:
+        "http://localhost:10000/web-apps/apps/api/documents/api.js",
       onReady: handleFileReady,
     });
   } else {
-    return h(UnknownViewer, { onReady: handleFileReady });
+    return h(UnknownViewer, {
+      src: currentFile.value.url,
+      filename: currentFile.value?.filename,
+    });
   }
+
+  /*else if (modelViewerSupportedTypes.includes(currentFile.value.mimeType)) {
+    return h("model-viewer", {
+      src: currentFile.value.url,
+      class: "full-size",
+      cameraControls: true,
+      touchAction: "pan-y",
+      onLoad: handleFileReady,
+    });
+  }*/
 });
 
 const handleClickFile = (file: FileItem) => {

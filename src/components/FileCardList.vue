@@ -38,53 +38,72 @@ const emits = defineEmits<{
   (e: "click-file", file: FileItem): void;
 }>();
 
-onMounted(async () => {
-  await loadFileList(keyword.value);
-});
-
 const currentPage = ref<number>(1);
 const loading = ref<boolean>(false);
 const fileItemList = ref<FileItem[]>([]);
-const keyword = ref<string>();
-const checkedFileTypes = ref<string[]>([]);
+
+const inputValue = ref<string>();
+const selectFileTypes = ref<string[]>([]);
 
 const isEmpty = computed(
   () => fileItemList.value.length === 0 && !loading.value,
 );
 
+const fileTypeOptions = computed(() =>
+  props.fileTypes.map((item) => ({ label: item, value: item })),
+);
+
+onMounted(() => {
+  loadFileList(inputValue.value, selectFileTypes.value, true);
+});
+
 watch(
-  () => props.fileTypes,
+  () => selectFileTypes.value,
   (val) => {
-    checkedFileTypes.value = val;
+    loadFileList(inputValue.value, val, true);
   },
 );
 
-watch(
-  () => checkedFileTypes.value,
-  () => {
-    loadFileList(keyword.value, true);
-  },
-  { deep: true },
-);
+const loadFileList = async (
+  keyword?: string,
+  types?: string[],
+  reset = false,
+) => {
+  if (reset) {
+    fileItemList.value = [];
+    currentPage.value = 1;
+  }
 
-const loadFileList = async (keyword?: string, reset = false) => {
-  if (loading.value) {
+  if (!reset && loading.value) {
     return;
   }
+
   loading.value = true;
-  if (reset) {
-    currentPage.value = 1;
-    fileItemList.value = [];
+
+  try {
+    const result = await getResult(
+      props.onLoad(currentPage.value, types, keyword),
+    );
+
+    fileItemList.value.push(...result);
+    ++currentPage.value;
+  } catch (e) {
+    if (reset) {
+      fileItemList.value = [];
+    }
+    throw e;
+  } finally {
+    loading.value = false;
   }
-  const result = await getResult(
-    props.onLoad(currentPage.value, checkedFileTypes.value, keyword),
-  );
-  fileItemList.value.push(...result);
-  ++currentPage.value;
-  loading.value = false;
 };
 
-const searchFileList = (keyword: string) => loadFileList(keyword, true);
+const searchFileList = (keyword?: string, types?: string[]) => {
+  loadFileList(keyword, types, true);
+};
+
+const handleScrollLoad = () => {
+  loadFileList(inputValue.value, selectFileTypes.value, false);
+};
 
 const handleClickDownload = (fileUrl: string, filename?: string) => {
   downloadFile(fileUrl, filename ?? "");
@@ -92,7 +111,6 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
 
 defineExpose({
   searchFileList,
-  checkedFileTypes,
 });
 </script>
 
@@ -104,38 +122,35 @@ defineExpose({
     <div v-if="showSearch" class="search-input">
       <slot name="search">
         <n-input
+          v-model:value="inputValue"
           round
           placeholder="请输入文件名"
-          @keydown.enter="searchFileList"
+          @keydown.enter="searchFileList(inputValue, selectFileTypes)"
         >
           <template #suffix>
-            <n-icon :size="24" class="cursor-pointer" @click="searchFileList">
+            <n-icon
+              :size="24"
+              class="cursor-pointer"
+              @click="searchFileList(inputValue, selectFileTypes)"
+            >
               <SearchRound />
             </n-icon>
           </template>
         </n-input>
       </slot>
     </div>
-    <div v-if="showTypeFilter" class="type-checkbox-group">
+    <div v-if="showTypeFilter" class="type-select">
       <slot name="types">
-        <n-checkbox-group v-model:value="checkedFileTypes">
-          <n-flex>
-            <n-checkbox
-              v-for="fileType in fileTypes"
-              :key="fileType"
-              :value="fileType"
-              :label="fileType"
-            />
-          </n-flex>
-        </n-checkbox-group>
+        <n-select
+          v-model:value="selectFileTypes"
+          multiple
+          placeholder="请选择文件类型"
+          :options="fileTypeOptions"
+        />
       </slot>
     </div>
     <div class="file-card-list">
-      <n-infinite-scroll
-        class="h-100"
-        :distance="10"
-        @load="loadFileList(keyword)"
-      >
+      <n-infinite-scroll class="h-100" :distance="10" @load="handleScrollLoad">
         <slot name="file-card" :file-list="fileItemList">
           <n-card
             v-for="(fileItem, i) in fileItemList"
@@ -154,7 +169,7 @@ defineExpose({
             <template v-if="fileItem?.name" #header>
               <div class="mr-10">
                 <n-ellipsis>
-                  {{ fileItem?.name }}
+                  {{ fileItem?.name ?? fileItem.filename }}
                 </n-ellipsis>
               </div>
             </template>
@@ -294,7 +309,7 @@ defineExpose({
     flex-shrink: 0;
   }
 
-  .type-checkbox-group {
+  .type-select {
     flex-shrink: 0;
   }
 

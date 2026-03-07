@@ -31,8 +31,9 @@ const props = withDefaults(
   },
 );
 
-defineEmits<{
+const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: MediaError): void;
 }>();
 
 const width = ref<number>(300);
@@ -80,6 +81,10 @@ const addCoverAnimation = () => {
 const removeCoverAnimation = () => {
   coverAnimationClasses.value = [];
 };
+
+const handleAudioError = (e: Event) => {
+  emits("error", (e.target as HTMLAudioElement).error as MediaError);
+};
 </script>
 
 <template>
@@ -102,6 +107,7 @@ const removeCoverAnimation = () => {
       @play="addCoverAnimation"
       @pause="removeCoverAnimation"
       @playing="$emit('ready')"
+      @error="handleAudioError"
     />
     <canvas v-if="visual" ref="canvasRef" class="w-100" />
   </div>
@@ -118,11 +124,11 @@ const removeCoverAnimation = () => {
   flex-direction: column;
 
   .title {
-    font-size: 16px;
+    font-size: 24px;
     text-align: center;
     color: #3c3c3c;
-    line-height: 20px;
-    font-weight: 700;
+    line-height: 30px;
+    font-weight: bold;
   }
 
   .cover {

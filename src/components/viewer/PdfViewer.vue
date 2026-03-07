@@ -1,5 +1,7 @@
 <script setup lang="ts">
-withDefaults(
+import { computed } from "vue";
+
+const props = withDefaults(
   defineProps<{
     src: string;
   }>(),
@@ -9,13 +11,18 @@ withDefaults(
 defineEmits<{
   (e: "ready"): void;
 }>();
+
+const pdfjsPath = computed(
+  () => `/pdfjs/web/viewer.html?file=${encodeURIComponent(props.src)}`,
+);
 </script>
 
 <template>
   <iframe
-    :src="`/pdfjs/web/viewer.html?file=${encodeURIComponent(src)}`"
+    :src="pdfjsPath"
     width="100%"
     height="100%"
     style="border: none"
+    @load="$emit('ready')"
   />
 </template>
