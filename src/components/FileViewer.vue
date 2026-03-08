@@ -91,7 +91,7 @@ const currentFileViewer = computed(() => {
       mimeType: currentFile.value.mimeType,
       onReady: handleFileReady,
     });
-  } else if (audioMimeTypes.includes(currentFile.value.mimeType)) {
+  } else if (currentFile.value.mimeType.startsWith("audio/")) {
     return h(AudioViewer, {
       src: currentFile.value.url,
       title: currentFile.value?.name,

@@ -330,7 +330,7 @@ export const testFiles: FileItem[] = [
     filename: "suzume_no_tojimari.flac",
     mimeType: "audio/flac",
     //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-    url: "https://disk.sample.cat/samples/flac/suzume_no_tojimari.flac",
+    url: "https://disk.sample.cat/samples/flac/suzume_no_tojimari.flaca",
     createTime: new Date(),
     size: 10000000,
     descriptions: [

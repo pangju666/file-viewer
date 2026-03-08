@@ -1,78 +1,29 @@
 <script lang="ts" setup>
-import { useAVBars, useAVLine, useAVWaveform } from "vue-audio-visual";
-import { ref, onMounted } from "vue";
-import type { AudioViewerOption } from "@/types/viewer.ts";
+import { ref } from "vue";
+import { useMessage } from "naive-ui";
+import { MusicNoteRound } from "@vicons/material";
+
+const message = useMessage();
 
 const props = withDefaults(
   defineProps<{
     src: string;
     cover?: string;
     title?: string;
-    visual?: boolean;
-    mode?: "bars" | "waveform" | "line";
-    option?: AudioViewerOption;
+    onError?: (error: MediaError | null) => void;
   }>(),
   {
-    mode: "waveform",
-    cover: undefined,
+    cover: "coverIcon",
     title: undefined,
-    visual: true,
-    option: () => ({
-      line: {},
-      bars: {},
-      circle: {},
-      waveform: {
-        playedLineColor: "lime",
-        noplayedLineColor: "#CFCFCF",
-        playtimeClickable: false,
-        playtime: false,
-      },
-    }),
+    onError: undefined,
   },
 );
 
-const emits = defineEmits<{
+defineEmits<{
   (e: "ready"): void;
-  (e: "error", error: MediaError): void;
 }>();
 
-const width = ref<number>(300);
-
-const audioRef = ref();
-const canvasRef = ref();
 const coverAnimationClasses = ref<string[]>([]);
-
-onMounted(() => {
-  if (props.visual) {
-    switch (props.mode) {
-      case "bars":
-        useAVBars(audioRef, canvasRef, {
-          canvasFillColor: props.option?.canvasFillColor,
-          canvasWidth: props.option?.bars.canvasWidth,
-          canvasHeight: props.option?.bars.canvasHeight,
-          ...props.option?.bars,
-        });
-        break;
-      case "waveform":
-        useAVWaveform(audioRef, canvasRef, {
-          src: props.src,
-          canvasFillColor: props.option?.canvasFillColor,
-          canvasWidth: props.option?.waveform.canvasWidth,
-          canvasHeight: props.option?.waveform.canvasHeight,
-          ...props.option?.waveform,
-        });
-        break;
-      default:
-        useAVLine(audioRef, canvasRef, {
-          canvasFillColor: props.option?.canvasFillColor,
-          canvasWidth: props.option?.line.canvasWidth,
-          canvasHeight: props.option?.line.canvasHeight,
-          ...props.option?.line,
-        });
-        break;
-    }
-  }
-});
 
 const addCoverAnimation = () => {
   coverAnimationClasses.value = ["cover-animation"];
@@ -83,33 +34,66 @@ const removeCoverAnimation = () => {
 };
 
 const handleAudioError = (e: Event) => {
-  emits("error", (e.target as HTMLAudioElement).error as MediaError);
+  const error: MediaError | null = (e.target as HTMLAudioElement)?.error;
+
+  if (props.onError) {
+    props.onError(error);
+    return;
+  }
+
+  switch (error?.code) {
+    case MediaError.MEDIA_ERR_ABORTED:
+      // 音频加载被用户主动中断
+      break;
+    case MediaError.MEDIA_ERR_NETWORK:
+      // 网络错误：音频下载过程中断
+      message.error("音频加载失败，请检查网络后重试。");
+      break;
+    case MediaError.MEDIA_ERR_DECODE:
+      // 解码错误：音频文件损坏或格式不兼容
+      message.error("音频文件损坏或格式不支持");
+      break;
+    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+      // 源不支持：无效的音频地址或格式
+      message.error("无效的音频链接或格式不支持");
+      break;
+    default:
+      break;
+  }
 };
 </script>
 
 <template>
-  <div v-if="width" class="audio-viewer full-size">
-    <img
-      v-if="cover"
+  <div class="audio-viewer full-size">
+    <n-image
       :src="cover"
+      :width="300"
+      :height="300"
+      preview-disabled
+      object-fit="cover"
       class="cover mb-10"
       :class="coverAnimationClasses"
-    />
+    >
+      <template #error>
+        <n-icon :size="100">
+          <MusicNoteRound />
+        </n-icon>
+      </template>
+    </n-image>
     <n-ellipsis class="mb-10">
       <span class="title">{{ title }}</span>
     </n-ellipsis>
     <audio
-      ref="audioRef"
       :src="src"
       controls
+      autoplay
       crossorigin="anonymous"
-      class="mb-10 w-100"
+      class="w-100"
       @play="addCoverAnimation"
       @pause="removeCoverAnimation"
       @playing="$emit('ready')"
       @error="handleAudioError"
     />
-    <canvas v-if="visual" ref="canvasRef" class="w-100" />
   </div>
 </template>
 
@@ -132,10 +116,7 @@ const handleAudioError = (e: Event) => {
   }
 
   .cover {
-    width: 300px;
-    height: 300px;
     border-radius: 999px;
-    object-fit: cover;
   }
 
   .cover-animation {

@@ -7,11 +7,13 @@
   >
     <n-notification-provider>
       <n-loading-bar-provider>
-        <file-viewer
-          :no-more="noMore"
-          :file-types="fileTypes"
-          :on-load="onLoad"
-        />
+        <n-message-provider>
+          <file-viewer
+            :no-more="noMore"
+            :file-types="fileTypes"
+            :on-load="onLoad"
+          />
+        </n-message-provider>
       </n-loading-bar-provider>
     </n-notification-provider>
   </n-config-provider>
@@ -39,14 +41,12 @@ const onLoad = (
   types?: string[],
   keyword?: string,
 ): Promise<FileItem[]> => {
-  console.log(1);
   return new Promise((resolve) => {
     if (noMore.value) {
       resolve([]);
       return;
     }
     setTimeout(() => {
-      console.log(types);
       let result = testFiles.filter(
         (item: FileItem) => types?.length === 0 || types?.includes(item.type),
       );
@@ -56,11 +56,10 @@ const onLoad = (
         );
       }
       resolve(result);
-      console.log(result);
       if (page === 10) {
         noMore.value = true;
       }
-    }, 1000);
+    }, 100);
   });
 };
 </script>
