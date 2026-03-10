@@ -8,7 +8,7 @@
     <n-notification-provider>
       <n-loading-bar-provider>
         <n-message-provider>
-          <file-viewer
+          <route-file-viewer
             :no-more="noMore"
             :file-types="fileTypes"
             :on-load="onLoad"
@@ -22,7 +22,7 @@
 <script lang="ts" setup>
 import { dateZhCN, zhCN } from "naive-ui";
 import "@/assets/css/pangju.less";
-import FileViewer from "@/components/FileViewer.vue";
+import RouteFileViewer from "@/components/RouteFileViewer.vue";
 import { testFiles } from "@/utils/mock";
 import { onMounted, ref } from "vue";
 import type { FileItem } from "@/types/file.ts";

@@ -5,7 +5,11 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/",
     name: "FileView",
-    props: true,
+    props: (route) => ({
+      fileUrl: decodeURIComponent(route.query.src as string),
+      mimeType: decodeURIComponent(route.query.type as string),
+      filename: decodeURIComponent(route.query.filename as string),
+    }),
     component: () => import("@/views/FileView.vue"),
   },
 ];

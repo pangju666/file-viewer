@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, watch } from "vue";
 import { useScriptTag } from "@vueuse/core";
-import type { OnlyOfficeUrl } from "@/types/file.ts";
+import type { OfficeUrl } from "@/types/file.ts";
 
 const props = withDefaults(
   defineProps<{
-    src: OnlyOfficeUrl;
+    src: OfficeUrl | string;
     mode?: "microsoft" | "onlyOffice";
     language?: string;
     microsoftViewBaseUrl?: string;
@@ -27,9 +27,13 @@ const emits = defineEmits<{
 
 let editor: unknown | null = null;
 
-const microsoftViewUrl = computed(
-  () => `${props.microsoftViewBaseUrl}?src=${encodeURIComponent(props.src)}`,
-);
+const microsoftViewUrl = computed(() => {
+  if (typeof props.src === "string") {
+    return `${props.microsoftViewBaseUrl}?src=${encodeURIComponent(props.src)}`;
+  } else {
+    return `${props.microsoftViewBaseUrl}?src=${encodeURIComponent(props.src?.url)}`;
+  }
+});
 
 const getDocumentType = (mimeType: string) => {
   switch (mimeType) {
@@ -62,7 +66,7 @@ const getFileType = (mimeType: string) => {
   }
 };
 
-const initEditor = (src: OnlyOfficeUrl) => {
+const initEditor = (src: OfficeUrl) => {
   editor = new window.DocsAPI.DocEditor("only-office-container", {
     documentType: getDocumentType(src.mimeType),
     type: "desktop",

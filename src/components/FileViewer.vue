@@ -134,7 +134,7 @@ const handleOfficeViewerError = (/*{ errorCode, errorDescription }*/) => {
     >
       <template #1>
         <div v-if="currentFile" class="full-size">
-          <slot v-if="hasError" name="error-viewer">
+          <slot v-if="hasError" name="error-viewer" :current-file="currentFile">
             <error-viewer
               :reason="errorReason"
               :filename="currentFile.name ?? currentFile.filename"
@@ -270,7 +270,10 @@ const handleOfficeViewerError = (/*{ errorCode, errorDescription }*/) => {
               name="pdf-viewer"
               :current-file="currentFile"
             >
-              <pdf-viewer :src="currentFile.url" @ready="handleViewerReady" />
+              <pdf-viewer
+                :src="{ url: currentFile.url, password: currentFile.password }"
+                @ready="handleViewerReady"
+              />
             </slot>
             <slot
               v-else-if="isTargetMimeType(jsonMimeType, currentFile?.mimeType)"

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import type { PdfUrl } from "@/types/file.ts";
 
 const props = withDefaults(
   defineProps<{
-    src: string;
+    src: PdfUrl;
   }>(),
   {},
 );
@@ -13,7 +14,8 @@ defineEmits<{
 }>();
 
 const pdfjsPath = computed(
-  () => `/pdfjs/web/viewer.html?file=${encodeURIComponent(props.src)}`,
+  () =>
+    `/pdfjs/web/viewer.html?file=${encodeURIComponent(props.src?.url)}&password=${props.src?.password}`,
 );
 </script>
 
