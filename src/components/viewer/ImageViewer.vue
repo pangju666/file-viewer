@@ -71,8 +71,6 @@ const handleError = (e: Event) => {
       message.error("图片加载失败");
     }
   }
-
-  emits("ready");
 };
 
 watch(

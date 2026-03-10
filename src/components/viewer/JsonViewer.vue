@@ -57,7 +57,6 @@ const downloadContent = (src: UrlWithFileEncoding | string) => {
         if (props.onError && error) {
           props.onError(error);
         }
-        emits("ready");
       });
   } else {
     axios
@@ -78,7 +77,6 @@ const downloadContent = (src: UrlWithFileEncoding | string) => {
         if (props.onError && error) {
           props.onError(error);
         }
-        emits("ready");
       });
   }
 };

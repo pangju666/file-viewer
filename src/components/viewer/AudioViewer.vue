@@ -1,9 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useMessage } from "naive-ui";
 import { MusicNoteRound } from "@vicons/material";
-
-const message = useMessage();
 
 const props = withDefaults(
   defineProps<{
@@ -23,7 +20,7 @@ const props = withDefaults(
   },
 );
 
-const emits = defineEmits<{
+defineEmits<{
   (e: "ready"): void;
 }>();
 
@@ -39,33 +36,9 @@ const removeCoverAnimation = () => {
 
 const handleError = (e: Event) => {
   const error: MediaError | null = (e.target as HTMLAudioElement)?.error;
-  if (error) {
-    if (props.onError) {
-      props.onError(error);
-    } else {
-      switch (error?.code) {
-        case MediaError.MEDIA_ERR_ABORTED:
-          // 音频加载被用户主动中断
-          break;
-        case MediaError.MEDIA_ERR_NETWORK:
-          // 网络错误：音频下载过程中断
-          message.error("音频加载失败，请检查网络后重试。");
-          break;
-        case MediaError.MEDIA_ERR_DECODE:
-          // 解码错误：音频文件损坏或格式不兼容
-          message.error("音频文件损坏或格式不支持");
-          break;
-        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-          // 源不支持：无效的音频地址或格式
-          message.error("无效的音频链接或格式不支持");
-          break;
-        default:
-          break;
-      }
-    }
+  if (props.onError && error) {
+    props.onError(error);
   }
-
-  emits("ready");
 };
 </script>
 

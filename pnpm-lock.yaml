@@ -12,11 +12,11 @@ importers:
         specifier: ^8.54.1
         version: 8.54.1(@babylonjs/core@8.54.1)(@babylonjs/loaders@8.54.1(@babylonjs/core@8.54.1)(babylonjs-gltf2interface@8.54.1))
       '@photo-sphere-viewer/core':
-        specifier: 5.11.5
-        version: 5.11.5
+        specifier: 5.7.4
+        version: 5.7.4
       '@photo-sphere-viewer/cubemap-adapter':
-        specifier: 5.11.5
-        version: 5.11.5(@photo-sphere-viewer/core@5.11.5)
+        specifier: 5.7.4
+        version: 5.7.4(@photo-sphere-viewer/core@5.7.4)
       '@vicons/material':
         specifier: ^0.13.0
         version: 0.13.0
@@ -530,13 +530,13 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@photo-sphere-viewer/core@5.11.5':
-    resolution: {integrity: sha512-aCo+zsWR0m0qSlNQpkacnQoSfc0An0zujBpQJ5l9LSvZixeC85FTWm9OZs1yaXvE5bM+TsdqfPDojjy9xT8qzQ==}
+  '@photo-sphere-viewer/core@5.7.4':
+    resolution: {integrity: sha512-NwhJuxSdRrjb7oCJOgvD5ZBMJpgXLZjKhACmebvGB2FIM2A71l3vU/fzAzYjG+xjJt+93pYI/myBhL5Ds6wyYw==}
 
-  '@photo-sphere-viewer/cubemap-adapter@5.11.5':
-    resolution: {integrity: sha512-fMMA7IA5qmWr3zrQ/yAULK0z1/5BqMB1yGdQdoP/7iWySQeb/ojc8xzwSpUJBTeQ+dMUrWkWosNgBYiL+vEHOQ==}
+  '@photo-sphere-viewer/cubemap-adapter@5.7.4':
+    resolution: {integrity: sha512-Gh7UFFlrDyPtyFcMXrR1m1lqT1/Aa5lN0A85JIjPjFLUIp0oBus9keumMSNc3i/9F9NFDVzNHhARvp2TUe8XiA==}
     peerDependencies:
-      '@photo-sphere-viewer/core': 5.11.5
+      '@photo-sphere-viewer/core': 5.7.4
 
   '@rolldown/pluginutils@1.0.0-rc.2':
     resolution: {integrity: sha512-izyXV/v+cHiRfozX62W9htOAvwMo4/bXKDrQ+vom1L1qRuexPock/7VZDAhnpHCLNejd3NJ6hiab+tO0D44Rgw==}
@@ -2115,9 +2115,6 @@ packages:
   three@0.161.0:
     resolution: {integrity: sha512-LC28VFtjbOyEu5b93K0bNRLw1rQlMJ85lilKsYj6dgTu+7i17W+JCCEbvrpmNHF1F3NAUqDSWq50UD7w9H2xQw==}
 
-  three@0.169.0:
-    resolution: {integrity: sha512-Ed906MA3dR4TS5riErd4QBsRGPcx+HBDX2O5yYE5GqJeFQTPU+M56Va/f/Oph9X7uZo3W3o4l2ZhBZ6f6qUv0w==}
-
   tiny-emitter@2.1.0:
     resolution: {integrity: sha512-NB6Dk1A9xgQPMoGqC5CVXn123gWyte215ONT5Pp5a0yt4nlEoO1ZWeCwpncaekPHXO60i47ihFnZPiRPjRMq4Q==}
 
@@ -2666,13 +2663,13 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@photo-sphere-viewer/core@5.11.5':
+  '@photo-sphere-viewer/core@5.7.4':
     dependencies:
-      three: 0.169.0
+      three: 0.161.0
 
-  '@photo-sphere-viewer/cubemap-adapter@5.11.5(@photo-sphere-viewer/core@5.11.5)':
+  '@photo-sphere-viewer/cubemap-adapter@5.7.4(@photo-sphere-viewer/core@5.7.4)':
     dependencies:
-      '@photo-sphere-viewer/core': 5.11.5
+      '@photo-sphere-viewer/core': 5.7.4
 
   '@rolldown/pluginutils@1.0.0-rc.2': {}
 
@@ -4306,8 +4303,6 @@ snapshots:
       strip-ansi: 6.0.1
 
   three@0.161.0: {}
-
-  three@0.169.0: {}
 
   tiny-emitter@2.1.0: {}
 

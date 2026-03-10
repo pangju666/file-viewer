@@ -53,8 +53,8 @@ export const dxfMimeType = "image/vnd.dxf";
 
 export const pdfMimeType = "application/pdf";
 
-export const textMimeTypePrefix = "text/";
+export const jsonMimeType = "application/json";
 
-export const jsonMimeTypePrefix = "application/json";
+export const textMimeTypePrefix = "text/";
 
 export const utf8Charset = "utf-8";

@@ -11,6 +11,8 @@ import { utf8Charset } from "@/utils/constants.ts";
 const props = withDefaults(
   defineProps<{
     src: string;
+    showLayerSider?: boolean;
+    layerSiderWidth?: number | string;
     fileEncoding?: string;
     fonts?: string[];
     options?: DxfViewerOptions;
@@ -24,6 +26,8 @@ const props = withDefaults(
     onError?: (error: Error) => void;
   }>(),
   {
+    showLayerSider: true,
+    layerSiderWidth: 300,
     fileEncoding: utf8Charset,
     fonts: () => [
       HanaMinAFont,
@@ -103,7 +107,6 @@ const loadDxf = (dxfUrl: string) => {
       if (props.onError && error) {
         props.onError(error);
       }
-      emits("ready");
     });
 };
 
@@ -147,7 +150,7 @@ watch(
 
 <template>
   <n-layout has-sider class="full-size">
-    <n-layout-sider :width="300" bordered>
+    <n-layout-sider v-if="showLayerSider" :width="layerSiderWidth" bordered>
       <div>
         <n-scrollbar>
           <div class="layer-list-title">图 层</div>

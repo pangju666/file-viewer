@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 withDefaults(
   defineProps<{
-    title?: string;
+    reason?: string;
     filename?: string;
     url?: string;
     type?: string;
   }>(),
   {
-    title: "文件不支持预览",
+    reason: "文件预览失败",
     filename: undefined,
     url: undefined,
     type: undefined,
@@ -17,7 +17,7 @@ withDefaults(
 
 <template>
   <div class="flex-center full-size">
-    <n-result status="403" size="huge" :title="title" class="unknown-viewer">
+    <n-result status="500" size="huge" :title="reason" class="error-viewer">
       <div class="descriptions">
         <div v-show="filename" class="description-item">
           <div class="title">文件名：</div>
@@ -31,7 +31,7 @@ withDefaults(
         </div>
         <div v-show="url" class="description-item">
           <div class="title">链&nbsp;&nbsp;&nbsp;接：</div>
-          <n-ellipsis>
+          <n-ellipsis class="w-100">
             <a :href="url" target="_blank">
               {{ url }}
             </a>
@@ -43,13 +43,11 @@ withDefaults(
 </template>
 
 <style lang="less" scoped>
-.unknown-viewer {
+.error-viewer {
   padding: 0 15px;
   max-width: 100%;
 
   .descriptions {
-    margin: 0 auto;
-    max-width: 80%;
     font-size: 16px;
 
     .description-item {

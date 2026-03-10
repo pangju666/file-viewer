@@ -44,8 +44,6 @@ const handleError = (error: Error) => {
   if (error && props.onError) {
     props.onError(error?.error);
   }
-
-  emits("ready");
 };
 
 const handleProgressChange = () => {
