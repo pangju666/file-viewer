@@ -5,6 +5,7 @@ import { NEllipsis } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
 import { SearchRound } from "@vicons/material";
 
+//todo 增加card插槽
 const props = withDefaults(
   defineProps<{
     showSkeleton?: boolean;
@@ -102,6 +103,9 @@ const searchFileList = (keyword?: string, types?: string[]) => {
 };
 
 const handleScrollLoad = () => {
+  if (props.noMore) {
+    return;
+  }
   loadFileList(inputValue.value, selectFileTypes.value, false);
 };
 
@@ -278,7 +282,7 @@ defineExpose({
           </n-empty>
         </slot>
         <slot name="noMore">
-          <div v-if="noMore" class="h-center">没有更多了</div>
+          <div v-if="noMore && !isEmpty" class="h-center">没有更多了</div>
         </slot>
         <slot name="backTop">
           <n-back-top v-if="showBackTop" :right="20" style="z-index: 100" />

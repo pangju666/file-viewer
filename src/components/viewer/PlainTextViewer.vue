@@ -1,52 +1,63 @@
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import axios, { type AxiosProgressEvent } from "axios";
 import { utf8Charset } from "@/utils/constants.ts";
 import { getResult } from "@/utils/utils.ts";
+import type { UrlWithFileEncoding } from "@/types/file.ts";
 
 const props = withDefaults(
   defineProps<{
-    src: string;
-    fileEncoding?: string;
-    onProgress?: (loaded: number, total: number) => void;
+    src: UrlWithFileEncoding | string;
+    onProgress?: (event: AxiosProgressEvent) => void;
     customDownload?: (
       url: string,
       encoding?: string,
     ) => string | Promise<string>;
+    onError?: (error: Error) => void;
   }>(),
   {
-    fileEncoding: utf8Charset,
-    onProgress: () => {},
+    onProgress: undefined,
     customDownload: undefined,
+    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
-  (e: "error", error: Error): void;
 }>();
 
-const content = ref<string | null>(null);
+const content = ref<string>();
 
-onMounted(async () => {
+const getFileUrl = (src: UrlWithFileEncoding | string) => {
+  if (typeof src === "string") {
+    return src;
+  }
+  return src.url;
+};
+
+const downloadContent = (src: UrlWithFileEncoding | string) => {
   if (props.customDownload) {
-    getResult(props.customDownload(props.src, props.fileEncoding))
+    getResult(
+      props.customDownload(getFileUrl(src), src?.fileEncoding ?? utf8Charset),
+    )
       .then((res) => {
         content.value = res;
         emits("ready");
       })
-      .catch((err: Error) => {
-        emits("error", err);
+      .catch((error: Error) => {
+        if (props.onError && error) {
+          props.onError(error);
+        }
+        emits("ready");
       });
   } else {
     axios
-      .get<string>(props.src, {
+      .get<string>(getFileUrl(src), {
         responseType: "text",
-        responseEncoding: props.fileEncoding,
-        onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
-          const { loaded, total } = progressEvent;
-          if (total) {
-            props.onProgress?.(loaded, total);
+        responseEncoding: src?.fileEncoding ?? utf8Charset,
+        onDownloadProgress: (event: AxiosProgressEvent) => {
+          if (props.onProgress) {
+            props.onProgress(event);
           }
         },
       })
@@ -54,30 +65,26 @@ onMounted(async () => {
         content.value = res.data;
         emits("ready");
       })
-      .catch((err: Error) => {
-        emits("error", err);
+      .catch((error: Error) => {
+        if (props.onError && error) {
+          props.onError(error);
+        }
+        emits("ready");
       });
   }
+};
+
+onMounted(() => {
+  downloadContent(props.src);
 });
 
-/*watch(
+watch(
   () => props.src,
-  async (newVal: string) => {
-    if (props.customDownload) {
-      const response = getResult(
-        props.customDownload(newVal, props.fileEncoding),
-      );
-      content.value = response?.data;
-    } else {
-      const response = await axios.get<string>(newVal, {
-        responseType: "text",
-        responseEncoding: props.fileEncoding,
-      });
-      content.value = response.data;
-    }
-    emits("ready");
+  (newVal: UrlWithFileEncoding | string) => {
+    content.value = "";
+    downloadContent(newVal);
   },
-);*/
+);
 </script>
 
 <template>
@@ -89,6 +96,7 @@ onMounted(async () => {
 <style scoped lang="less">
 .plain-text-viewer {
   overflow: hidden auto;
+  padding: 15px;
   width: 100%;
   height: 100%;
   font-size: 16px;

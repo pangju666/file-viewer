@@ -14,21 +14,7 @@ export default defineConfig({
       "@": resolve(__dirname, "src"),
     },
   },
-  assetsInclude: [
-    "**/*.md",
-    "**/*.glb",
-    "**/*.stl",
-    "**/*.obj",
-    "**/*.txt",
-    "**/*.json5",
-    "**/*.ppt",
-    "**/*.pptx",
-    "**/*.docx",
-    "**/*.doc",
-    "**/*.xlsx",
-    "**/*.xls",
-    "**/*.pdf",
-  ],
+  assetsInclude: ["**/*.DXF"],
   css: {
     preprocessorOptions: {
       less: {
@@ -61,6 +47,6 @@ export default defineConfig({
     viteCompression(),
   ],
   build: {
-    sourcemap: false,
+    //sourcemap: false,
   },
 });

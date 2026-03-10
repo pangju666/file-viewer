@@ -1,119 +1,133 @@
 <script lang="ts" setup>
-import { computed, nextTick, onMounted } from "vue";
+import { computed, nextTick, onMounted, watch } from "vue";
 import { useScriptTag } from "@vueuse/core";
+import type { OnlyOfficeUrl } from "@/types/file.ts";
 
 const props = withDefaults(
   defineProps<{
-    src: string;
-    filename?: string;
-    mimeType: string;
-    mode?: "officeapps" | "onlyOffice";
-    officeappsViewBaseUrl?: string;
+    src: OnlyOfficeUrl;
+    mode?: "microsoft" | "onlyOffice";
+    language?: string;
+    microsoftViewBaseUrl?: string;
     onlyOfficeApiJsUrl?: string;
+    onError?: (error: unknown) => void;
   }>(),
   {
-    filename: undefined,
-    mode: "officeapps",
+    language: "zh",
+    mode: "microsoft",
     onlyOfficeApiJsUrl: undefined,
-    officeappsViewBaseUrl: "http://view.officeapps.live.com/op/view.aspx",
+    microsoftViewBaseUrl: "http://view.officeapps.live.com/op/view.aspx",
+    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
-  (e: "error", error: Error): void;
 }>();
+
+let editor: unknown | null = null;
+
+const microsoftViewUrl = computed(
+  () => `${props.microsoftViewBaseUrl}?src=${encodeURIComponent(props.src)}`,
+);
+
+const getDocumentType = (mimeType: string) => {
+  switch (mimeType) {
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+    case "application/msword":
+      return "word";
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    case "application/vnd.ms-excel":
+      return "cell";
+    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+    case "application/vnd.ms-powerpoint":
+      return "slide";
+  }
+};
+
+const getFileType = (mimeType: string) => {
+  switch (mimeType) {
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      return "docx";
+    case "application/msword":
+      return "doc";
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      return "xlsx";
+    case "application/vnd.ms-excel":
+      return "xls";
+    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+      return "pptx";
+    case "application/vnd.ms-powerpoint":
+      return "ppt";
+  }
+};
+
+const initEditor = (src: OnlyOfficeUrl) => {
+  editor = new window.DocsAPI.DocEditor("only-office-container", {
+    documentType: getDocumentType(src.mimeType),
+    type: "desktop",
+    height: "100%",
+    width: "100%",
+    document: {
+      fileType: getFileType(src.mimeType),
+      key: src?.key ?? "only-office-editor",
+      title: src?.title,
+      url: src.url,
+      permissions: {
+        copy: true,
+        download: true,
+        print: true,
+      },
+    },
+    editorConfig: {
+      customization: {
+        anonymous: {
+          request: false,
+        },
+        chat: false,
+        comments: false,
+      },
+      lang: props.language ?? "zh",
+      mode: "view",
+    },
+    events: {
+      onDocumentReady: () => emits("ready"),
+      onError: (e: Event) => {
+        if (props?.onError && e?.data) {
+          props.onError(e.data);
+        }
+      },
+    },
+  });
+};
+
+watch(
+  () => props.src,
+  (newVal) => {
+    if (props.mode === "onlyOffice") {
+      editor?.destroyEditor();
+      initEditor(newVal);
+    }
+  },
+  { deep: true },
+);
 
 onMounted(() => {
   if (props.mode === "onlyOffice") {
     if (!props.onlyOfficeApiJsUrl) {
-      //...提示没配置js链接
-      return;
+      throw new Error("未配置onlyOffice的api.js文件地址");
     }
 
     nextTick(() => {
-      useScriptTag(props.onlyOfficeApiJsUrl, () => {
-        console.log(33331);
-
-        // 配置文档查看器
-        const fileNameWithExt = props.filename?.split(/[/\\]/).pop() || "";
-
-        let baseName;
-        let extension;
-        const lastDotIndex = fileNameWithExt.lastIndexOf(".");
-        if (lastDotIndex === -1) {
-          // 无扩展名
-          baseName = fileNameWithExt;
-          extension = "";
-        } else if (lastDotIndex === 0) {
-          // 以 . 开头
-          baseName = fileNameWithExt;
-          extension = "";
-        } else if (lastDotIndex === fileNameWithExt.length - 1) {
-          // 以 . 结尾
-          extension = "";
-        } else {
-          baseName = fileNameWithExt.slice(0, lastDotIndex);
-          extension = fileNameWithExt.slice(lastDotIndex).toLowerCase();
+      useScriptTag(props.onlyOfficeApiJsUrl as string, () => {
+        if (!window?.DocsAPI?.DocEditor) {
+          throw new Error("DocsAPI注入失败，请检查api.js文件地址是否正确");
         }
-
-        let documentType: string | null = null;
-        switch (props.mimeType) {
-          case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          case "application/msword":
-            documentType = "word";
-            break;
-          case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-          case "application/vnd.ms-excel":
-            documentType = "cell";
-            break;
-          case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-          case "application/vnd.ms-powerpoint":
-            documentType = "slide";
-            break;
-        }
-
-        window.docEditor = new window.DocsAPI.DocEditor(
-          "only-office-container",
-          {
-            documentType: documentType,
-            type: "desktop",
-            height: "100%",
-            width: "100%",
-            document: {
-              fileType: extension,
-              key: "test",
-              title: baseName,
-              url: props.src,
-              permissions: {
-                copy: true,
-                download: true,
-                print: true,
-              },
-            },
-            editorConfig: {
-              customization: {
-                anonymous: {
-                  request: false,
-                },
-                chat: false,
-                comments: false,
-              },
-              lang: "zh",
-              mode: "view",
-            },
-          },
-        );
-
-        emits("ready");
+        initEditor(props.src);
       });
     });
   }
 });
-
-const officeappsUrl = computed(
-  () => `${props.officeappsViewBaseUrl}?src=${encodeURIComponent(props.src)}`,
-);
 </script>
 
 <template>
@@ -124,7 +138,7 @@ const officeappsUrl = computed(
   ></div>
   <iframe
     v-else
-    :src="officeappsUrl"
+    :src="microsoftViewUrl"
     width="100%"
     height="100%"
     style="border: none"

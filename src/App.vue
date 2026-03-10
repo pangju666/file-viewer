@@ -42,10 +42,10 @@ const onLoad = (
   keyword?: string,
 ): Promise<FileItem[]> => {
   return new Promise((resolve) => {
-    if (noMore.value) {
+    /*if (noMore.value) {
       resolve([]);
       return;
-    }
+    }*/
     setTimeout(() => {
       let result = testFiles.filter(
         (item: FileItem) => types?.length === 0 || types?.includes(item.type),
@@ -56,9 +56,10 @@ const onLoad = (
         );
       }
       resolve(result);
-      if (page === 10) {
+      noMore.value = (types ?? []).length > 0;
+      /* if (page === 10) {
         noMore.value = true;
-      }
+      }*/
     }, 100);
   });
 };

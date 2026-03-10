@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, watch, onUnmounted } from "vue";
 import { DxfViewer, type DxfViewerOptions, type LayerInfo } from "dxf-viewer";
 import * as THREE from "three";
 import HanaMinAFont from "@/assets/fonts/HanaMinA.ttf";
@@ -14,7 +14,14 @@ const props = withDefaults(
     fileEncoding?: string;
     fonts?: string[];
     options?: DxfViewerOptions;
-    onProgress?: (processedSize: number, totalSize: number) => void;
+    onProgress?:
+      | ((
+          phase: "font" | "fetch" | "parse" | "prepare",
+          processedSize: number,
+          totalSize: number,
+        ) => void)
+      | null;
+    onError?: (error: Error) => void;
   }>(),
   {
     fileEncoding: utf8Charset,
@@ -32,13 +39,13 @@ const props = withDefaults(
         wireframeMesh: true,
       },
     }),
-    onProgress: () => {},
+    onProgress: null,
+    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
-  (e: "error", error: Error): void;
 }>();
 
 let dxfViewer: DxfViewer | null = null;
@@ -47,17 +54,13 @@ const dxfContainerRef = ref<HTMLElement>();
 const showAll = ref(true);
 const layers = ref<LayerInfo[]>([]);
 
-onMounted(() => {
-  if (!dxfContainerRef.value) {
-    return;
-  }
-
-  dxfViewer = new DxfViewer(dxfContainerRef.value, {
+const initViewer = (fileEncoding?: string) => {
+  dxfViewer = new DxfViewer(dxfContainerRef.value as HTMLElement, {
     ...props?.options,
     clearColor: props?.options?.clearColor ?? new THREE.Color("#fff"),
     autoResize: props?.options?.autoResize ?? true,
     colorCorrection: props?.options?.colorCorrection ?? true,
-    fileEncoding: props?.fileEncoding ?? utf8Charset,
+    fileEncoding: fileEncoding ?? utf8Charset,
     sceneOptions: {
       wireframeMesh: props?.options?.sceneOptions?.wireframeMesh ?? true,
     },
@@ -70,22 +73,7 @@ onMounted(() => {
     layers.value = dxfLayers;
     emits("ready");
   });
-  if (props.src != null) {
-    loadDxf(props.src);
-  }
-});
-
-onUnmounted(() => {
-  dxfViewer?.Destroy();
-  dxfViewer = null;
-});
-
-/*watch(
-  () => props.src,
-  (newVal: string) => {
-    loadDxf(newVal);
-  },
-);*/
+};
 
 const handleToggleLayer = (layer: LayerInfo, newState: boolean) => {
   layer.isVisible = newState;
@@ -104,27 +92,57 @@ const handleToggleAll = (newState: boolean) => {
 };
 
 const loadDxf = (dxfUrl: string) => {
-  if (dxfViewer) {
-    dxfViewer
-      .Load({
-        url: dxfUrl,
-        fonts: props.fonts,
-        progressCbk: (
-          phase: string,
-          processedSize: number,
-          totalSize: number,
-        ) => {
-          if (phase === "fetch") {
-            props.onProgress?.(processedSize, totalSize);
-          }
-        },
-        //workerFactory: DxfViewer.SetupWorker()
-      })
-      .catch((e) => {
-        emits("error", e);
-      });
-  }
+  dxfViewer
+    ?.Load({
+      url: dxfUrl,
+      fonts: props.fonts,
+      progressCbk: props.onProgress,
+      //workerFactory: DxfViewer.SetupWorker()
+    })
+    .catch((error) => {
+      if (props.onError && error) {
+        props.onError(error);
+      }
+      emits("ready");
+    });
 };
+
+onMounted(() => {
+  initViewer(props.fileEncoding);
+
+  if (props.src) {
+    loadDxf(props.src);
+  }
+});
+
+onUnmounted(() => {
+  dxfViewer?.Destroy();
+  dxfViewer = null;
+});
+
+watch(
+  () => props.src,
+  (newVal) => {
+    showAll.value = true;
+    layers.value = [];
+
+    if (newVal) {
+      loadDxf(newVal);
+    }
+  },
+);
+
+watch(
+  () => props.fileEncoding,
+  (newVal) => {
+    dxfViewer?.Destroy();
+    initViewer(newVal);
+
+    if (props.src) {
+      loadDxf(props.src);
+    }
+  },
+);
 </script>
 
 <template>

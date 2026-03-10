@@ -1,32 +1,32 @@
 <script lang="ts" setup>
-import { computed, h, ref } from "vue";
-import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
+import { watch, ref, shallowRef } from "vue";
 import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import FileCardList from "@/components/FileCardList.vue";
 import {
-  audioMimeTypes,
-  babylonSupportedTypes,
+  supportedImageMimeTypes,
+  supportedModelTypes,
   dxfMimeType,
-  imageMimeTypes,
+  supportedVideoMimeTypes,
   jsonMimeTypePrefix,
   markdownMimType,
-  officeMimeTypes,
+  supportedOfficeMimeTypes,
   pdfMimeType,
   textMimeTypePrefix,
-  videoMimeTypes,
+  supportedAudioMimeTypes,
 } from "@/utils/constants.ts";
 import { useLoadingBar } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
-import PlainTextViewer from "@/components/viewer/PlainTextViewer.vue";
+import { getMimeTypeCharset, isTargetMimeType } from "@/utils/utils.ts";
 import JsonViewer from "@/components/viewer/JsonViewer.vue";
 import ImageViewer from "@/components/viewer/ImageViewer.vue";
 import VideoViewer from "@/components/viewer/VideoViewer.vue";
 import AudioViewer from "@/components/viewer/AudioViewer.vue";
 import ModelViewer from "@/components/viewer/ModelViewer.vue";
-import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
 import UnknownViewer from "@/components/viewer/UnknownViewer.vue";
 import PdfViewer from "@/components/viewer/PdfViewer.vue";
-import { getMimeTypeCharset } from "@/utils/utils.ts";
+import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
+import PlainTextViewer from "@/components/viewer/PlainTextViewer.vue";
+import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
 
 const loadingBar = useLoadingBar();
 
@@ -46,91 +46,124 @@ withDefaults(
 );
 
 const currentFile = ref<FileItem>();
+const currentFileViewer = shallowRef({
+  component: UnknownViewer,
+  props: {},
+});
 
-const currentFileViewer = computed(() => {
-  if (!currentFile.value?.mimeType) {
-    return h(UnknownViewer, { onReady: handleFileReady });
-  } else if (currentFile.value.mimeType.startsWith(markdownMimType)) {
-    return h(MarkdownViewer, {
-      src: currentFile.value.url,
-      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
-      onReady: handleFileReady,
-    });
-  } else if (currentFile.value.mimeType === dxfMimeType) {
-    return h(DxfViewer, {
-      src: currentFile.value.url,
-      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
-      onReady: handleFileReady,
-    });
-  } else if (currentFile.value.mimeType === pdfMimeType) {
-    return h(PdfViewer, {
-      src: currentFile.value.url,
-      onReady: handleFileReady,
-    });
-  } else if (currentFile.value.mimeType.startsWith(textMimeTypePrefix)) {
-    return h(PlainTextViewer, {
-      src: currentFile.value.url,
-      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
-      onReady: handleFileReady,
-    });
-  } else if (currentFile.value.mimeType.startsWith(jsonMimeTypePrefix)) {
-    return h(JsonViewer, {
-      src: currentFile.value.url,
-      fileEncoding: getMimeTypeCharset(currentFile.value.mimeType),
-      onReady: handleFileReady,
-    });
-  } else if (imageMimeTypes.includes(currentFile.value.mimeType)) {
-    return h(ImageViewer, {
-      src: currentFile.value.url,
-      filename: currentFile.value?.name,
-      onReady: handleFileReady,
-    });
-  } else if (videoMimeTypes.includes(currentFile.value.mimeType)) {
-    return h(VideoViewer, {
-      src: currentFile.value.url,
-      mimeType: currentFile.value.mimeType,
-      onReady: handleFileReady,
-    });
-  } else if (currentFile.value.mimeType.startsWith("audio/")) {
-    return h(AudioViewer, {
-      src: currentFile.value.url,
-      title: currentFile.value?.name,
-      cover: currentFile.value?.cover,
-      onReady: handleFileReady,
-    });
-  } else if (babylonSupportedTypes.includes(currentFile.value.mimeType)) {
-    return h(ModelViewer, {
-      src: currentFile.value.url,
-      mimeType: currentFile.value.mimeType,
-      onReady: handleFileReady,
-    });
-  } else if (officeMimeTypes.includes(currentFile.value.mimeType)) {
-    return h(OfficeViewer, {
-      src: currentFile.value.url,
-      filename: currentFile.value?.name,
-      mimeType: currentFile.value.mimeType,
-      mode: "onlyOffice",
-      onlyOfficeApiJsUrl:
-        "http://localhost:10000/web-apps/apps/api/documents/api.js",
-      onReady: handleFileReady,
-    });
-  } else {
-    return h(UnknownViewer, {
-      src: currentFile.value.url,
-      filename: currentFile.value?.filename,
-    });
+const getFileViewer = (file: FileItem) => {
+  if (file.url) {
+    if (isTargetMimeType(markdownMimType, file?.mimeType)) {
+      return {
+        component: MarkdownViewer,
+        props: {
+          src: {
+            url: file.url,
+            fileEncoding: getMimeTypeCharset(file?.mimeType as string),
+          },
+          onReady: handleFileReady,
+        },
+      };
+    } else if (isTargetMimeType(dxfMimeType, file?.mimeType)) {
+      return {
+        component: DxfViewer,
+        props: {
+          src: file.url,
+          fileEncoding: getMimeTypeCharset(file?.mimeType as string),
+          onReady: handleFileReady,
+        },
+      };
+    } else if (pdfMimeType === file?.mimeType) {
+      return {
+        component: PdfViewer,
+        props: {
+          src: file.url,
+          onReady: handleFileReady,
+        },
+      };
+    } else if (file?.mimeType?.startsWith(textMimeTypePrefix)) {
+      return {
+        component: PlainTextViewer,
+        props: {
+          src: file.url,
+          fileEncoding: getMimeTypeCharset(file.mimeType),
+          onReady: handleFileReady,
+        },
+      };
+    } else if (file?.mimeType?.startsWith(jsonMimeTypePrefix)) {
+      return {
+        component: JsonViewer,
+        props: {
+          src: file.url,
+          fileEncoding: getMimeTypeCharset(file.mimeType),
+          onReady: handleFileReady,
+        },
+      };
+    } else if (supportedImageMimeTypes.includes(file?.mimeType as string)) {
+      return {
+        component: ImageViewer,
+        props: {
+          src: { url: file.url, filename: file?.name ?? file?.filename },
+          onReady: handleFileReady,
+        },
+      };
+    } else if (supportedVideoMimeTypes.includes(file?.mimeType as string)) {
+      return {
+        component: VideoViewer,
+        props: {
+          src: {
+            url: file.url,
+            mimeType: file?.mimeType,
+          },
+          poster: file?.cover,
+          onReady: handleFileReady,
+        },
+      };
+    } else if (supportedAudioMimeTypes.includes(file?.mimeType as string)) {
+      return {
+        component: AudioViewer,
+        props: {
+          src: file.url,
+          title: file?.name ?? file?.filename,
+          cover: file?.cover,
+          onReady: handleFileReady,
+        },
+      };
+    } else if (supportedModelTypes.includes(file?.mimeType as string)) {
+      return {
+        component: ModelViewer,
+        props: {
+          src: file.url,
+          mimeType: file?.mimeType,
+          onReady: handleFileReady,
+        },
+      };
+    } else if (supportedOfficeMimeTypes.includes(file?.mimeType as string)) {
+      return {
+        component: OfficeViewer,
+        props: {
+          src: {
+            url: file.url,
+            mimeType: file?.mimeType,
+            title: file?.name ?? file?.filename,
+          },
+          mode: "onlyOffice",
+          onlyOfficeApiJsUrl:
+            "http://localhost:10000/web-apps/apps/api/documents/api.js",
+          onReady: handleFileReady,
+        },
+      };
+    }
   }
 
-  /*else if (modelViewerSupportedTypes.includes(currentFile.value.mimeType)) {
-    return h("model-viewer", {
-      src: currentFile.value.url,
-      class: "full-size",
-      cameraControls: true,
-      touchAction: "pan-y",
-      onLoad: handleFileReady,
-    });
-  }*/
-});
+  return {
+    component: UnknownViewer,
+    props: {
+      src: file?.url,
+      filename: file?.filename,
+    },
+  };
+};
 
 const handleClickFile = (file: FileItem) => {
   currentFile.value = file;
@@ -140,6 +173,13 @@ const handleClickFile = (file: FileItem) => {
 const handleFileReady = () => {
   loadingBar.finish();
 };
+
+watch(
+  () => currentFile.value,
+  (newVal) => {
+    currentFileViewer.value = getFileViewer(newVal);
+  },
+);
 </script>
 
 <template>
@@ -155,7 +195,10 @@ const handleFileReady = () => {
       <template #1>
         <div class="full-size">
           <slot name="viewer" :current-file="currentFile">
-            <component :is="currentFileViewer" />
+            <component
+              :is="currentFileViewer.component"
+              v-bind="currentFileViewer.props"
+            />
           </slot>
         </div>
       </template>

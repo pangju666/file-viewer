@@ -10,16 +10,20 @@ const props = withDefaults(
     src: string;
     cover?: string;
     title?: string;
-    onError?: (error: MediaError | null) => void;
+    autoplay?: boolean;
+    controls?: boolean;
+    onError?: (error: MediaError) => void;
   }>(),
   {
     cover: "coverIcon",
+    autoplay: false,
+    controls: true,
     title: undefined,
     onError: undefined,
   },
 );
 
-defineEmits<{
+const emits = defineEmits<{
   (e: "ready"): void;
 }>();
 
@@ -33,33 +37,35 @@ const removeCoverAnimation = () => {
   coverAnimationClasses.value = [];
 };
 
-const handleAudioError = (e: Event) => {
+const handleError = (e: Event) => {
   const error: MediaError | null = (e.target as HTMLAudioElement)?.error;
-
-  if (props.onError) {
-    props.onError(error);
-    return;
+  if (error) {
+    if (props.onError) {
+      props.onError(error);
+    } else {
+      switch (error?.code) {
+        case MediaError.MEDIA_ERR_ABORTED:
+          // 音频加载被用户主动中断
+          break;
+        case MediaError.MEDIA_ERR_NETWORK:
+          // 网络错误：音频下载过程中断
+          message.error("音频加载失败，请检查网络后重试。");
+          break;
+        case MediaError.MEDIA_ERR_DECODE:
+          // 解码错误：音频文件损坏或格式不兼容
+          message.error("音频文件损坏或格式不支持");
+          break;
+        case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+          // 源不支持：无效的音频地址或格式
+          message.error("无效的音频链接或格式不支持");
+          break;
+        default:
+          break;
+      }
+    }
   }
 
-  switch (error?.code) {
-    case MediaError.MEDIA_ERR_ABORTED:
-      // 音频加载被用户主动中断
-      break;
-    case MediaError.MEDIA_ERR_NETWORK:
-      // 网络错误：音频下载过程中断
-      message.error("音频加载失败，请检查网络后重试。");
-      break;
-    case MediaError.MEDIA_ERR_DECODE:
-      // 解码错误：音频文件损坏或格式不兼容
-      message.error("音频文件损坏或格式不支持");
-      break;
-    case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
-      // 源不支持：无效的音频地址或格式
-      message.error("无效的音频链接或格式不支持");
-      break;
-    default:
-      break;
-  }
+  emits("ready");
 };
 </script>
 
@@ -85,14 +91,13 @@ const handleAudioError = (e: Event) => {
     </n-ellipsis>
     <audio
       :src="src"
-      controls
-      autoplay
-      crossorigin="anonymous"
+      :controls="controls"
+      :autoplay="autoplay"
       class="w-100"
       @play="addCoverAnimation"
       @pause="removeCoverAnimation"
       @playing="$emit('ready')"
-      @error="handleAudioError"
+      @error="handleError"
     />
   </div>
 </template>

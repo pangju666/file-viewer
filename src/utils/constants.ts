@@ -1,4 +1,4 @@
-export const officeMimeTypes = [
+export const supportedOfficeMimeTypes = [
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   "application/vnd.openxmlformats-officedocument.presentationml.presentation",
@@ -7,44 +7,49 @@ export const officeMimeTypes = [
   "application/vnd.ms-powerpoint",
 ];
 
-export const audioMimeTypes = [
+export const supportedAudioMimeTypes = [
   "audio/mpeg",
-  "audio/wav",
+  "audio/mp4",
+  "audio/aac",
   "audio/ogg",
-  "audio/x-aac",
-  "audio/x-flac",
+  "audio/wav",
+  "audio/webm",
+  "audio/opus",
+  "audio/flac",
 ];
 
-export const imageMimeTypes = [
+export const supportedImageMimeTypes = [
   "image/jpeg",
   "image/png",
   "image/gif",
-  "image/webp",
+  "image/bmp",
   "image/svg+xml",
+  "image/webp",
+  "image/avif",
+  "image/x-icon",
 ];
 
-export const sphereImageMimeTypes = ["image/jpeg", "image/png"];
-
-export const videoMimeTypes = ["video/mp4", "video/ogg", "video/webm"];
-
-export const modelViewerSupportedTypes = [
-  "model/gltf-binary",
-  "model/gltf+json",
+export const supportedVideoMimeTypes = [
+  "video/mp4",
+  "video/webm",
+  "video/ogg",
+  "application/x-mpegURL",
+  "application/vnd.apple.mpegurl",
+  "application/dash+xml",
 ];
-export const babylonSupportedTypes = [
+
+export const supportedModelTypes = [
   "model/gltf-binary",
   "model/gltf+json",
   "model/obj",
   "model/x.stl-binary",
 ];
 
-export const kmlMimType = "application/vnd.google-earth.kml+xml";
+export const sphereImageMimeTypes = ["image/jpeg", "image/png"];
 
 export const markdownMimType = "text/x-web-markdown";
 
 export const dxfMimeType = "image/vnd.dxf";
-
-export const stlMimeType = "model/x.stl-binary";
 
 export const pdfMimeType = "application/pdf";
 

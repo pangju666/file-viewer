@@ -1,95 +1,115 @@
 <script lang="ts" setup>
 import { mavonEditor } from "mavon-editor";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import axios, { type AxiosProgressEvent } from "axios";
 import "mavon-editor/dist/css/index.css";
 import { utf8Charset } from "@/utils/constants.ts";
 import { getResult } from "@/utils/utils.ts";
+import type { UrlWithFileEncoding } from "@/types/file.ts";
 
 const props = withDefaults(
   defineProps<{
-    src: string;
-    fileEncoding?: string;
-    onProgress?: (loaded: number, total: number) => void;
+    src: UrlWithFileEncoding | string;
+    options?: Record<string, unknown>;
+    onProgress?: (event: AxiosProgressEvent) => void;
     customDownload?: (
       url: string,
       encoding?: string,
     ) => string | Promise<string>;
+    onError?: (error: Error) => void;
   }>(),
   {
-    fileEncoding: utf8Charset,
-    onProgress: () => {},
+    options: () => ({
+      subfield: false,
+      defaultOpen: "preview",
+      scrollStyle: true,
+      toolbars: {
+        fullscreen: true,
+        readmodel: true,
+        htmlcode: true,
+        help: true,
+        navigation: true,
+        subfield: true,
+        preview: true,
+      },
+    }),
+    onProgress: undefined,
     customDownload: undefined,
+    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
-  (e: "error", error: Error): void;
 }>();
 
-const content = ref<string | null>(null);
+const content = ref<string>();
 
-onMounted(async () => {
+const getFileUrl = (src: UrlWithFileEncoding | string) => {
+  if (typeof src === "string") {
+    return src;
+  }
+  return src.url;
+};
+
+const downloadContent = (src: UrlWithFileEncoding | string) => {
   if (props.customDownload) {
-    getResult(props.customDownload(props.src, props.fileEncoding))
+    getResult(
+      props.customDownload(getFileUrl(src), src?.fileEncoding ?? utf8Charset),
+    )
       .then((res) => {
         content.value = res;
-        emits("ready");
       })
-      .catch((err: Error) => {
-        emits("error", err);
+      .catch((error: Error) => {
+        if (props.onError && error) {
+          props.onError(error);
+        }
+        emits("ready");
       });
   } else {
     axios
-      .get<string>(props.src, {
+      .get<string>(getFileUrl(src), {
         responseType: "text",
-        responseEncoding: props.fileEncoding,
-        onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
-          const { loaded, total } = progressEvent;
-          if (total) {
-            props.onProgress?.(loaded, total);
+        responseEncoding: src?.fileEncoding ?? utf8Charset,
+        onDownloadProgress: (event: AxiosProgressEvent) => {
+          if (props.onProgress) {
+            props.onProgress(event);
           }
         },
       })
       .then((res) => {
         content.value = res.data;
-        emits("ready");
       })
-      .catch((err: Error) => {
-        emits("error", err);
+      .catch((error: Error) => {
+        if (props.onError && error) {
+          props.onError(error);
+        }
+        emits("ready");
       });
   }
+};
+
+onMounted(() => {
+  downloadContent(props.src);
 });
 
-/*watch(
+watch(
   () => props.src,
-  async (newVal: string) => {
-    const response = await axios.get<string>(newVal, {
-      responseType: "text",
-    });
-    content.value = response.data;
-    emits("ready");
+  (newVal: UrlWithFileEncoding | string) => {
+    content.value = "";
+    downloadContent(newVal);
   },
-);*/
+);
 </script>
 
 <template>
-  <div class="md-viewer">
+  <div class="full-size">
     <mavon-editor
-      v-model="content"
-      :subfield="false"
-      default-open="preview"
+      :value="content"
+      class="h-100"
       :editable="false"
-      :toolbars-flag="false"
-      :scroll-style="true"
+      v-bind="options"
+      @change="$emit('ready')"
     />
   </div>
 </template>
-
-<style scoped lang="less">
-.md-viewer {
-  overflow: auto;
-  height: 100%;
-}
-</style>

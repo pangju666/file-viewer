@@ -15,3 +15,25 @@ export type FileItem = {
   size?: number;
   descriptions?: FileDescription[];
 };
+
+export type UrlWithMimeType = {
+  url: string;
+  mimeType?: string;
+};
+
+export type UrlWithFilename = {
+  url: string;
+  filename?: string;
+};
+
+export type UrlWithFileEncoding = {
+  url: string;
+  fileEncoding?: string;
+};
+
+export type OnlyOfficeUrl = {
+  url: string;
+  mimeType: string;
+  title?: string;
+  key?: string;
+};

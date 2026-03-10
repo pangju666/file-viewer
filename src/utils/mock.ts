@@ -1,5 +1,7 @@
 import type { FileItem } from "@/types/file.ts";
 
+import Dxf3DFile from "@/assets/file/3d.DXF";
+
 export const testFiles: FileItem[] = [
   /* PDF */
   {
@@ -243,6 +245,26 @@ export const testFiles: FileItem[] = [
       },
     ],
   },
+  {
+    name: "Monalisa 1200x1200",
+    type: "图像",
+    filename: "monalisa-1200x1200.tiff",
+    mimeType: "image/tiff",
+    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    url: "https://disk.sample.cat/samples/tiff/monalisa-1200x1200.tiff",
+    createTime: new Date(),
+    size: 10000000,
+    descriptions: [
+      {
+        name: "描述",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      {
+        name: "描述2",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+    ],
+  },
   /* 音频 */
   {
     name: "Suzume No Tojimari",
@@ -330,7 +352,7 @@ export const testFiles: FileItem[] = [
     filename: "suzume_no_tojimari.flac",
     mimeType: "audio/flac",
     //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-    url: "https://disk.sample.cat/samples/flac/suzume_no_tojimari.flaca",
+    url: "https://disk.sample.cat/samples/flac/suzume_no_tojimari.flac",
     createTime: new Date(),
     size: 10000000,
     descriptions: [
@@ -370,7 +392,7 @@ export const testFiles: FileItem[] = [
     type: "视频",
     filename: "1416529-hd_1920_1080_30fps.mp4",
     mimeType: "video/mp4",
-    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: "https://disk.sample.cat/samples/mp4/1416529-hd_1920_1080_30fps.mp4",
     createTime: new Date(),
     size: 10000000,
@@ -590,6 +612,26 @@ export const testFiles: FileItem[] = [
       },
     ],
   },
+  {
+    name: "Sample 2",
+    type: "JSON",
+    filename: "sample-2.json",
+    mimeType: "application/json",
+    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    url: "https://disk.sample.cat/samples/json/sample-2.json",
+    createTime: new Date(),
+    size: 10000000,
+    descriptions: [
+      {
+        name: "描述",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      {
+        name: "描述2",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+    ],
+  },
   /* MD */
   {
     name: "Markdown示例文件",
@@ -611,14 +653,54 @@ export const testFiles: FileItem[] = [
       },
     ],
   },
+  {
+    name: "README",
+    type: "文档",
+    filename: "README.md",
+    mimeType: "text/x-web-markdown",
+    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    url: "https://raw.githubusercontent.com/JeremyHeleine/Photo-Sphere-Viewer/refs/heads/master/README.md",
+    createTime: new Date(),
+    size: 10000000,
+    descriptions: [
+      {
+        name: "描述",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      {
+        name: "描述2",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+    ],
+  },
   /* TEXT */
   {
-    name: "Long document",
+    name: "Markdown示例文件",
     type: "文本",
-    filename: "long-doc.txt",
+    filename: "Markdown-Demo.md",
     mimeType: "text/plain",
     //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-    url: "https://sample-files.com/downloads/documents/txt/long-doc.txt",
+    url: "https://gist.githubusercontent.com/AlanDecode/7d31f3fac75b698ff1fa67240c56832b/raw/a75fc70d9e3efad92d67f009159add5c4ca2802d/Markdown-Demo.md",
+    createTime: new Date(),
+    size: 10000000,
+    descriptions: [
+      {
+        name: "描述",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      {
+        name: "描述2",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+    ],
+  },
+  {
+    name: "README",
+    type: "文本",
+    filename: "README.md",
+    mimeType: "text/plain",
+    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    url: "https://raw.githubusercontent.com/JeremyHeleine/Photo-Sphere-Viewer/refs/heads/master/README.md",
     createTime: new Date(),
     size: 10000000,
     descriptions: [
@@ -634,12 +716,12 @@ export const testFiles: FileItem[] = [
   },
   /* 模型 */
   {
-    name: "Robot",
+    name: "Male",
     type: "模型",
-    filename: "robot.obj",
+    filename: "male02.obj",
     mimeType: "model/obj",
     //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-    url: "https://raw.githubusercontent.com/eddicke/kkk/master/robot.obj",
+    url: "https://threejs.org/examples/models/obj/male02/male02.obj",
     createTime: new Date(),
     size: 10000000,
     descriptions: [
@@ -741,6 +823,26 @@ export const testFiles: FileItem[] = [
     mimeType: "image/vnd.dxf",
     //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
     url: "https://raw.githubusercontent.com/gdsestimating/dxf-parser/refs/heads/master/samples/data/api-cw750-details.dxf",
+    createTime: new Date(),
+    size: 10000000,
+    descriptions: [
+      {
+        name: "描述",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+      {
+        name: "描述2",
+        value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      },
+    ],
+  },
+  {
+    name: "3D Demo",
+    type: "矢量图",
+    filename: "3d.dxf",
+    mimeType: "image/vnd.dxf",
+    //cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    url: Dxf3DFile,
     createTime: new Date(),
     size: 10000000,
     descriptions: [

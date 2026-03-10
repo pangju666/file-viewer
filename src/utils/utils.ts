@@ -1,17 +1,4 @@
-import {
-  audioMimeTypes,
-  babylonSupportedTypes,
-  dxfMimeType,
-  imageMimeTypes,
-  jsonMimeTypePrefix,
-  kmlMimType,
-  markdownMimType,
-  officeMimeTypes,
-  pdfMimeType,
-  textMimeTypePrefix,
-  utf8Charset,
-  videoMimeTypes,
-} from "@/utils/constants";
+import { markdownMimType, utf8Charset } from "@/utils/constants";
 import { format } from "date-fns";
 
 const mimeTypeCharsetRegex = /charset\s*=\s*"?([^"\s;]+)"?/i;
@@ -129,34 +116,6 @@ export function formatFileSize(fileSize: number) {
   return (fileSize / Math.pow(num, 4)).toFixed(2) + "T";
 }
 
-export const formatFileType = (mimeType: string) => {
-  if (mimeType === kmlMimType) {
-    return "kml";
-  } else if (mimeType === markdownMimType) {
-    return "MD文档";
-  } else if (mimeType === dxfMimeType) {
-    return "工程矢量图";
-  } else if (mimeType === pdfMimeType) {
-    return "PDF文档";
-  } else if (imageMimeTypes.includes(mimeType)) {
-    return "图片";
-  } else if (videoMimeTypes.includes(mimeType)) {
-    return "视频";
-  } else if (audioMimeTypes.includes(mimeType)) {
-    return "音频";
-  } else if (babylonSupportedTypes.includes(mimeType)) {
-    return "模型";
-  } else if (officeMimeTypes.includes(mimeType)) {
-    return "OFFICE文档";
-  } else if (mimeType.startsWith(textMimeTypePrefix)) {
-    return "文本";
-  } else if (mimeType.startsWith(jsonMimeTypePrefix)) {
-    return "JSON";
-  } else {
-    return "未知";
-  }
-};
-
 export function toTree<T extends Record<string, unknown>>(
   source: T[],
   options = {
@@ -207,7 +166,20 @@ export function toTree<T extends Record<string, unknown>>(
   return tree;
 }
 
-export function getMimeTypeCharset(mimeType: string) {
+export function getMimeTypeCharset(
+  mimeType: string,
+  defaultCharset = utf8Charset,
+) {
   const match = mimeType.match(mimeTypeCharsetRegex);
-  return match ? match[1] : utf8Charset;
+  return match ? match[1] : defaultCharset;
+}
+
+export function isTargetMimeType(
+  targetMimeType: string,
+  fileMimeType?: string,
+) {
+  return (
+    fileMimeType === targetMimeType ||
+    fileMimeType?.startsWith(`${targetMimeType};`)
+  );
 }

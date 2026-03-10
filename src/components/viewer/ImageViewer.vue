@@ -1,30 +1,25 @@
 <script lang="ts" setup>
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
-import { onMounted, onUnmounted } from "vue";
+import { nextTick, onUnmounted, ref, watch } from "vue";
+import { useMessage } from "naive-ui";
+import type { UrlWithFilename } from "@/types/file.ts";
+
+const message = useMessage();
 
 const props = withDefaults(
   defineProps<{
-    src: string;
-    filename?: string;
+    src: UrlWithFilename | string;
     options?: Viewer.Options;
+    onError?: (e: Event) => void;
   }>(),
   {
     filename: undefined,
     options: () => ({
       inline: true,
-      backdrop: true,
-      button: true,
-      focus: true,
-      fullscreen: true,
-      loading: true,
+      button: false,
       loop: false,
-      keyboard: false,
-      movable: true,
       navbar: false,
-      rotatable: true,
-      scalable: true,
-      slideOnTouch: true,
       toolbar: {
         flipHorizontal: true,
         flipVertical: true,
@@ -38,12 +33,8 @@ const props = withDefaults(
         zoomIn: true,
         zoomOut: true,
       },
-      tooltip: true,
-      transition: true,
-      zoomable: true,
-      zoomOnTouch: true,
-      zoomOnWheel: true,
     }),
+    onError: undefined,
   },
 );
 
@@ -51,32 +42,77 @@ const emits = defineEmits<{
   (e: "ready"): void;
 }>();
 
-onMounted(() => {
-  const imageElement = document.getElementById("image");
-  if (!imageElement) {
-    return;
-  }
+let viewer: Viewer | null = null;
 
-  viewer = new Viewer(imageElement, {
+const imageRef = ref<HTMLImageElement>();
+const imageUrl = ref<string>();
+
+const initViewer = (filename?: string) => {
+  viewer = new Viewer(imageRef.value as HTMLImageElement, {
     ...props.options,
     title:
       props.options?.title ??
       ((image: HTMLImageElement, imageData: unknown) =>
-        `(${props.filename ?? ""} ${imageData.naturalWidth} × ${imageData.naturalHeight})`),
-    viewed: props.options?.viewed ?? (() => emits("ready")),
+        `(${filename ?? ""}${filename ? " " : ""}${imageData.naturalWidth} × ${imageData.naturalHeight})`),
+    viewed: (event: CustomEvent) => {
+      if (props?.options?.viewed) {
+        props.options.viewed(event);
+      }
+      emits("ready");
+    },
   });
-});
+};
+
+const handleError = (e: Event) => {
+  if (e) {
+    if (props.onError) {
+      props.onError(e);
+    } else {
+      message.error("图片加载失败");
+    }
+  }
+
+  emits("ready");
+};
+
+watch(
+  () => props.src,
+  (val) => {
+    if (!val) {
+      imageUrl.value = undefined;
+    } else if (typeof props.src === "string") {
+      imageUrl.value = props.src;
+    } else {
+      imageUrl.value = props.src.url;
+    }
+
+    viewer?.destroy();
+    if (val) {
+      if (imageRef.value) {
+        initViewer(props.src?.filename);
+      } else {
+        nextTick(() => {
+          initViewer(props.src?.filename);
+        });
+      }
+    }
+  },
+  { immediate: true, deep: true },
+);
 
 onUnmounted(() => {
   viewer?.destroy();
   viewer = null;
 });
-
-let viewer: Viewer | null = null;
 </script>
 
 <template>
   <div class="full-size">
-    <img id="image" class="display-none" :src="src" />
+    <img
+      ref="imageRef"
+      class="display-none"
+      :src="imageUrl"
+      @error="handleError"
+    />
   </div>
 </template>
