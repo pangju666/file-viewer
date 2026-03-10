@@ -45,8 +45,6 @@ export const supportedModelTypes = [
   "model/x.stl-binary",
 ];
 
-export const sphereImageMimeTypes = ["image/jpeg", "image/png"];
-
 export const markdownMimType = "text/x-web-markdown";
 
 export const dxfMimeType = "image/vnd.dxf";
