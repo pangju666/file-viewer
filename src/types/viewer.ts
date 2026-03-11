@@ -64,3 +64,9 @@ export type FilePreviewProps = {
     video: Record<string, unknown>;
   };
 };
+
+export type ViewerError =
+  | Event
+  | Error
+  | MediaError
+  | { errorCode: number; errorDescription: string };

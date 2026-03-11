@@ -8,7 +8,10 @@ const props = withDefaults(
   defineProps<
     OfficeViewerProps & {
       src: OnlyOfficeUrl | string;
-      onError?: (error: unknown) => void;
+      onError?: (error: {
+        errorCode: number;
+        errorDescription: string;
+      }) => void;
     }
   >(),
   {

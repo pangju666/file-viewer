@@ -16,7 +16,11 @@ import {
 } from "@/utils/constants.ts";
 import { useLoadingBar } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
-import { getMimeTypeCharset, isTargetMimeType } from "@/utils/utils.ts";
+import {
+  getMimeTypeCharset,
+  getResult,
+  isTargetMimeType,
+} from "@/utils/utils.ts";
 import JsonViewer from "@/components/viewer/JsonViewer.vue";
 import ImageViewer from "@/components/viewer/ImageViewer.vue";
 import VideoViewer from "@/components/viewer/VideoViewer.vue";
@@ -28,7 +32,8 @@ import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
 import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
-import type { FilePreviewProps } from "@/types/viewer.ts";
+import type { FilePreviewProps, ViewerError } from "@/types/viewer.ts";
+import { type AnyWebReadableStream, fileTypeFromStream } from "file-type";
 
 const loadingBar = useLoadingBar();
 
@@ -49,12 +54,14 @@ const props = withDefaults(
 
 const hasError = ref(false);
 const errorReason = ref<string | undefined>(undefined);
+const error = ref<ViewerError>();
 
 watch(
   () => props.file,
   () => {
     hasError.value = false;
     errorReason.value = undefined;
+    error.value = undefined;
     loadingBar.start();
   },
 );
@@ -83,15 +90,15 @@ const handleViewerReady = () => {
   loadingBar.finish();
 };
 
-const handleViewerError = () => {
-  //todo 处理各个预览器的错误
-  loadingBar.error();
-  hasError.value = true;
+const handleViewerError = (e: ViewerError) => {
   errorReason.value = undefined;
+  error.value = e;
+  hasError.value = true;
+  loadingBar.error();
 };
 
 const handleAudioViewerError = (error: MediaError) => {
-  handleViewerError();
+  handleViewerError(error);
 
   switch (error?.code) {
     case MediaError.MEDIA_ERR_ABORTED:
@@ -115,7 +122,7 @@ const handleAudioViewerError = (error: MediaError) => {
 };
 
 const handleVideoViewerError = (error: MediaError) => {
-  handleViewerError();
+  handleViewerError(error);
 
   switch (error?.code) {
     case MediaError.MEDIA_ERR_ABORTED:
@@ -138,10 +145,6 @@ const handleVideoViewerError = (error: MediaError) => {
   }
 };
 
-const handleOfficeViewerError = (/*{ errorCode, errorDescription }*/) => {
-  handleViewerError();
-};
-
 onMounted(() => {
   if (props.file?.url && props.file?.mimeType) {
     return;
@@ -153,7 +156,7 @@ onMounted(() => {
 
 <template>
   <div class="full-size">
-    <slot v-if="hasError" name="error-viewer" :error-reason="errorReason">
+    <slot v-if="hasError" name="error-viewer" :error="error">
       <error-viewer
         :reason="errorReason"
         :filename="filename"
@@ -228,7 +231,7 @@ onMounted(() => {
             mimeType: file.mimeType,
             title: filename,
           }"
-          :on-error="handleOfficeViewerError"
+          :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>

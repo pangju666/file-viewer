@@ -4,8 +4,8 @@ import FileItemList from "@/components/FileItemList.vue";
 import type { FileItem } from "@/types/file.ts";
 import FilePreview from "@/components/FilePreview.vue";
 import type { FileItemListProps, FilePreviewProps } from "@/types/viewer.ts";
-import { type AnyWebReadableStream, fileTypeFromStream } from "file-type";
 import { getResult } from "@/utils/utils.ts";
+import { type AnyWebReadableStream, fileTypeFromStream } from "file-type";
 
 const props = withDefaults(
   defineProps<
@@ -52,6 +52,8 @@ const filePreviewProps = computed(() => {
 });
 
 const handleClickFile = async (file: FileItem) => {
+  currentFile.value = undefined;
+
   if (file && file.url && !file.mimeType && props.autoDetectType) {
     if (props.detectFileType) {
       file.mimeType = await getResult(props.detectFileType(file));
@@ -63,6 +65,7 @@ const handleClickFile = async (file: FileItem) => {
       file.mimeType = fileType?.mime as string;
     }
   }
+
   currentFile.value = file;
 };
 </script>
