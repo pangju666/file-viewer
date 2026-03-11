@@ -3,15 +3,35 @@
   "private": false,
   "version": "1.0.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/lib/my-lib.cjs.js",
+  "module": "./dist/lib/my-lib.es.js",
+  "types": "./dist/lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/lib/my-lib.es.js",
+      "require": "./dist/lib/my-lib.cjs.js",
+      "types": "./dist/lib/types/index.d.ts"
+    },
+    "./style.css": "./dist/lib/my-lib.css",
+    "./app": {
+      "default": "./dist/app/index.html"
+    }
+  },
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "vite preview --outDir dist/app",
     "type-check": "vue-tsc --noEmit",
     "prettier": "prettier --write ./**/*.{html,vue,js,ts,json,md}",
     "eslint": "eslint . --fix",
     "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix",
     "prepare": "husky"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.29"
   },
   "dependencies": {
     "@babylonjs/viewer": "^8.54.1",
@@ -58,6 +78,7 @@
     "unplugin-vue-components": "^31.0.0",
     "vite": "^7.3.1",
     "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-dts": "^4.5.4",
     "vite-plugin-remove-console": "^2.2.0",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.2.5"

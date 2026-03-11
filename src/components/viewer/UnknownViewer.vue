@@ -7,7 +7,7 @@ withDefaults(
     type?: string;
   }>(),
   {
-    title: "文件不支持预览",
+    title: "不支持预览该文件",
     filename: undefined,
     url: undefined,
     type: undefined,

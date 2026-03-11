@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, watch, computed, onMounted } from "vue";
-import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import {
   supportedImageMimeTypes,
   supportedModelTypes,
@@ -16,11 +15,8 @@ import {
 } from "@/utils/constants.ts";
 import { useLoadingBar } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
-import {
-  getMimeTypeCharset,
-  getResult,
-  isTargetMimeType,
-} from "@/utils/utils.ts";
+import { getMimeTypeCharset, isTargetMimeType } from "@/utils/utils.ts";
+import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import JsonViewer from "@/components/viewer/JsonViewer.vue";
 import ImageViewer from "@/components/viewer/ImageViewer.vue";
 import VideoViewer from "@/components/viewer/VideoViewer.vue";
@@ -33,7 +29,6 @@ import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
 import type { FilePreviewProps, ViewerError } from "@/types/viewer.ts";
-import { type AnyWebReadableStream, fileTypeFromStream } from "file-type";
 
 const loadingBar = useLoadingBar();
 
