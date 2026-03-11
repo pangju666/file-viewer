@@ -1,10 +1,13 @@
 <script lang="ts" setup>
-import { onMounted, watch, ref } from "vue";
+import { watch, ref, onMounted } from "vue";
 import axios, { type AxiosProgressEvent } from "axios";
 import VueJsonViewer from "vue-json-viewer";
 import "vue-json-viewer/style.css";
-import { utf8Charset } from "@/utils/constants.ts";
-import { getResult } from "@/utils/utils.ts";
+import {
+  getResult,
+  getSrcFromUrl,
+  getFileEncodingFromUrl,
+} from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
 
 const props = withDefaults(
@@ -14,7 +17,7 @@ const props = withDefaults(
     onProgress?: (event: AxiosProgressEvent) => void;
     fetcher?: (
       url: string,
-      encoding?: string,
+      fileEncoding?: string,
     ) => Record<string, unknown> | Promise<Record<string, unknown>>;
     onError?: (error: Error) => void;
   }>(),
@@ -37,16 +40,9 @@ const emits = defineEmits<{
 
 const content = ref<Record<string, unknown>>({});
 
-const getFileUrl = (src: UrlWithFileEncoding | string) => {
-  if (typeof src === "string") {
-    return src;
-  }
-  return src.url;
-};
-
 const getContent = (src: UrlWithFileEncoding | string) => {
   if (props.fetcher) {
-    getResult(props.fetcher(getFileUrl(src), src?.fileEncoding ?? utf8Charset))
+    getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
       .then((res) => {
         content.value = res;
         emits("ready");
@@ -58,9 +54,9 @@ const getContent = (src: UrlWithFileEncoding | string) => {
       });
   } else {
     axios
-      .get<Record<string, unknown>>(getFileUrl(src), {
+      .get<Record<string, unknown>>(getSrcFromUrl(src), {
         responseType: "json",
-        responseEncoding: src?.fileEncoding ?? utf8Charset,
+        responseEncoding: getFileEncodingFromUrl(src),
         onDownloadProgress: (event: AxiosProgressEvent) => {
           if (props.onProgress) {
             props.onProgress(event);

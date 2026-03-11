@@ -6,6 +6,7 @@ import FilePreview from "@/components/FilePreview.vue";
 import type { FileItemListProps, FilePreviewProps } from "@/types/viewer.ts";
 import { getResult } from "@/utils/utils.ts";
 import { type AnyWebReadableStream, fileTypeFromStream } from "file-type";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<
@@ -25,6 +26,16 @@ const props = withDefaults(
     autoDetectType: true,
     detectFileType: undefined,
     title: undefined,
+    enableImage: undefined,
+    enableVideo: undefined,
+    enableAudio: undefined,
+    enablePdf: undefined,
+    enableOffice: undefined,
+    enableModel: undefined,
+    enableMarkdown: undefined,
+    enableText: undefined,
+    enableJson: undefined,
+    enableDxf: undefined,
     showSkeleton: undefined,
     showBackTop: undefined,
     showSearch: undefined,
@@ -71,10 +82,10 @@ const handleClickFile = async (file: FileItem) => {
 </script>
 
 <template>
-  <div class="full-size">
+  <div class="pangju-wh-100">
     <n-split
       direction="horizontal"
-      class="h-100"
+      class="pangju-h-100"
       :default-size="defaultSplitSize"
       :max="maxSplitSize"
       :min="minSplitSize"

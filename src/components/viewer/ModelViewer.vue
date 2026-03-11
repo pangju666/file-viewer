@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import "@babylonjs/viewer";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<{
@@ -42,12 +43,16 @@ const source = ref<string>();
 
 const handleError = (error: Error) => {
   if (error && props.onError) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     props.onError(error?.error);
   }
 };
 
 const handleProgressChange = () => {
   if (props.onProgress && viewerRef.value) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     props.onProgress(viewerRef.value?.loadingProgress);
   }
 };
@@ -59,6 +64,8 @@ const handleViewerReady = () => {
 };
 
 const handleModelChange = (e: Event) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if (e?.detail) {
     emits("ready");
   }
@@ -75,7 +82,7 @@ watch(
 <template>
   <babylon-viewer
     ref="viewerRef"
-    class="full-size"
+    class="pangju-wh-100"
     v-bind="options"
     :source="source"
     :extension="extension"

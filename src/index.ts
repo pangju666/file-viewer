@@ -1,4 +1,3 @@
-// src/index.ts
 import type { App } from "vue";
 import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import JsonViewer from "@/components/viewer/JsonViewer.vue";
@@ -16,7 +15,6 @@ import FileViewer from "@/components/FileViewer.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import FileItemList from "@/components/FileItemList.vue";
 
-// 导出所有组件
 export {
   FileItemList,
   FilePreview,
@@ -35,7 +33,6 @@ export {
   VideoViewer,
 };
 
-// 导出插件安装方法
 export const install = (app: App) => {
   app.component("FileItemList", FileItemList);
   app.component("FilePreview", FilePreview);
@@ -55,5 +52,46 @@ export const install = (app: App) => {
 
 export default { install };
 
-// 导出类型
-export * from "./types/file";
+export type {
+  FileDescription,
+  FileItem,
+  UrlWithFileEncoding,
+  UrlWithFilename,
+  OnlyOfficeUrl,
+  PdfUrl,
+  UrlWithMimeType,
+} from "./types/file";
+
+export type {
+  FileItemListProps,
+  FilePreviewProps,
+  AudioViewerProps,
+  DxfViewerProps,
+  ViewerError,
+  OfficeViewerProps,
+} from "./types/viewer";
+
+export {
+  supportedOfficeMimeTypes,
+  dxfMimeType,
+  supportedModelTypes,
+  supportedVideoMimeTypes,
+  supportedImageMimeTypes,
+  pdfMimeType,
+  supportedAudioMimeTypes,
+  jsonMimeType,
+  mimeTypeWithCharsetRegex,
+  utf8Charset,
+  markdownMimType,
+  textMimeTypePrefix,
+} from "./utils/constants.ts";
+
+export {
+  getResult,
+  getSrcFromUrl,
+  getFileEncodingFromUrl,
+  downloadFile,
+  getMimeTypeCharset,
+  isTargetMimeType,
+  formatFileSize,
+} from "./utils/utils.ts";

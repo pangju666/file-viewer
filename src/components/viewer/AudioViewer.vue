@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { MusicNoteRound } from "@vicons/material";
 import type { AudioViewerProps } from "@/types/viewer.ts";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<
@@ -44,14 +45,14 @@ const handleError = (e: Event) => {
 </script>
 
 <template>
-  <div class="audio-viewer full-size">
+  <div class="audio-viewer">
     <n-image
       :src="cover"
       :width="300"
       :height="300"
       preview-disabled
       object-fit="cover"
-      class="cover mb-10"
+      class="cover"
       :class="coverAnimationClasses"
     >
       <template #error>
@@ -60,14 +61,14 @@ const handleError = (e: Event) => {
         </n-icon>
       </template>
     </n-image>
-    <n-ellipsis class="mb-10">
+    <n-ellipsis class="pangju-mb-10">
       <span class="title">{{ title }}</span>
     </n-ellipsis>
     <audio
       :src="src"
       :controls="controls"
       :autoplay="autoplay"
-      class="w-100"
+      class="pangju-w-100"
       @play="addCoverAnimation"
       @pause="removeCoverAnimation"
       @playing="$emit('ready')"
@@ -95,6 +96,7 @@ const handleError = (e: Event) => {
   }
 
   .cover {
+    margin-bottom: 10px;
     border-radius: 999px;
   }
 

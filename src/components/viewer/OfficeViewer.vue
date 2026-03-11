@@ -3,22 +3,28 @@ import { computed, nextTick, onMounted, watch } from "vue";
 import { useScriptTag } from "@vueuse/core";
 import type { OnlyOfficeUrl } from "@/types/file.ts";
 import type { OfficeViewerProps } from "@/types/viewer.ts";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<
     OfficeViewerProps & {
       src: OnlyOfficeUrl | string;
-      onError?: (error: {
-        errorCode: number;
-        errorDescription: string;
-      }) => void;
+      onError?: (
+        error:
+          | {
+              errorCode: number;
+              errorDescription: string;
+            }
+          | string,
+      ) => void;
     }
   >(),
   {
     language: "zh",
     mode: "microsoft",
     onlyOfficeApiJsUrl: undefined,
-    microsoftViewBaseUrl: "http://view.officeapps.live.com/op/view.aspx",
+    //microsoftViewBaseUrl: "https://view.officeapps.live.com/op/view.aspx",
+    microsoftViewBaseUrl: "https://view.officeapps.live.com/op/embed.aspx",
     onError: undefined,
   },
 );
@@ -69,6 +75,8 @@ const getFileType = (mimeType: string) => {
 };
 
 const initEditor = (src: OnlyOfficeUrl) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   editor = new window.DocsAPI.DocEditor("only-office-container", {
     documentType: getDocumentType(src.mimeType),
     type: "desktop",
@@ -99,7 +107,11 @@ const initEditor = (src: OnlyOfficeUrl) => {
     events: {
       onDocumentReady: () => emits("ready"),
       onError: (e: Event) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (props?.onError && e?.data) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           props.onError(e.data);
         }
       },
@@ -111,8 +123,14 @@ watch(
   () => props.src,
   (newVal) => {
     if (props.mode === "onlyOffice") {
+      if (typeof props.src === "string" || !props.src.mimeType) {
+        return;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       editor?.destroyEditor();
-      initEditor(newVal);
+      initEditor(newVal as OnlyOfficeUrl);
     }
   },
   { deep: true },
@@ -120,16 +138,30 @@ watch(
 
 onMounted(() => {
   if (props.mode === "onlyOffice") {
+    if (typeof props.src === "string" || !props.src.mimeType) {
+      return;
+    }
+
     if (!props.onlyOfficeApiJsUrl) {
-      throw new Error("未配置onlyOffice的api.js文件地址");
+      if (props.onError) {
+        props.onError('未配置onlyOffice的api.js文件地址"');
+      } else {
+        throw new Error("未配置onlyOffice的api.js文件地址");
+      }
     }
 
     nextTick(() => {
       useScriptTag(props.onlyOfficeApiJsUrl as string, () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         if (!window?.DocsAPI?.DocEditor) {
-          throw new Error("DocsAPI注入失败，请检查api.js文件地址是否正确");
+          if (props.onError) {
+            props.onError("DocsAPI注入失败，请检查api.js文件地址是否正确");
+          } else {
+            throw new Error("DocsAPI注入失败，请检查api.js文件地址是否正确");
+          }
         }
-        initEditor(props.src);
+        initEditor(props.src as OnlyOfficeUrl);
       });
     });
   }
@@ -140,14 +172,14 @@ onMounted(() => {
   <div
     v-if="mode === 'onlyOffice'"
     id="only-office-container"
-    class="full-size"
+    class="pangju-wh-100"
   ></div>
   <iframe
     v-else
     :src="microsoftViewUrl"
     width="100%"
     height="100%"
-    style="border: none"
+    class="pangju-no-border"
     @load="$emit('ready')"
   />
 </template>

@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import "@/assets/css/pangju.css";
+
 withDefaults(
   defineProps<{
     reason?: string;
@@ -16,7 +18,7 @@ withDefaults(
 </script>
 
 <template>
-  <div class="flex-center full-size">
+  <div class="pangju-flex-center pangju-wh-100">
     <n-result status="500" size="huge" :title="reason" class="error-viewer">
       <div class="descriptions">
         <div v-show="filename" class="description-item">
@@ -31,7 +33,7 @@ withDefaults(
         </div>
         <div v-show="url" class="description-item">
           <div class="title">链&nbsp;&nbsp;&nbsp;接：</div>
-          <n-ellipsis class="w-100">
+          <n-ellipsis class="pangju-w-100">
             <a :href="url" target="_blank">
               {{ url }}
             </a>

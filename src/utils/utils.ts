@@ -1,6 +1,5 @@
-import { utf8Charset } from "@/utils/constants";
-
-const mimeTypeCharsetRegex = /charset\s*=\s*"?([^"\s;]+)"?/i;
+import { mimeTypeWithCharsetRegex, utf8Charset } from "@/utils/constants";
+import type { UrlWithFileEncoding } from "@/types/file.ts";
 
 export async function getResult<T>(
   value: T | Promise<T> | (() => T) | (() => Promise<T>),
@@ -51,7 +50,7 @@ export function getMimeTypeCharset(
   mimeType: string,
   defaultCharset = utf8Charset,
 ): string {
-  const match = mimeType.match(mimeTypeCharsetRegex);
+  const match = mimeType.match(mimeTypeWithCharsetRegex);
   return match ? (match[1] ?? defaultCharset) : defaultCharset;
 }
 
@@ -63,4 +62,21 @@ export function isTargetMimeType(
     fileMimeType === targetMimeType ||
     (fileMimeType ?? "").startsWith(`${targetMimeType};`)
   );
+}
+
+export function getSrcFromUrl(src: UrlWithFileEncoding | string) {
+  if (typeof src === "string") {
+    return src;
+  }
+  return src.url;
+}
+
+export function getFileEncodingFromUrl(src: UrlWithFileEncoding | string) {
+  if (typeof src === "string") {
+    return utf8Charset;
+  }
+  if (src.fileEncoding) {
+    return src.fileEncoding;
+  }
+  return getMimeTypeCharset(src.mimeType);
 }

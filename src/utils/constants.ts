@@ -56,3 +56,5 @@ export const jsonMimeType = "application/json";
 export const textMimeTypePrefix = "text/";
 
 export const utf8Charset = "utf-8";
+
+export const mimeTypeWithCharsetRegex = /charset\s*=\s*"?([^"\s;]+)"?/i;

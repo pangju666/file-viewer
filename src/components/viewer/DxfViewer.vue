@@ -2,12 +2,9 @@
 import { ref, onMounted, watch, onUnmounted } from "vue";
 import { DxfViewer, type LayerInfo } from "dxf-viewer";
 import * as THREE from "three";
-import HanaMinAFont from "@/assets/fonts/HanaMinA.ttf";
-import NanumGothicRegularFont from "@/assets/fonts/HanaMinA.ttf";
-import NotoSansDisplaySemiCondensedLightItalicFont from "@/assets/fonts/HanaMinA.ttf";
-import RobotoLightItalicFont from "@/assets/fonts/HanaMinA.ttf";
 import { utf8Charset } from "@/utils/constants.ts";
 import type { DxfViewerProps } from "@/types/viewer.ts";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<
@@ -27,12 +24,7 @@ const props = withDefaults(
     showLayerSider: true,
     layerSiderWidth: 300,
     fileEncoding: utf8Charset,
-    fonts: () => [
-      HanaMinAFont,
-      NanumGothicRegularFont,
-      NotoSansDisplaySemiCondensedLightItalicFont,
-      RobotoLightItalicFont,
-    ],
+    fonts: () => [],
     options: () => ({
       clearColor: new THREE.Color("#fff"),
       autoResize: true,
@@ -68,8 +60,12 @@ const initViewer = (fileEncoding?: string) => {
     },
   });
   dxfViewer.Subscribe("loaded", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const dxfLayers = Array.from(dxfViewer?.GetLayers(true) ?? []);
     dxfLayers.forEach((dxfLayer: LayerInfo) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       dxfLayer.isVisible = true;
     });
     layers.value = dxfLayers;
@@ -78,6 +74,8 @@ const initViewer = (fileEncoding?: string) => {
 };
 
 const handleToggleLayer = (layer: LayerInfo, newState: boolean) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   layer.isVisible = newState;
   if (dxfViewer) {
     dxfViewer.ShowLayer(layer.name, newState);
@@ -87,6 +85,8 @@ const handleToggleLayer = (layer: LayerInfo, newState: boolean) => {
 const handleToggleAll = (newState: boolean) => {
   showAll.value = newState;
   for (const layer of layers.value) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if (layer?.isVisible !== newState) {
       handleToggleLayer(layer, newState);
     }
@@ -135,12 +135,12 @@ watch(
 </script>
 
 <template>
-  <n-layout has-sider class="full-size">
+  <n-layout has-sider class="pangju-wh-100">
     <n-layout-sider v-if="showLayerSider" :width="layerSiderWidth" bordered>
       <div>
         <n-scrollbar>
           <div class="layer-list-title">图 层</div>
-          <div v-show="layers.length > 0" class="display-flex layer-list-item">
+          <div v-show="layers.length > 0" class="layer-list-item">
             <n-checkbox
               v-model:checked="showAll"
               label="全部图层"
@@ -167,7 +167,7 @@ watch(
       </div>
     </n-layout-sider>
     <n-layout-content>
-      <div ref="dxfContainerRef" class="full-size"></div>
+      <div ref="dxfContainerRef" class="pangju-wh-100"></div>
     </n-layout-content>
   </n-layout>
 </template>
@@ -181,6 +181,7 @@ watch(
 }
 
 .layer-list-item {
+  display: flex;
   padding: 2px 16px;
 }
 </style>

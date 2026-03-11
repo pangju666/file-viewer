@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue";
 import axios, { type AxiosProgressEvent } from "axios";
-import { utf8Charset } from "@/utils/constants.ts";
-import { getResult } from "@/utils/utils.ts";
+import {
+  getFileEncodingFromUrl,
+  getResult,
+  getSrcFromUrl,
+} from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
 
 const props = withDefaults(
@@ -25,16 +28,9 @@ const emits = defineEmits<{
 
 const content = ref<string>();
 
-const getFileUrl = (src: UrlWithFileEncoding | string) => {
-  if (typeof src === "string") {
-    return src;
-  }
-  return src.url;
-};
-
 const getContent = (src: UrlWithFileEncoding | string) => {
   if (props.fetcher) {
-    getResult(props.fetcher(getFileUrl(src), src?.fetcher ?? utf8Charset))
+    getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
       .then((res) => {
         content.value = res;
         emits("ready");
@@ -46,9 +42,9 @@ const getContent = (src: UrlWithFileEncoding | string) => {
       });
   } else {
     axios
-      .get<string>(getFileUrl(src), {
+      .get<string>(getSrcFromUrl(src), {
         responseType: "text",
-        responseEncoding: src?.fileEncoding ?? utf8Charset,
+        responseEncoding: getFileEncodingFromUrl(src),
         onDownloadProgress: (event: AxiosProgressEvent) => {
           if (props.onProgress) {
             props.onProgress(event);

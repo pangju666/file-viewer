@@ -4,6 +4,7 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import zhCN from "video.js/dist/lang/zh-CN.json";
 import type { UrlWithMimeType } from "@/types/file.ts";
+import "@/assets/css/pangju.css";
 
 videojs.addLanguage("zh-CN", zhCN);
 
@@ -45,7 +46,11 @@ watch(
   () => props.src,
   (newVal) => {
     if (newVal) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       videoPlayer?.src(normalizeSource(newVal));
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       videoPlayer?.load();
     }
   },
@@ -65,17 +70,25 @@ onMounted(() => {
     sources: props.src ? [normalizeSource(props.src)] : [],
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   videoPlayer?.on("loadeddata", () => {
     emits("ready");
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   videoPlayer?.on("error", () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const error = videoPlayer?.error();
     if (props.onError && error) {
       props.onError(error);
     }
   });
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   videoPlayer?.on("progress", () => {
     if (props.onProgress) {
       props.onProgress(videoPlayer);
@@ -84,16 +97,18 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   videoPlayer?.dispose();
   videoPlayer = null;
 });
 </script>
 
 <template>
-  <div class="full-size">
+  <div class="pangju-wh-100">
     <video
       ref="videoPlayRef"
-      class="video-js full-size"
+      class="video-js pangju-wh-100"
       :poster="poster"
     ></video>
   </div>

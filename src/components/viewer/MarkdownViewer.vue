@@ -1,11 +1,15 @@
 <script lang="ts" setup>
 import { mavonEditor } from "mavon-editor";
+import "mavon-editor/dist/css/index.css";
 import { onMounted, ref, watch } from "vue";
 import axios, { type AxiosProgressEvent } from "axios";
-import "mavon-editor/dist/css/index.css";
-import { utf8Charset } from "@/utils/constants.ts";
-import { getResult } from "@/utils/utils.ts";
+import {
+  getFileEncodingFromUrl,
+  getResult,
+  getSrcFromUrl,
+} from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<{
@@ -36,22 +40,15 @@ const props = withDefaults(
   },
 );
 
-const emits = defineEmits<{
+defineEmits<{
   (e: "ready"): void;
 }>();
 
 const content = ref<string>();
 
-const getFileUrl = (src: UrlWithFileEncoding | string) => {
-  if (typeof src === "string") {
-    return src;
-  }
-  return src.url;
-};
-
 const getContent = (src: UrlWithFileEncoding | string) => {
   if (props.fetcher) {
-    getResult(props.fetcher(getFileUrl(src), src?.fileEncoding ?? utf8Charset))
+    getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
       .then((res) => {
         content.value = res;
       })
@@ -62,9 +59,9 @@ const getContent = (src: UrlWithFileEncoding | string) => {
       });
   } else {
     axios
-      .get<string>(getFileUrl(src), {
+      .get<string>(getSrcFromUrl(src), {
         responseType: "text",
-        responseEncoding: src?.fileEncoding ?? utf8Charset,
+        responseEncoding: getFileEncodingFromUrl(src),
         onDownloadProgress: (event: AxiosProgressEvent) => {
           if (props.onProgress) {
             props.onProgress(event);
@@ -100,12 +97,12 @@ watch(
 </script>
 
 <template>
-  <div class="full-size">
+  <div class="pangju-wh-100">
     <mavon-editor
       v-bind="options"
       :value="content"
       :editable="false"
-      class="h-100"
+      class="pangju-h-100"
       @change="$emit('ready')"
     />
   </div>

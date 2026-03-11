@@ -43,6 +43,16 @@ export type OfficeViewerProps = {
 };
 
 export type FilePreviewProps = {
+  enableImage?: boolean;
+  enableVideo?: boolean;
+  enableAudio?: boolean;
+  enablePdf?: boolean;
+  enableOffice?: boolean;
+  enableModel?: boolean; // 3D 模型
+  enableMarkdown?: boolean;
+  enableText?: boolean;
+  enableJson?: boolean;
+  enableDxf?: boolean;
   customViewerMatcher?: string[] | ((file: FileItem) => boolean);
   jsonFetcher?: (
     url: string,
@@ -66,6 +76,7 @@ export type FilePreviewProps = {
 };
 
 export type ViewerError =
+  | string
   | Event
   | Error
   | MediaError

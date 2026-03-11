@@ -2,10 +2,8 @@
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
 import { nextTick, onUnmounted, ref, watch } from "vue";
-import { useMessage } from "naive-ui";
 import type { UrlWithFilename } from "@/types/file.ts";
-
-const message = useMessage();
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<{
@@ -53,6 +51,8 @@ const initViewer = (filename?: string) => {
     title:
       props.options?.title ??
       ((image: HTMLImageElement, imageData: unknown) =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         `(${filename ?? ""}${filename ? " " : ""}${imageData.naturalWidth} × ${imageData.naturalHeight})`),
     viewed: (event: CustomEvent) => {
       if (props?.options?.viewed) {
@@ -64,33 +64,31 @@ const initViewer = (filename?: string) => {
 };
 
 const handleError = (e: Event) => {
-  if (e) {
-    if (props.onError) {
-      props.onError(e);
-    } else {
-      message.error("图片加载失败");
-    }
+  if (props.onError && e) {
+    props.onError(e);
   }
 };
 
 watch(
   () => props.src,
   (val) => {
+    let filename = undefined;
     if (!val) {
       imageUrl.value = undefined;
     } else if (typeof props.src === "string") {
       imageUrl.value = props.src;
     } else {
       imageUrl.value = props.src.url;
+      filename = props.src?.filename;
     }
 
     viewer?.destroy();
     if (val) {
       if (imageRef.value) {
-        initViewer(props.src?.filename);
+        initViewer(filename);
       } else {
         nextTick(() => {
-          initViewer(props.src?.filename);
+          initViewer(filename);
         });
       }
     }
@@ -105,12 +103,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="full-size">
-    <img
-      ref="imageRef"
-      class="display-none"
-      :src="imageUrl"
-      @error="handleError"
-    />
+  <div class="pangju-wh-100">
+    <img v-show="false" ref="imageRef" :src="imageUrl" @error="handleError" />
   </div>
 </template>

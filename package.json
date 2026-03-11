@@ -1,28 +1,12 @@
 {
-  "name": "file-viewer",
+  "name": "@pangju/file-viewer",
   "private": false,
   "version": "1.0.0",
-  "type": "module",
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/lib/my-lib.cjs.js",
-  "module": "./dist/lib/my-lib.es.js",
-  "types": "./dist/lib/types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/lib/my-lib.es.js",
-      "require": "./dist/lib/my-lib.cjs.js",
-      "types": "./dist/lib/types/index.d.ts"
-    },
-    "./style.css": "./dist/lib/my-lib.css",
-    "./app": {
-      "default": "./dist/app/index.html"
-    }
-  },
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build:lib": "vite build --mode lib",
+    "build:app": "vite build --mode app",
+    "build": "pnpm run build:lib && pnpm run build:app",
     "preview": "vite preview --outDir dist/app",
     "type-check": "vue-tsc --noEmit",
     "prettier": "prettier --write ./**/*.{html,vue,js,ts,json,md}",
@@ -30,8 +14,37 @@
     "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix",
     "prepare": "husky"
   },
+  "files": [
+    "dist/lib"
+  ],
+  "type": "module",
+  "main": "./dist/lib/index.cjs.js",
+  "module": "./dist/lib/index.es.mjs",
+  "types": "./dist/lib/types/index.d.ts",
+  "style": "./dist/lib/index.css",
+  "exports": {
+    ".": {
+      "types": "./dist/lib/types/index.d.ts",
+      "import": "./dist/lib/index.es.mjs",
+      "require": "./dist/lib/index.cjs.js"
+    },
+    "./index.css": "./dist/lib/index.css"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
   "peerDependencies": {
-    "vue": "^3.5.29"
+    "@babylonjs/viewer": "^8.54.1",
+    "@vueuse/core": "^14.2.1",
+    "axios": "^1.13.6",
+    "dxf-viewer": "^1.0.46",
+    "file-type": "^21.3.0",
+    "mavon-editor": "^3.0.2",
+    "three": "^0.161.0",
+    "video.js": "^8.23.7",
+    "viewerjs": "^1.11.7",
+    "vue": "^3.5.29",
+    "vue-json-viewer": "^3.0.4"
   },
   "dependencies": {
     "@babylonjs/viewer": "^8.54.1",
@@ -42,7 +55,7 @@
     "file-type": "^21.3.0",
     "mavon-editor": "^3.0.2",
     "naive-ui": "^2.43.2",
-    "three": "0.161.0",
+    "three": "^0.161.0",
     "video.js": "^8.23.7",
     "viewerjs": "^1.11.7",
     "vue": "^3.5.29",
@@ -53,7 +66,7 @@
     "@eslint/compat": "^2.0.2",
     "@eslint/js": "^10.0.1",
     "@types/node": "^25.3.3",
-    "@types/three": "0.161.0",
+    "@types/three": "0.161.2",
     "@vitejs/plugin-vue": "^6.0.4",
     "@vue/tsconfig": "^0.8.1",
     "eslint": "^10.0.2",
@@ -72,6 +85,7 @@
     "stylelint-config-standard": "^40.0.0",
     "stylelint-config-standard-vue": "^1.0.0",
     "stylelint-order": "^7.0.1",
+    "terser": "^5.46.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.56.1",
     "unplugin-auto-import": "^21.0.0",

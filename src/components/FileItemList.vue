@@ -5,6 +5,7 @@ import { NEllipsis } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
 import { SearchRound } from "@vicons/material";
 import type { FileItemListProps } from "@/types/viewer.ts";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(defineProps<FileItemListProps>(), {
   title: "文件列表",
@@ -165,7 +166,11 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
           @keydown.enter="searchFileList"
         >
           <template #suffix>
-            <n-icon :size="24" class="cursor-pointer" @click="searchFileList">
+            <n-icon
+              :size="24"
+              class="pangju-cursor-pointer"
+              @click="searchFileList"
+            >
               <SearchRound />
             </n-icon>
           </template>
@@ -183,12 +188,16 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
       </div>
     </slot>
     <div class="file-card-list">
-      <n-infinite-scroll class="h-100" :distance="10" @load="handleScrollLoad">
+      <n-infinite-scroll
+        class="pangju-h-100"
+        :distance="10"
+        @load="handleScrollLoad"
+      >
         <slot name="file-item" :file-list="fileItemList">
           <n-card
             v-for="(fileItem, i) in fileItemList"
             :key="i"
-            class="file-card cursor-pointer"
+            class="file-card pangju-cursor-pointer"
             hoverable
             embedded
             size="small"
@@ -201,7 +210,7 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
           >
             <template #header>
               <slot name="file-card-header" :file-item="fileItem">
-                <div v-if="fileItem?.name" class="mr-10">
+                <div v-if="fileItem?.name" class="pangju-mr-10">
                   <n-ellipsis>
                     {{ fileItem?.name ?? fileItem.filename }}
                   </n-ellipsis>
@@ -222,7 +231,7 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
             </template>
             <template #cover>
               <slot name="file-card-cover" :file-item="fileItem">
-                <div v-if="fileItem.cover" class="p-10 h-center">
+                <div v-if="fileItem.cover" class="pangju-p-10 pangju-h-center">
                   <n-image
                     lazy
                     preview-disabled
@@ -237,7 +246,7 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
               <slot name="file-card-footer" :file-item="fileItem">
                 <div
                   v-if="fileItem.createTime || fileItem.size"
-                  class="flex-space-between"
+                  class="pangju-flex-space-between"
                 >
                   <n-time
                     v-if="fileItem.createTime"
@@ -253,7 +262,7 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
               <slot name="file-card-action" :file-item="fileItem">
                 <n-button
                   size="tiny"
-                  class="mr-10"
+                  class="pangju-mr-10"
                   type="info"
                   @click.stop="emits('click-file', fileItem)"
                   >查看</n-button
@@ -289,7 +298,7 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
           </n-card>
         </slot>
         <slot name="loading" :loading="loading">
-          <n-spin v-if="loading && !showSkeleton" class="flex-center">
+          <n-spin v-if="loading && !showSkeleton" class="pangju-flex-center">
             <template #description> 加载中... </template>
           </n-spin>
           <n-card
@@ -315,14 +324,14 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
               <n-skeleton> </n-skeleton>
             </template>
             <template #action>
-              <div class="display-flex">
-                <n-skeleton width="30px" class="mr-10"> </n-skeleton>
+              <div class="pangju-flex">
+                <n-skeleton width="30px" class="pangju-mr-10"> </n-skeleton>
                 <n-skeleton width="30px"> </n-skeleton>
               </div>
             </template>
             <template #default>
-              <n-skeleton class="mb-5"> </n-skeleton>
-              <n-skeleton class="mb-5"> </n-skeleton>
+              <n-skeleton class="pangju-mb-5"> </n-skeleton>
+              <n-skeleton class="pangju-mb-5"> </n-skeleton>
               <n-skeleton> </n-skeleton>
             </template>
           </n-card>
@@ -330,16 +339,16 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
         <slot name="empty" :is-empty="isEmpty">
           <n-empty
             v-if="isEmpty"
-            class="h-100 flex-center"
+            class="pangju-h-100 pangju-flex-center"
             description="文件列表为空"
           >
           </n-empty>
         </slot>
         <slot name="noMore">
-          <div v-if="isNoMore" class="h-center">没有更多了</div>
+          <div v-if="isNoMore" class="pangju-h-center">没有更多了</div>
         </slot>
         <slot name="backTop">
-          <n-back-top v-if="showBackTop" :right="20" style="z-index: 100" />
+          <n-back-top v-if="showBackTop" :right="20" style="z-index: 9999" />
         </slot>
       </n-infinite-scroll>
     </div>

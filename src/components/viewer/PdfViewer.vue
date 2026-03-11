@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { PdfUrl } from "@/types/file.ts";
+import "@/assets/css/pangju.css";
 
 const props = withDefaults(
   defineProps<{
@@ -24,7 +25,7 @@ const pdfjsPath = computed(
     :src="pdfjsPath"
     width="100%"
     height="100%"
-    style="border: none"
+    class="pangju-no-border"
     @load="$emit('ready')"
   />
 </template>

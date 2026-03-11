@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import "@/assets/css/pangju.css";
+
 withDefaults(
   defineProps<{
     title?: string;
@@ -16,7 +18,7 @@ withDefaults(
 </script>
 
 <template>
-  <div class="flex-center full-size">
+  <div class="pangju-flex-center pangju-wh-100">
     <n-result status="403" size="huge" :title="title" class="unknown-viewer">
       <div class="descriptions">
         <div v-show="filename" class="description-item">

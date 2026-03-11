@@ -27,14 +27,11 @@ export type UrlWithFilename = {
   filename?: string;
 };
 
-export type UrlWithFileEncoding = {
-  url: string;
+export type UrlWithFileEncoding = UrlWithMimeType & {
   fileEncoding?: string;
 };
 
-export type OnlyOfficeUrl = {
-  url: string;
-  mimeType: string;
+export type OnlyOfficeUrl = UrlWithMimeType & {
   title?: string;
   key?: string;
 };
