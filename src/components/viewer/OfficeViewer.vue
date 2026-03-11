@@ -1,17 +1,16 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, watch } from "vue";
 import { useScriptTag } from "@vueuse/core";
-import type { OfficeUrl } from "@/types/file.ts";
+import type { OnlyOfficeUrl } from "@/types/file.ts";
+import type { OfficeViewerProps } from "@/types/viewer.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: OfficeUrl | string;
-    mode?: "microsoft" | "onlyOffice";
-    language?: string;
-    microsoftViewBaseUrl?: string;
-    onlyOfficeApiJsUrl?: string;
-    onError?: (error: unknown) => void;
-  }>(),
+  defineProps<
+    OfficeViewerProps & {
+      src: OnlyOfficeUrl | string;
+      onError?: (error: unknown) => void;
+    }
+  >(),
   {
     language: "zh",
     mode: "microsoft",
@@ -66,7 +65,7 @@ const getFileType = (mimeType: string) => {
   }
 };
 
-const initEditor = (src: OfficeUrl) => {
+const initEditor = (src: OnlyOfficeUrl) => {
   editor = new window.DocsAPI.DocEditor("only-office-container", {
     documentType: getDocumentType(src.mimeType),
     type: "desktop",

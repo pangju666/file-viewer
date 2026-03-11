@@ -12,10 +12,7 @@ const props = withDefaults(
     src: UrlWithFileEncoding | string;
     options?: Record<string, unknown>;
     onProgress?: (event: AxiosProgressEvent) => void;
-    customDownload?: (
-      url: string,
-      encoding?: string,
-    ) => string | Promise<string>;
+    fetcher?: (url: string, encoding?: string) => string | Promise<string>;
     onError?: (error: Error) => void;
   }>(),
   {
@@ -34,7 +31,7 @@ const props = withDefaults(
       },
     }),
     onProgress: undefined,
-    customDownload: undefined,
+    fetcher: undefined,
     onError: undefined,
   },
 );
@@ -52,11 +49,9 @@ const getFileUrl = (src: UrlWithFileEncoding | string) => {
   return src.url;
 };
 
-const downloadContent = (src: UrlWithFileEncoding | string) => {
-  if (props.customDownload) {
-    getResult(
-      props.customDownload(getFileUrl(src), src?.fileEncoding ?? utf8Charset),
-    )
+const getContent = (src: UrlWithFileEncoding | string) => {
+  if (props.fetcher) {
+    getResult(props.fetcher(getFileUrl(src), src?.fileEncoding ?? utf8Charset))
       .then((res) => {
         content.value = res;
       })
@@ -88,14 +83,18 @@ const downloadContent = (src: UrlWithFileEncoding | string) => {
 };
 
 onMounted(() => {
-  downloadContent(props.src);
+  if (props.src) {
+    getContent(props.src);
+  }
 });
 
 watch(
   () => props.src,
   (newVal: UrlWithFileEncoding | string) => {
     content.value = "";
-    downloadContent(newVal);
+    if (newVal) {
+      getContent(newVal);
+    }
   },
 );
 </script>
@@ -103,10 +102,10 @@ watch(
 <template>
   <div class="full-size">
     <mavon-editor
-      :value="content"
-      class="h-100"
-      :editable="false"
       v-bind="options"
+      :value="content"
+      :editable="false"
+      class="h-100"
       @change="$emit('ready')"
     />
   </div>

@@ -12,7 +12,7 @@ const props = withDefaults(
     src: UrlWithFileEncoding | string;
     options?: Record<string, unknown>;
     onProgress?: (event: AxiosProgressEvent) => void;
-    customDownload?: (
+    fetcher?: (
       url: string,
       encoding?: string,
     ) => Record<string, unknown> | Promise<Record<string, unknown>>;
@@ -26,7 +26,7 @@ const props = withDefaults(
       showArrayIndex: true,
     }),
     onProgress: undefined,
-    customDownload: undefined,
+    fetcher: undefined,
     onError: undefined,
   },
 );
@@ -44,11 +44,9 @@ const getFileUrl = (src: UrlWithFileEncoding | string) => {
   return src.url;
 };
 
-const downloadContent = (src: UrlWithFileEncoding | string) => {
-  if (props.customDownload) {
-    getResult(
-      props.customDownload(getFileUrl(src), src?.fileEncoding ?? utf8Charset),
-    )
+const getContent = (src: UrlWithFileEncoding | string) => {
+  if (props.fetcher) {
+    getResult(props.fetcher(getFileUrl(src), src?.fileEncoding ?? utf8Charset))
       .then((res) => {
         content.value = res;
         emits("ready");
@@ -82,21 +80,25 @@ const downloadContent = (src: UrlWithFileEncoding | string) => {
 };
 
 onMounted(() => {
-  downloadContent(props.src);
+  if (props.src) {
+    getContent(props.src);
+  }
 });
 
 watch(
   () => props.src,
   (newVal: UrlWithFileEncoding | string) => {
     content.value = {};
-    downloadContent(newVal);
+    if (newVal) {
+      getContent(newVal);
+    }
   },
 );
 </script>
 
 <template>
   <div class="json-viewer">
-    <vue-json-viewer :value="content" v-bind="options" />
+    <vue-json-viewer v-bind="options" :value="content" />
   </div>
 </template>
 

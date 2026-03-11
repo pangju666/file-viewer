@@ -76,9 +76,9 @@ watch(
   <babylon-viewer
     ref="viewerRef"
     class="full-size"
+    v-bind="options"
     :source="source"
     :extension="extension"
-    v-bind="options"
     @loadingprogresschange="handleProgressChange"
     @modelerror="handleError"
     @viewerready="handleViewerReady"

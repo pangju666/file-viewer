@@ -4,45 +4,23 @@ import { downloadFile, formatFileSize, getResult } from "@/utils/utils.ts";
 import { NEllipsis } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
 import { SearchRound } from "@vicons/material";
+import type { FileItemListProps } from "@/types/viewer.ts";
 
-const props = withDefaults(
-  defineProps<{
-    staticFileList?: FileItem[];
-    showSkeleton?: boolean;
-    showBackTop?: boolean;
-    showSearch?: boolean;
-    showTitle?: boolean;
-    showTypeFilter?: boolean;
-    coverHeight?: number | string;
-    coverObjectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
-    fileTypes?: string[];
-    fileMatcher?: (
-      file: FileItem,
-      types?: string[],
-      keyword?: string,
-    ) => boolean;
-    load?: (
-      page: number,
-      types?: string[],
-      keyword?: string,
-    ) => Promise<FileItem[]> | FileItem[];
-    noMore?: boolean;
-  }>(),
-  {
-    showSkeleton: true,
-    showBackTop: true,
-    showSearch: true,
-    showTitle: true,
-    coverHeight: 150,
-    coverObjectFit: "fill",
-    showTypeFilter: true,
-    fileTypes: () => [],
-    staticFileList: () => [],
-    load: undefined,
-    fileMatcher: undefined,
-    noMore: undefined,
-  },
-);
+const props = withDefaults(defineProps<FileItemListProps>(), {
+  title: "文件列表",
+  showSkeleton: true,
+  showBackTop: true,
+  showSearch: true,
+  showTitle: true,
+  coverHeight: 150,
+  coverObjectFit: "fill",
+  showTypeFilter: true,
+  fileTypes: () => [],
+  staticFileList: () => [],
+  load: undefined,
+  fileMatcher: undefined,
+  noMore: undefined,
+});
 
 const emits = defineEmits<{
   (e: "click-file", file: FileItem): void;
@@ -150,10 +128,10 @@ const filterStaticFileList = (keyword?: string, types?: string[]) => {
     if (!props.fileMatcher) {
       let flag = true;
       if (keyword) {
-        flag = item.filename?.includes(keyword as string) ?? false;
+        flag = item.filename?.includes(keyword) ?? false;
       }
       if (types && types.length > 0) {
-        flag = types.includes(item.type as string);
+        flag = types.includes(item.type ?? "");
       }
       return flag;
     }
@@ -175,11 +153,11 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
 
 <template>
   <div class="container">
-    <div v-if="showTitle" class="title">
-      <slot name="title">文件列表</slot>
-    </div>
-    <div v-if="showSearch" class="search-input">
-      <slot name="search">
+    <slot name="title">
+      <div v-if="showTitle" class="title">{{ title }}</div>
+    </slot>
+    <slot name="search">
+      <div v-if="showSearch" class="search-input">
         <n-input
           v-model:value="inputValue"
           round
@@ -192,18 +170,18 @@ const handleClickDownload = (fileUrl: string, filename?: string) => {
             </n-icon>
           </template>
         </n-input>
-      </slot>
-    </div>
-    <div v-if="showTypeFilter" class="type-select">
-      <slot name="types">
+      </div>
+    </slot>
+    <slot name="types">
+      <div v-if="showTypeFilter" class="type-select">
         <n-select
           v-model:value="selectFileTypes"
           multiple
           placeholder="请选择文件类型"
           :options="fileTypeOptions"
         />
-      </slot>
-    </div>
+      </div>
+    </slot>
     <div class="file-card-list">
       <n-infinite-scroll class="h-100" :distance="10" @load="handleScrollLoad">
         <slot name="file-item" :file-list="fileItemList">

@@ -1,16 +1,17 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { MusicNoteRound } from "@vicons/material";
+import type { AudioViewerProps } from "@/types/viewer.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: string;
-    cover?: string;
-    title?: string;
-    autoplay?: boolean;
-    controls?: boolean;
-    onError?: (error: MediaError) => void;
-  }>(),
+  defineProps<
+    AudioViewerProps & {
+      src: string;
+      cover?: string;
+      title?: string;
+      onError?: (error: MediaError) => void;
+    }
+  >(),
   {
     cover: "coverIcon",
     autoplay: false,

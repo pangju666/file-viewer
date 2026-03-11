@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import {
   supportedImageMimeTypes,
@@ -12,6 +12,7 @@ import {
   textMimeTypePrefix,
   supportedAudioMimeTypes,
   jsonMimeType,
+  utf8Charset,
 } from "@/utils/constants.ts";
 import { useLoadingBar } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
@@ -27,16 +28,22 @@ import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
 import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
+import type { FilePreviewProps } from "@/types/viewer.ts";
 
 const loadingBar = useLoadingBar();
 
 const props = withDefaults(
-  defineProps<{
-    file: FileItem;
-    customViewerMatcher?: string[] | ((file: FileItem) => boolean);
-  }>(),
+  defineProps<
+    FilePreviewProps & {
+      file: FileItem;
+    }
+  >(),
   {
+    jsonFetcher: undefined,
+    textFetcher: undefined,
+    markdownFetcher: undefined,
     customViewerMatcher: undefined,
+    options: undefined,
   },
 );
 
@@ -52,6 +59,12 @@ watch(
   },
 );
 
+const filename = computed(() => props.file.name ?? props.file.filename);
+
+const fileEncoding = computed(() => {
+  return getMimeTypeCharset(props.file.mimeType, utf8Charset);
+});
+
 const matchCustomViewer = (file: FileItem) => {
   if (props.customViewerMatcher) {
     if (typeof props.customViewerMatcher == "function") {
@@ -60,7 +73,7 @@ const matchCustomViewer = (file: FileItem) => {
       Array.isArray(props.customViewerMatcher) &&
       props.customViewerMatcher.length > 0
     ) {
-      return props.customViewerMatcher.includes(file?.mimeType);
+      return props.customViewerMatcher.includes(file.mimeType);
     }
   }
   return false;
@@ -71,9 +84,10 @@ const handleViewerReady = () => {
 };
 
 const handleViewerError = () => {
+  //todo 处理各个预览器的错误
   loadingBar.error();
   hasError.value = true;
-  //errorReason.value = undefined;
+  errorReason.value = undefined;
 };
 
 const handleAudioViewerError = (error: MediaError) => {
@@ -127,53 +141,64 @@ const handleVideoViewerError = (error: MediaError) => {
 const handleOfficeViewerError = (/*{ errorCode, errorDescription }*/) => {
   handleViewerError();
 };
+
+onMounted(() => {
+  if (props.file?.url && props.file?.mimeType) {
+    return;
+  }
+  hasError.value = true;
+  errorReason.value = "未定义文件链接或类型";
+});
 </script>
 
 <template>
   <div class="full-size">
-    <slot v-if="hasError" name="error-viewer">
+    <slot v-if="hasError" name="error-viewer" :error-reason="errorReason">
       <error-viewer
         :reason="errorReason"
-        :filename="file.name ?? file.filename"
+        :filename="filename"
         :url="file.url"
-        :type="file.mimeType"
+        :mime-type="file.mimeType"
       />
     </slot>
     <slot v-else name="viewer">
       <slot v-if="matchCustomViewer(file)" name="custom-viewer"> </slot>
       <slot
-        v-else-if="supportedAudioMimeTypes.includes(file?.mimeType as string)"
+        v-else-if="supportedAudioMimeTypes.includes(file.mimeType)"
         name="audio-viewer"
       >
         <audio-viewer
+          v-bind="options?.audio"
           :src="file.url"
-          :title="file?.name ?? file?.filename"
+          :title="filename"
           :cover="file?.cover"
           :on-error="handleAudioViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="supportedImageMimeTypes.includes(file?.mimeType as string)"
+        v-else-if="supportedImageMimeTypes.includes(file.mimeType)"
         name="image-viewer"
       >
         <image-viewer
+          :options="options?.image"
           :src="{
             url: file.url,
-            filename: file?.name ?? file?.filename,
+            filename: filename,
           }"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="supportedVideoMimeTypes.includes(file?.mimeType as string)"
+        v-else-if="supportedVideoMimeTypes.includes(file.mimeType)"
         name="video-viewer"
       >
         <video-viewer
+          :options="options?.video"
           :src="{
             url: file.url,
-            mimeType: file?.mimeType,
+            mimeType: file.mimeType,
           }"
           :poster="file.cover"
           :on-error="handleVideoViewerError"
@@ -181,90 +206,95 @@ const handleOfficeViewerError = (/*{ errorCode, errorDescription }*/) => {
         />
       </slot>
       <slot
-        v-else-if="supportedModelTypes.includes(file?.mimeType as string)"
+        v-else-if="supportedModelTypes.includes(file.mimeType)"
         name="model-viewer"
       >
         <model-viewer
+          :options="options?.model"
           :src="file.url"
-          :mime-type="file?.mimeType"
+          :mime-type="file.mimeType"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="supportedOfficeMimeTypes.includes(file?.mimeType as string)"
+        v-else-if="supportedOfficeMimeTypes.includes(file.mimeType)"
         name="office-viewer"
       >
         <office-viewer
+          v-bind="options?.office"
           :src="{
             url: file.url,
-            mimeType: file?.mimeType as string,
-            title: file?.name ?? file?.filename,
+            mimeType: file.mimeType,
+            title: filename,
           }"
-          :mime-type="file?.mimeType"
-          mode="onlyOffice"
-          only-office-api-js-url="http://localhost:10000/web-apps/apps/api/documents/api.js"
           :on-error="handleOfficeViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="isTargetMimeType(markdownMimType, file?.mimeType)"
+        v-else-if="isTargetMimeType(markdownMimType, file.mimeType)"
         name="markdown-viewer"
       >
         <markdown-viewer
+          :options="options?.markdown"
           :src="{
             url: file.url,
-            fileEncoding: getMimeTypeCharset(file?.mimeType as string),
+            fileEncoding: fileEncoding,
           }"
+          :fetcher="markdownFetcher"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="isTargetMimeType(dxfMimeType, file?.mimeType)"
+        v-else-if="isTargetMimeType(dxfMimeType, file.mimeType)"
         name="dxf-viewer"
       >
         <dxf-viewer
+          v-bind="options?.dxf"
           :src="file.url"
-          :file-encoding="getMimeTypeCharset(file?.mimeType as string)"
+          :file-encoding="fileEncoding"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
-      <slot v-else-if="pdfMimeType === file?.mimeType" name="pdf-viewer">
+      <slot v-else-if="pdfMimeType === file.mimeType" name="pdf-viewer">
         <pdf-viewer
           :src="{ url: file.url, password: file.password }"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="isTargetMimeType(jsonMimeType, file?.mimeType)"
+        v-else-if="isTargetMimeType(jsonMimeType, file.mimeType)"
         name="json-viewer"
       >
         <json-viewer
+          :options="options?.json"
           :src="file.url"
-          :file-encoding="getMimeTypeCharset(file?.mimeType as string)"
+          :file-encoding="fileEncoding"
+          :fetcher="jsonFetcher"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="file?.mimeType?.startsWith(textMimeTypePrefix)"
+        v-else-if="file.mimeType.startsWith(textMimeTypePrefix)"
         name="text-viewer"
       >
         <text-viewer
           :src="file.url"
-          :file-encoding="getMimeTypeCharset(file?.mimeType as string)"
+          :file-encoding="fileEncoding"
+          :fetcher="textFetcher"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot v-else name="unknown-viewer">
         <unknown-viewer
-          :filename="file?.name ?? file?.filename"
-          :url="file?.url"
-          :type="file?.mimeType"
+          :filename="filename"
+          :url="file.url"
+          :type="file.mimeType"
         />
       </slot>
     </slot>

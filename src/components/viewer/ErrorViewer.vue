@@ -4,13 +4,13 @@ withDefaults(
     reason?: string;
     filename?: string;
     url?: string;
-    type?: string;
+    mimeType?: string;
   }>(),
   {
     reason: "文件预览失败",
     filename: undefined,
     url: undefined,
-    type: undefined,
+    mimeType: undefined,
   },
 );
 </script>
@@ -25,9 +25,9 @@ withDefaults(
             {{ filename }}
           </n-ellipsis>
         </div>
-        <div v-show="type" class="description-item">
+        <div v-show="mimeType" class="description-item">
           <div class="title">类&nbsp;&nbsp;&nbsp;型：</div>
-          <n-ellipsis>{{ type }}</n-ellipsis>
+          <n-ellipsis>{{ mimeType }}</n-ellipsis>
         </div>
         <div v-show="url" class="description-item">
           <div class="title">链&nbsp;&nbsp;&nbsp;接：</div>

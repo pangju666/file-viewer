@@ -1,30 +1,28 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch, onUnmounted } from "vue";
-import { DxfViewer, type DxfViewerOptions, type LayerInfo } from "dxf-viewer";
+import { DxfViewer, type LayerInfo } from "dxf-viewer";
 import * as THREE from "three";
 import HanaMinAFont from "@/assets/fonts/HanaMinA.ttf";
 import NanumGothicRegularFont from "@/assets/fonts/HanaMinA.ttf";
 import NotoSansDisplaySemiCondensedLightItalicFont from "@/assets/fonts/HanaMinA.ttf";
 import RobotoLightItalicFont from "@/assets/fonts/HanaMinA.ttf";
 import { utf8Charset } from "@/utils/constants.ts";
+import type { DxfViewerProps } from "@/types/viewer.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: string;
-    showLayerSider?: boolean;
-    layerSiderWidth?: number | string;
-    fileEncoding?: string;
-    fonts?: string[];
-    options?: DxfViewerOptions;
-    onProgress?:
-      | ((
-          phase: "font" | "fetch" | "parse" | "prepare",
-          processedSize: number,
-          totalSize: number,
-        ) => void)
-      | null;
-    onError?: (error: Error) => void;
-  }>(),
+  defineProps<
+    DxfViewerProps & {
+      src: string;
+      onProgress?:
+        | ((
+            phase: "font" | "fetch" | "parse" | "prepare",
+            processedSize: number,
+            totalSize: number,
+          ) => void)
+        | null;
+      onError?: (error: Error) => void;
+    }
+  >(),
   {
     showLayerSider: true,
     layerSiderWidth: 300,
@@ -131,18 +129,6 @@ watch(
 
     if (newVal) {
       loadDxf(newVal);
-    }
-  },
-);
-
-watch(
-  () => props.fileEncoding,
-  (newVal) => {
-    dxfViewer?.Destroy();
-    initViewer(newVal);
-
-    if (props.src) {
-      loadDxf(props.src);
     }
   },
 );

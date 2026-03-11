@@ -32,7 +32,7 @@ export type UrlWithFileEncoding = {
   fileEncoding?: string;
 };
 
-export type OfficeUrl = {
+export type OnlyOfficeUrl = {
   url: string;
   mimeType: string;
   title?: string;

@@ -5,17 +5,11 @@
     :theme-overrides="{ common: { fontWeightStrong: '600' } }"
     class="full-size"
   >
-    <n-notification-provider>
-      <n-loading-bar-provider>
-        <n-message-provider>
-          <file-viewer
-            :no-more="noMore"
-            :file-types="fileTypes"
-            :load="onLoad"
-          />
-        </n-message-provider>
-      </n-loading-bar-provider>
-    </n-notification-provider>
+    <n-loading-bar-provider>
+      <n-message-provider>
+        <file-viewer :no-more="noMore" :file-types="fileTypes" :load="onLoad" />
+      </n-message-provider>
+    </n-loading-bar-provider>
   </n-config-provider>
 </template>
 
