@@ -5,9 +5,9 @@ import { NEllipsis } from "naive-ui";
 import type { FileItem } from "@/types/file.ts";
 import { SearchRound } from "@vicons/material";
 
-//todo 增加card插槽
 const props = withDefaults(
   defineProps<{
+    staticFileList?: FileItem[];
     showSkeleton?: boolean;
     showBackTop?: boolean;
     showSearch?: boolean;
@@ -16,12 +16,17 @@ const props = withDefaults(
     coverHeight?: number | string;
     coverObjectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
     fileTypes?: string[];
-    onLoad: (
+    fileMatcher?: (
+      file: FileItem,
+      types?: string[],
+      keyword?: string,
+    ) => boolean;
+    load?: (
       page: number,
       types?: string[],
       keyword?: string,
     ) => Promise<FileItem[]> | FileItem[];
-    noMore: boolean;
+    noMore?: boolean;
   }>(),
   {
     showSkeleton: true,
@@ -32,6 +37,10 @@ const props = withDefaults(
     coverObjectFit: "fill",
     showTypeFilter: true,
     fileTypes: () => [],
+    staticFileList: () => [],
+    load: undefined,
+    fileMatcher: undefined,
+    noMore: undefined,
   },
 );
 
@@ -42,6 +51,7 @@ const emits = defineEmits<{
 const currentPage = ref<number>(1);
 const loading = ref<boolean>(false);
 const fileItemList = ref<FileItem[]>([]);
+const internalNoMore = ref<boolean>(false);
 
 const inputValue = ref<string>();
 const selectFileTypes = ref<string[]>([]);
@@ -50,18 +60,37 @@ const isEmpty = computed(
   () => fileItemList.value.length === 0 && !loading.value,
 );
 
+const isNoMore = computed(() => {
+  if (!props.load) {
+    return true;
+  }
+  if (props.noMore != null) {
+    return props.noMore;
+  }
+  return internalNoMore.value;
+});
+
 const fileTypeOptions = computed(() =>
   props.fileTypes.map((item) => ({ label: item, value: item })),
 );
 
 onMounted(() => {
-  loadFileList(inputValue.value, selectFileTypes.value, true);
+  if (!props.load) {
+    fileItemList.value = props.staticFileList ?? [];
+  } else {
+    internalNoMore.value = false;
+    loadFileList(inputValue.value, selectFileTypes.value, true);
+  }
 });
 
 watch(
   () => selectFileTypes.value,
   (val) => {
-    loadFileList(inputValue.value, val, true);
+    if (!props.load) {
+      filterStaticFileList(inputValue.value, val);
+    } else {
+      loadFileList(inputValue.value, val, true);
+    }
   },
 );
 
@@ -70,24 +99,34 @@ const loadFileList = async (
   types?: string[],
   reset = false,
 ) => {
-  if (reset) {
-    fileItemList.value = [];
-    currentPage.value = 1;
+  if (!props.load) {
+    return;
   }
-
   if (!reset && loading.value) {
     return;
   }
+  if (!reset && isNoMore.value) {
+    return;
+  }
+
+  if (reset) {
+    fileItemList.value = [];
+    currentPage.value = 1;
+    internalNoMore.value = false;
+  }
 
   loading.value = true;
-
   try {
     const result = await getResult(
-      props.onLoad(currentPage.value, types, keyword),
+      props.load(currentPage.value, types, keyword),
     );
 
-    fileItemList.value.push(...result);
-    ++currentPage.value;
+    if (result.length === 0) {
+      internalNoMore.value = true;
+    } else {
+      fileItemList.value.push(...result);
+      ++currentPage.value;
+    }
   } catch (e) {
     if (reset) {
       fileItemList.value = [];
@@ -98,12 +137,32 @@ const loadFileList = async (
   }
 };
 
-const searchFileList = (keyword?: string, types?: string[]) => {
-  loadFileList(keyword, types, true);
+const searchFileList = () => {
+  if (!props.load) {
+    filterStaticFileList(inputValue.value, selectFileTypes.value);
+  } else {
+    loadFileList(inputValue.value, selectFileTypes.value, true);
+  }
+};
+
+const filterStaticFileList = (keyword?: string, types?: string[]) => {
+  fileItemList.value = (props.staticFileList ?? []).filter((item) => {
+    if (!props.fileMatcher) {
+      let flag = true;
+      if (keyword) {
+        flag = item.filename?.includes(keyword as string) ?? false;
+      }
+      if (types && types.length > 0) {
+        flag = types.includes(item.type as string);
+      }
+      return flag;
+    }
+    return props.fileMatcher(item, types, keyword);
+  });
 };
 
 const handleScrollLoad = () => {
-  if (props.noMore) {
+  if (isNoMore.value || !props.load || loading.value) {
     return;
   }
   loadFileList(inputValue.value, selectFileTypes.value, false);
@@ -112,10 +171,6 @@ const handleScrollLoad = () => {
 const handleClickDownload = (fileUrl: string, filename?: string) => {
   downloadFile(fileUrl, filename ?? "");
 };
-
-defineExpose({
-  searchFileList,
-});
 </script>
 
 <template>
@@ -129,14 +184,10 @@ defineExpose({
           v-model:value="inputValue"
           round
           placeholder="请输入文件名"
-          @keydown.enter="searchFileList(inputValue, selectFileTypes)"
+          @keydown.enter="searchFileList"
         >
           <template #suffix>
-            <n-icon
-              :size="24"
-              class="cursor-pointer"
-              @click="searchFileList(inputValue, selectFileTypes)"
-            >
+            <n-icon :size="24" class="cursor-pointer" @click="searchFileList">
               <SearchRound />
             </n-icon>
           </template>
@@ -155,7 +206,7 @@ defineExpose({
     </div>
     <div class="file-card-list">
       <n-infinite-scroll class="h-100" :distance="10" @load="handleScrollLoad">
-        <slot name="file-card" :file-list="fileItemList">
+        <slot name="file-item" :file-list="fileItemList">
           <n-card
             v-for="(fileItem, i) in fileItemList"
             :key="i"
@@ -170,67 +221,92 @@ defineExpose({
             }"
             @click="emits('click-file', fileItem)"
           >
-            <template v-if="fileItem?.name" #header>
-              <div class="mr-10">
-                <n-ellipsis>
-                  {{ fileItem?.name ?? fileItem.filename }}
-                </n-ellipsis>
-              </div>
-            </template>
-            <template v-if="fileItem.type" #header-extra>
-              <n-tag :bordered="false" type="info" size="small">
-                {{ fileItem.type }}
-              </n-tag>
-            </template>
-            <template v-if="fileItem.cover" #cover>
-              <div class="p-10 h-center">
-                <n-image
-                  lazy
-                  preview-disabled
-                  :object-fit="coverObjectFit"
-                  :height="coverHeight"
-                  :src="fileItem.cover"
-                />
-              </div>
-            </template>
-            <template v-if="fileItem.createTime || fileItem.size" #footer>
-              <div v-if="fileItem.createTime" class="flex-space-between">
-                <n-time :time="fileItem.createTime" />
-                <div v-if="fileItem.size">
-                  {{ formatFileSize(fileItem.size) }}
-                </div>
-              </div>
-            </template>
-            <template #action>
-              <n-button
-                size="tiny"
-                class="mr-10"
-                type="info"
-                @click.stop="emits('click-file', fileItem)"
-                >查看</n-button
-              >
-              <n-button
-                size="tiny"
-                type="success"
-                @click.stop="handleClickDownload(fileItem.url, fileItem.name)"
-                >下载</n-button
-              >
-            </template>
-            <template v-if="fileItem?.descriptions" #default>
-              <div class="file-descriptions">
-                <div
-                  v-for="(description, j) in fileItem?.descriptions"
-                  :key="j"
-                  class="file-description-item"
-                >
-                  <div class="file-description-item-name">
-                    {{ description.name }}
-                  </div>
+            <template #header>
+              <slot name="file-card-header" :file-item="fileItem">
+                <div v-if="fileItem?.name" class="mr-10">
                   <n-ellipsis>
-                    {{ description.value }}
+                    {{ fileItem?.name ?? fileItem.filename }}
                   </n-ellipsis>
                 </div>
-              </div>
+              </slot>
+            </template>
+            <template #header-extra>
+              <slot name="file-card-header-extra" :file-item="fileItem">
+                <n-tag
+                  v-if="fileItem.type"
+                  :bordered="false"
+                  type="info"
+                  size="small"
+                >
+                  {{ fileItem.type }}
+                </n-tag>
+              </slot>
+            </template>
+            <template #cover>
+              <slot name="file-card-cover" :file-item="fileItem">
+                <div v-if="fileItem.cover" class="p-10 h-center">
+                  <n-image
+                    lazy
+                    preview-disabled
+                    :object-fit="coverObjectFit"
+                    :height="coverHeight"
+                    :src="fileItem.cover"
+                  />
+                </div>
+              </slot>
+            </template>
+            <template #footer>
+              <slot name="file-card-footer" :file-item="fileItem">
+                <div
+                  v-if="fileItem.createTime || fileItem.size"
+                  class="flex-space-between"
+                >
+                  <n-time
+                    v-if="fileItem.createTime"
+                    :time="fileItem.createTime"
+                  />
+                  <div v-if="fileItem.size">
+                    {{ formatFileSize(fileItem.size) }}
+                  </div>
+                </div>
+              </slot>
+            </template>
+            <template #action>
+              <slot name="file-card-action" :file-item="fileItem">
+                <n-button
+                  size="tiny"
+                  class="mr-10"
+                  type="info"
+                  @click.stop="emits('click-file', fileItem)"
+                  >查看</n-button
+                >
+                <n-button
+                  size="tiny"
+                  type="success"
+                  @click.stop="handleClickDownload(fileItem.url, fileItem.name)"
+                  >下载</n-button
+                >
+                <slot name="file-card-action-extra" :file-item="fileItem">
+                </slot>
+              </slot>
+            </template>
+            <template #default>
+              <slot name="file-card-default" :file-item="fileItem">
+                <div v-if="fileItem?.descriptions" class="file-descriptions">
+                  <div
+                    v-for="(description, j) in fileItem?.descriptions"
+                    :key="j"
+                    class="file-description-item"
+                  >
+                    <div class="file-description-item-name">
+                      {{ description.name }}
+                    </div>
+                    <n-ellipsis>
+                      {{ description.value }}
+                    </n-ellipsis>
+                  </div>
+                </div>
+              </slot>
             </template>
           </n-card>
         </slot>
@@ -282,7 +358,7 @@ defineExpose({
           </n-empty>
         </slot>
         <slot name="noMore">
-          <div v-if="noMore && !isEmpty" class="h-center">没有更多了</div>
+          <div v-if="isNoMore" class="h-center">没有更多了</div>
         </slot>
         <slot name="backTop">
           <n-back-top v-if="showBackTop" :right="20" style="z-index: 100" />

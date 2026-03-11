@@ -14,7 +14,7 @@ declare module 'vue' {
     AudioViewer: typeof import('./../src/components/custom/AudioViewer.vue')['default']
     BabylonModelViewer: typeof import('./../src/components/custom/BabylonModelViewer.vue')['default']
     DxfViewer: typeof import('./../src/components/custom/DxfViewer.vue')['default']
-    FileCardList: typeof import('./../src/components/FileCardList.vue')['default']
+    FileItemList: typeof import('@/components/FileItemList.vue')['default']
     RouteFileViewer: typeof import('@/components/RouteFileViewer.vue')['default']
     ImageViewer: typeof import('./../src/components/custom/ImageViewer.vue')['default']
     JsonViewer: typeof import('./../src/components/custom/JsonViewer.vue')['default']

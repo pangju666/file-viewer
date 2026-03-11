@@ -13,7 +13,7 @@ export const testFiles: FileItem[] = [
     url: "https://disk.sample.cat/samples/pdf/sample-a4.pdf",
     createTime: new Date(),
     size: 10000000,
-    descriptions: [
+    /*descriptions: [
       {
         name: "描述",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -22,7 +22,7 @@ export const testFiles: FileItem[] = [
         name: "描述2",
         value: "测试用文件aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       },
-    ],
+    ],*/
   },
   {
     name: "Sample PDF with fit size images",
