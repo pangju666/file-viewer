@@ -1,8 +1,14 @@
 import type { FileItem } from "@/types/file.ts";
 import type { DxfViewerOptions } from "dxf-viewer";
 import Viewer from "viewerjs";
+import type {
+  PageScale,
+  Theme,
+  ToolbarConfig,
+  ToolbarIdConfig,
+} from "vue3-pdf-app/dist/types/types";
 
-export type FileItemListProps = {
+export type FileListProps = {
   title?: string;
   staticFileList?: FileItem[];
   showSkeleton?: boolean;
@@ -48,7 +54,7 @@ export type FilePreviewProps = {
   enableAudio?: boolean;
   enablePdf?: boolean;
   enableOffice?: boolean;
-  enableModel?: boolean; // 3D 模型
+  enableModel?: boolean;
   enableMarkdown?: boolean;
   enableText?: boolean;
   enableJson?: boolean;
@@ -64,15 +70,25 @@ export type FilePreviewProps = {
     encoding?: string,
   ) => string | Promise<string>;
   options?: {
-    audio: AudioViewerProps;
-    dxf: DxfViewerProps;
-    image: Viewer.Options;
-    json: Record<string, unknown>;
-    markdown: Record<string, unknown>;
-    model: Record<string, unknown>;
-    office: OfficeViewerProps;
-    video: Record<string, unknown>;
+    audio?: AudioViewerProps;
+    pdf?: PdfViewerProps;
+    dxf?: DxfViewerProps;
+    image?: Viewer.Options;
+    json?: Record<string, unknown>;
+    markdown?: Record<string, unknown>;
+    model?: Record<string, unknown>;
+    office?: OfficeViewerProps;
+    video?: Record<string, unknown>;
   };
+};
+
+export type PdfViewerProps = {
+  showTitle?: boolean;
+  theme?: Theme;
+  pageScale?: PageScale;
+  pageNumber?: number;
+  config?: ToolbarConfig;
+  idConfig?: ToolbarIdConfig;
 };
 
 export type ViewerError =

@@ -9,7 +9,6 @@ export type FileItem = {
   type?: string;
   filename?: string;
   mimeType: string;
-  password?: string;
   url: string;
   cover?: string;
   createTime?: number | Date;
@@ -27,16 +26,12 @@ export type UrlWithFilename = {
   filename?: string;
 };
 
-export type UrlWithFileEncoding = UrlWithMimeType & {
+export type UrlWithFileEncoding = {
+  url: string;
   fileEncoding?: string;
 };
 
 export type OnlyOfficeUrl = UrlWithMimeType & {
   title?: string;
   key?: string;
-};
-
-export type PdfUrl = {
-  url: string;
-  password?: string;
 };

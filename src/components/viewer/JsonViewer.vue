@@ -1,12 +1,11 @@
 <script lang="ts" setup>
 import { watch, ref, onMounted } from "vue";
-import axios, { type AxiosProgressEvent } from "axios";
 import VueJsonViewer from "vue-json-viewer";
 import "vue-json-viewer/style.css";
 import {
+  getFileEncodingFromUrl,
   getResult,
   getSrcFromUrl,
-  getFileEncodingFromUrl,
 } from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
 
@@ -14,7 +13,6 @@ const props = withDefaults(
   defineProps<{
     src: UrlWithFileEncoding | string;
     options?: Record<string, unknown>;
-    onProgress?: (event: AxiosProgressEvent) => void;
     fetcher?: (
       url: string,
       fileEncoding?: string,
@@ -28,7 +26,6 @@ const props = withDefaults(
       expanded: true,
       showArrayIndex: true,
     }),
-    onProgress: undefined,
     fetcher: undefined,
     onError: undefined,
   },
@@ -40,7 +37,7 @@ const emits = defineEmits<{
 
 const content = ref<Record<string, unknown>>({});
 
-const getContent = (src: UrlWithFileEncoding | string) => {
+const getContent = async (src: UrlWithFileEncoding | string) => {
   if (props.fetcher) {
     getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
       .then((res) => {
@@ -53,25 +50,15 @@ const getContent = (src: UrlWithFileEncoding | string) => {
         }
       });
   } else {
-    axios
-      .get<Record<string, unknown>>(getSrcFromUrl(src), {
-        responseType: "json",
-        responseEncoding: getFileEncodingFromUrl(src),
-        onDownloadProgress: (event: AxiosProgressEvent) => {
-          if (props.onProgress) {
-            props.onProgress(event);
-          }
-        },
-      })
-      .then((res) => {
-        content.value = res.data;
-        emits("ready");
-      })
-      .catch((error: Error) => {
-        if (props.onError && error) {
-          props.onError(error);
-        }
-      });
+    try {
+      const response = await fetch(getSrcFromUrl(src));
+      content.value = await response.json();
+      emits("ready");
+    } catch (error) {
+      if (props.onError && error) {
+        props.onError(error as Error);
+      }
+    }
   }
 };
 

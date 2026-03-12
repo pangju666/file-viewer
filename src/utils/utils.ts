@@ -71,12 +71,15 @@ export function getSrcFromUrl(src: UrlWithFileEncoding | string) {
   return src.url;
 }
 
-export function getFileEncodingFromUrl(src: UrlWithFileEncoding | string) {
+export function getFileEncodingFromUrl(
+  src: UrlWithFileEncoding | string,
+  defaultEncoding = utf8Charset,
+) {
   if (typeof src === "string") {
     return utf8Charset;
   }
   if (src.fileEncoding) {
     return src.fileEncoding;
   }
-  return getMimeTypeCharset(src.mimeType);
+  return defaultEncoding;
 }

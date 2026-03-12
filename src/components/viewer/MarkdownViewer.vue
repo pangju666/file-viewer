@@ -2,7 +2,6 @@
 import { mavonEditor } from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 import { onMounted, ref, watch } from "vue";
-import axios, { type AxiosProgressEvent } from "axios";
 import {
   getFileEncodingFromUrl,
   getResult,
@@ -15,7 +14,6 @@ const props = withDefaults(
   defineProps<{
     src: UrlWithFileEncoding | string;
     options?: Record<string, unknown>;
-    onProgress?: (event: AxiosProgressEvent) => void;
     fetcher?: (url: string, encoding?: string) => string | Promise<string>;
     onError?: (error: Error) => void;
   }>(),
@@ -46,7 +44,7 @@ defineEmits<{
 
 const content = ref<string>();
 
-const getContent = (src: UrlWithFileEncoding | string) => {
+const getContent = async (src: UrlWithFileEncoding | string) => {
   if (props.fetcher) {
     getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
       .then((res) => {
@@ -58,24 +56,14 @@ const getContent = (src: UrlWithFileEncoding | string) => {
         }
       });
   } else {
-    axios
-      .get<string>(getSrcFromUrl(src), {
-        responseType: "text",
-        responseEncoding: getFileEncodingFromUrl(src),
-        onDownloadProgress: (event: AxiosProgressEvent) => {
-          if (props.onProgress) {
-            props.onProgress(event);
-          }
-        },
-      })
-      .then((res) => {
-        content.value = res.data;
-      })
-      .catch((error: Error) => {
-        if (props.onError && error) {
-          props.onError(error);
-        }
-      });
+    try {
+      const response = await fetch(getSrcFromUrl(src));
+      content.value = await response.text();
+    } catch (error) {
+      if (props.onError && error) {
+        props.onError(error as Error);
+      }
+    }
   }
 };
 

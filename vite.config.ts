@@ -2,11 +2,11 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
-import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 import viteCompression from "vite-plugin-compression";
 import removeConsole from "vite-plugin-remove-console";
 import { resolve } from "node:path";
 import dts from "vite-plugin-dts";
+import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 
 export default defineConfig(({ mode }) => {
   const isLib = mode === "lib";
@@ -64,7 +64,6 @@ export default defineConfig(({ mode }) => {
       build: {
         lib: {
           entry: resolve(__dirname, "src/index.ts"),
-          name: "PangjuFileViewer",
           formats: ["es", "cjs"],
           fileName: (format) => {
             if (format === "es") return "index.es.mjs";
@@ -77,23 +76,24 @@ export default defineConfig(({ mode }) => {
             propertyReadSideEffects: false,
           },
           external: [
-            "@vueuse/core",
-            "axios",
-            "vue",
             "@babylonjs/viewer",
             "dxf-viewer",
             "mavon-editor",
             "three",
-            "file-type",
             "video.js",
             "viewerjs",
             "vue-json-viewer",
+            "vue3-pdf-app",
+            "vue",
             "vue-router",
             /^node:.*/,
           ],
           output: {
             exports: "named",
             preserveModulesRoot: "src",
+            globals: {
+              vue: "Vue",
+            },
             assetFileNames: (assetInfo) => {
               const hasCssSource = assetInfo.originalFileNames?.some((name) =>
                 name.endsWith(".css"),
@@ -108,17 +108,10 @@ export default defineConfig(({ mode }) => {
             },
           },
         },
-        terserOptions: {
-          compress: {
-            drop_console: true,
-            drop_debugger: true,
-            pure_funcs: ["console.log", "info"],
-          },
-        },
         assetsInclude: [/\.ttf$/],
         outDir: "dist/lib",
         emptyOutDir: true,
-        minify: "terser",
+        minify: "esbuild",
         cssCodeSplit: false,
         sourceMap: true,
       },

@@ -11,14 +11,16 @@ import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
 import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
-import FileViewer from "@/components/FileViewer.vue";
+import FileExplorer from "@/components/FileExplorer.vue";
 import FilePreview from "@/components/FilePreview.vue";
-import FileItemList from "@/components/FileItemList.vue";
+import FileList from "@/components/FileList.vue";
+import FilePreviewBase from "@/components/FilePreviewBase.vue";
 
 export {
-  FileItemList,
+  FileList,
   FilePreview,
-  FileViewer,
+  FilePreviewBase,
+  FileExplorer,
   AudioViewer,
   DxfViewer,
   ErrorViewer,
@@ -34,9 +36,9 @@ export {
 };
 
 export const install = (app: App) => {
-  app.component("FileItemList", FileItemList);
+  app.component("FileList", FileList);
   app.component("FilePreview", FilePreview);
-  app.component("FileViewer", FileViewer);
+  app.component("FileExplorer", FileExplorer);
   app.component("AudioViewer", AudioViewer);
   app.component("ErrorViewer", ErrorViewer);
   app.component("ImageViewer", ImageViewer);
@@ -58,15 +60,15 @@ export type {
   UrlWithFileEncoding,
   UrlWithFilename,
   OnlyOfficeUrl,
-  PdfUrl,
   UrlWithMimeType,
 } from "./types/file";
 
 export type {
-  FileItemListProps,
+  FileListProps,
   FilePreviewProps,
   AudioViewerProps,
   DxfViewerProps,
+  PdfViewerProps,
   ViewerError,
   OfficeViewerProps,
 } from "./types/viewer";

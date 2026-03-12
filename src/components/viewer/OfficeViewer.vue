@@ -142,6 +142,13 @@ onMounted(() => {
       return;
     }
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (window?.DocsAPI?.DocEditor) {
+      initEditor(props.src as OnlyOfficeUrl);
+      return;
+    }
+
     if (!props.onlyOfficeApiJsUrl) {
       if (props.onError) {
         props.onError('未配置onlyOffice的api.js文件地址"');

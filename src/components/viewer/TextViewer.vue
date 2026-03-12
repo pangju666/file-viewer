@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue";
-import axios, { type AxiosProgressEvent } from "axios";
 import {
   getFileEncodingFromUrl,
   getResult,
@@ -11,7 +10,6 @@ import type { UrlWithFileEncoding } from "@/types/file.ts";
 const props = withDefaults(
   defineProps<{
     src: UrlWithFileEncoding | string;
-    onProgress?: (event: AxiosProgressEvent) => void;
     fetcher?: (url: string, encoding?: string) => string | Promise<string>;
     onError?: (error: Error) => void;
   }>(),
@@ -28,7 +26,7 @@ const emits = defineEmits<{
 
 const content = ref<string>();
 
-const getContent = (src: UrlWithFileEncoding | string) => {
+const getContent = async (src: UrlWithFileEncoding | string) => {
   if (props.fetcher) {
     getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
       .then((res) => {
@@ -41,25 +39,15 @@ const getContent = (src: UrlWithFileEncoding | string) => {
         }
       });
   } else {
-    axios
-      .get<string>(getSrcFromUrl(src), {
-        responseType: "text",
-        responseEncoding: getFileEncodingFromUrl(src),
-        onDownloadProgress: (event: AxiosProgressEvent) => {
-          if (props.onProgress) {
-            props.onProgress(event);
-          }
-        },
-      })
-      .then((res) => {
-        content.value = res.data;
-        emits("ready");
-      })
-      .catch((error: Error) => {
-        if (props.onError && error) {
-          props.onError(error);
-        }
-      });
+    try {
+      const response = await fetch(getSrcFromUrl(src));
+      content.value = await response.text();
+      emits("ready");
+    } catch (error) {
+      if (props.onError && error) {
+        props.onError(error as Error);
+      }
+    }
   }
 };
 
