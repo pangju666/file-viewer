@@ -11,7 +11,7 @@ import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
 import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
-import FileExplorer from "@/components/FileExplorer.vue";
+import FileViewer from "@/components/FileViewer.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import FileList from "@/components/FileList.vue";
 import FilePreviewBase from "@/components/FilePreviewBase.vue";
@@ -20,7 +20,7 @@ export {
   FileList,
   FilePreview,
   FilePreviewBase,
-  FileExplorer,
+  FileViewer,
   AudioViewer,
   DxfViewer,
   ErrorViewer,
@@ -35,24 +35,14 @@ export {
   VideoViewer,
 };
 
-export const install = (app: App) => {
+export const install = <T extends App>(app: T): void => {
   app.component("FileList", FileList);
+  app.component("FilePreviewBase", FilePreviewBase);
   app.component("FilePreview", FilePreview);
-  app.component("FileExplorer", FileExplorer);
-  app.component("AudioViewer", AudioViewer);
-  app.component("ErrorViewer", ErrorViewer);
-  app.component("ImageViewer", ImageViewer);
-  app.component("JsonViewer", JsonViewer);
-  app.component("MarkdownViewer", MarkdownViewer);
-  app.component("ModelViewer", ModelViewer);
-  app.component("OfficeViewer", OfficeViewer);
-  app.component("PdfViewer", PdfViewer);
-  app.component("TextViewer", TextViewer);
-  app.component("UnknownViewer", UnknownViewer);
-  app.component("VideoViewer", VideoViewer);
+  app.component("FileViewer", FileViewer);
 };
 
-export default { install };
+export default install;
 
 export type {
   FileDescription,

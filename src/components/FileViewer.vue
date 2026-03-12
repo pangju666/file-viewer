@@ -83,7 +83,7 @@ defineExpose({
       :min="minSplitSize"
     >
       <template #1>
-        <slot name="preview" :current-file="currentFile">
+        <slot name="viewer" :current-file="currentFile">
           <file-preview
             v-if="currentFile"
             :enable-image="enableImage"
@@ -106,7 +106,7 @@ defineExpose({
         </slot>
       </template>
       <template #2>
-        <slot name="list">
+        <slot name="file-list">
           <file-list
             :title="title"
             :static-file-list="staticFileList"
