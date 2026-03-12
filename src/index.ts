@@ -1,4 +1,4 @@
-import type { App } from "vue";
+import type { App, Plugin } from "vue";
 import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import JsonViewer from "@/components/viewer/JsonViewer.vue";
 import ImageViewer from "@/components/viewer/ImageViewer.vue";
@@ -14,12 +14,10 @@ import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
 import FileViewer from "@/components/FileViewer.vue";
 import FilePreview from "@/components/FilePreview.vue";
 import FileList from "@/components/FileList.vue";
-import FilePreviewBase from "@/components/FilePreviewBase.vue";
 
 export {
   FileList,
   FilePreview,
-  FilePreviewBase,
   FileViewer,
   AudioViewer,
   DxfViewer,
@@ -35,14 +33,13 @@ export {
   VideoViewer,
 };
 
-export const install = <T extends App>(app: T): void => {
+const install = (app: App): void => {
   app.component("FileList", FileList);
-  app.component("FilePreviewBase", FilePreviewBase);
   app.component("FilePreview", FilePreview);
   app.component("FileViewer", FileViewer);
 };
 
-export default install;
+export default install as Plugin;
 
 export type {
   FileDescription,

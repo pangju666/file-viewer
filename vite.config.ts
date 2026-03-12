@@ -31,12 +31,7 @@ export default defineConfig(({ mode }) => {
       vue(),
       AutoImport({
         dts: "~/types/auto-imports.d.ts",
-        imports: [
-          "vue",
-          {
-            "naive-ui": ["useLoadingBar"],
-          },
-        ],
+        imports: ["vue"],
       }),
       Components({
         dts: "~/types/components.d.ts",

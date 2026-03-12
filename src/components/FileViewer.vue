@@ -48,11 +48,19 @@ const props = withDefaults(
   },
 );
 
+const emits = defineEmits<{
+  (e: "loading-start"): void;
+  (e: "loading-end"): void;
+  (e: "loading-error"): void;
+  (e: "click-file", file: FileItem): void;
+}>();
+
 const currentFile = ref<FileItem>();
 
 const changeFile = async (file: FileItem) => {
-  currentFile.value = undefined;
+  emits("click-file", file);
 
+  currentFile.value = undefined;
   if (file && file.url && !file.mimeType && props.autoDetectType) {
     if (props.detectFileType) {
       file.mimeType = await getResult(props.detectFileType(file));
@@ -64,7 +72,6 @@ const changeFile = async (file: FileItem) => {
       file.mimeType = fileType?.mime as string;
     }
   }
-
   currentFile.value = file;
 };
 
@@ -102,6 +109,9 @@ defineExpose({
             :markdown-fetcher="markdownFetcher"
             :options="options"
             :file="currentFile"
+            @loading-start="$emit('loading-start')"
+            @loading-end="$emit('loading-end')"
+            @loading-error="$emit('loading-error')"
           />
         </slot>
       </template>
