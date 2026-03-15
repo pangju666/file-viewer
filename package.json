@@ -19,56 +19,18 @@
   ],
   "type": "module",
   "main": "./dist/lib/index.cjs.js",
-  "module": "./dist/lib/index.es.mjs",
+  "module": "./dist/lib/index.es.js",
   "types": "./dist/lib/types/index.d.ts",
-  "style": "./dist/lib/index.css",
   "exports": {
     ".": {
       "types": "./dist/lib/types/index.d.ts",
-      "import": "./dist/lib/index.es.mjs",
+      "import": "./dist/lib/index.es.js",
       "require": "./dist/lib/index.cjs.js"
     },
-    "./index.css": "./dist/lib/index.css"
+    "./index.css": "./dist/lib/file-viewer.css"
   },
-  "sideEffects": [
-    "*.css"
-  ],
   "peerDependencies": {
-    "@babylonjs/viewer": "^8.54.1",
-    "dxf-viewer": "^1.0.46",
-    "mavon-editor": "^3.0.2",
-    "three": "^0.161.0",
-    "video.js": "^8.23.7",
-    "viewerjs": "^1.11.7",
-    "vue-json-viewer": "^3.0.4",
-    "vue3-pdf-app": "^1.0.3",
     "vue": "^3.5.29"
-  },
-  "peerDependenciesMeta": {
-    "@babylonjs/viewer": {
-      "optional": true
-    },
-    "dxf-viewer": {
-      "optional": true
-    },
-    "mavon-editor": {
-      "optional": true
-    },
-    "three": {
-      "optional": true
-    },
-    "video.js": {
-      "optional": true
-    },
-    "viewerjs": {
-      "optional": true
-    },
-    "vue-json-viewer": {
-      "optional": true
-    },
-    "vue3-pdf-app": {
-      "optional": true
-    }
   },
   "dependencies": {
     "@babylonjs/viewer": "^8.54.1",
@@ -76,15 +38,13 @@
     "@vueuse/core": "^14.2.1",
     "dxf-viewer": "^1.0.46",
     "file-type": "^21.3.0",
-    "mavon-editor": "^3.0.2",
+    "md-editor-v3": "^6.4.0",
     "naive-ui": "^2.43.2",
     "three": "^0.161.0",
     "video.js": "^8.23.7",
     "viewerjs": "^1.11.7",
-    "vue": "^3.5.29",
-    "vue-json-viewer": "^3.0.4",
     "vue-router": "^5.0.3",
-    "vue3-pdf-app": "^1.0.3"
+    "vue3-json-viewer": "^2.4.1"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.2",

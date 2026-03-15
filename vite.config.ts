@@ -27,17 +27,6 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    plugins: [
-      vue(),
-      AutoImport({
-        dts: "~/types/auto-imports.d.ts",
-        imports: ["vue"],
-      }),
-      Components({
-        dts: "~/types/components.d.ts",
-        resolvers: [NaiveUiResolver()],
-      }),
-    ],
   };
 
   // ================= 配置 1: 组件库模式 (Library) =================
@@ -45,75 +34,46 @@ export default defineConfig(({ mode }) => {
     return {
       ...baseConfig,
       plugins: [
-        ...baseConfig.plugins,
+        vue(),
+        AutoImport({
+          dts: false,
+          //dts: "~/types/auto-imports.d.ts",
+          imports: ["vue"],
+        }),
+        Components({
+          dts: false,
+          //dts: "~/types/components.d.ts",
+          resolvers: [NaiveUiResolver()],
+        }),
         dts({
-          include: [
-            "src/components/**/*",
-            "src/types/**/*",
-            "src/utils/**/*",
-            "src/index.ts",
-          ],
+          include: ["src"],
           outDir: "dist/lib/types",
         }),
       ],
       build: {
+        outDir: "dist/lib",
+        emptyOutDir: true,
         lib: {
           entry: resolve(__dirname, "src/index.ts"),
+          fileName: (format) => `index.${format}.js`,
           formats: ["es", "cjs"],
-          fileName: (format) => {
-            if (format === "es") return "index.es.mjs";
-            if (format === "cjs") return "index.cjs.js";
-            return `index.${format}.js`;
-          },
         },
         rollupOptions: {
-          treeshake: {
-            propertyReadSideEffects: false,
-          },
-          external: [
-            "@babylonjs/viewer",
-            "dxf-viewer",
-            "mavon-editor",
-            "three",
-            "video.js",
-            "viewerjs",
-            "vue-json-viewer",
-            "vue3-pdf-app",
-            "vue",
-            "vue-router",
-            /^node:.*/,
-          ],
+          external: ["vue", "vue-router", /^node:.*/],
           output: {
             exports: "named",
-            preserveModulesRoot: "src",
             globals: {
               vue: "Vue",
             },
-            assetFileNames: (assetInfo) => {
-              const hasCssSource = assetInfo.originalFileNames?.some((name) =>
-                name.endsWith(".css"),
-              );
-              const hasCssName =
-                !hasCssSource &&
-                assetInfo.names?.some((name) => name.endsWith(".css"));
-              if (hasCssSource || hasCssName) {
-                return "index.css";
-              }
-              return "assets/[name].[hash][extname]";
-            },
           },
         },
-        assetsInclude: [/\.ttf$/],
-        outDir: "dist/lib",
-        emptyOutDir: true,
         minify: "esbuild",
-        cssCodeSplit: false,
-        sourceMap: true,
+        sourcemap: true,
       },
     };
   }
 
-  // ================= 配置 2: 独立服务模式 (Application) =================
+  /*// ================= 配置 2: 独立服务模式 (Application) =================
   return {
     ...baseConfig,
     plugins: [...baseConfig.plugins, removeConsole(), viteCompression()],
@@ -130,5 +90,5 @@ export default defineConfig(({ mode }) => {
       },
       sourceMap: false,
     },
-  };
+  };*/
 });

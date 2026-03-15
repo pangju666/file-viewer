@@ -1,19 +1,21 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from "vue";
 import "@babylonjs/viewer";
-import "@/assets/css/pangju.css";
+import "@/assets/css/file-viewer.css";
+import type { UrlWithMimeType } from "@/types/file.ts";
+import { getSrcFromUrl } from "@/utils/utils.ts";
+import type { ModelPreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: string;
-    mimeType?: string;
-    options?: Record<string, unknown>;
-    onProgress?: (loadingProgress: number) => void;
-    onError?: (error: Error) => void;
-  }>(),
+  defineProps<
+    ModelPreviewOptions & {
+      src: UrlWithMimeType | string;
+      onProgress?: (loadingProgress: number) => void;
+      onError?: (error: Error) => void;
+    }
+  >(),
   {
-    options: undefined,
-    mimeType: undefined,
+    viewerOptions: undefined,
     onProgress: undefined,
     onError: undefined,
   },
@@ -24,7 +26,12 @@ const emits = defineEmits<{
 }>();
 
 const extension = computed(() => {
-  switch (props?.mimeType) {
+  if (props.src === "string") {
+    return undefined;
+  }
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  switch (props.src?.mimeType) {
     case "model/gltf-binary":
       return ".glb";
     case "model/gltf+json":
@@ -36,6 +43,12 @@ const extension = computed(() => {
     default:
       return undefined;
   }
+});
+
+const babylonViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { source, extension, ...options } = props.viewerOptions ?? {};
+  return options;
 });
 
 const viewerRef = ref<HTMLElement>();
@@ -59,7 +72,7 @@ const handleProgressChange = () => {
 
 const handleViewerReady = () => {
   if (props.src && viewerRef.value) {
-    source.value = props.src;
+    source.value = getSrcFromUrl(props.src);
   }
 };
 
@@ -74,7 +87,7 @@ const handleModelChange = (e: Event) => {
 watch(
   () => props.src,
   (newVal) => {
-    source.value = newVal;
+    source.value = getSrcFromUrl(newVal);
   },
 );
 </script>
@@ -83,7 +96,7 @@ watch(
   <babylon-viewer
     ref="viewerRef"
     class="pangju-wh-100"
-    v-bind="options"
+    v-bind="babylonViewerProps"
     :source="source"
     :extension="extension"
     @loadingprogresschange="handleProgressChange"

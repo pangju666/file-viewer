@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, computed, onMounted, onBeforeMount, reactive } from "vue";
+import { ref, watch, computed, onMounted } from "vue";
 import {
   supportedImageMimeTypes,
   supportedModelTypes,
@@ -27,8 +27,8 @@ import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
 import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
-import type { FilePreviewProps, ViewerError } from "@/types/viewer.ts";
-import "@/assets/css/pangju.css";
+import type { FilePreviewProps, ViewerError } from "@/types/options.ts";
+import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(
   defineProps<
@@ -47,11 +47,11 @@ const props = withDefaults(
     enableText: true,
     enableJson: true,
     enableDxf: true,
-    jsonFetcher: undefined,
-    textFetcher: undefined,
-    markdownFetcher: undefined,
+    jsonContentLoader: undefined,
+    textContentLoader: undefined,
+    markdownContentLoader: undefined,
     customViewerMatcher: undefined,
-    options: undefined,
+    viewerOptions: undefined,
   },
 );
 
@@ -60,6 +60,84 @@ const emits = defineEmits<{
   (e: "loading-end"): void;
   (e: "loading-error"): void;
 }>();
+
+const audioViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, cover, title, onError, ...options } =
+    props.viewerOptions?.audio ?? {};
+  return options;
+});
+
+const dxfViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, onProgress, onError, ...options } =
+    props.viewerOptions?.dxf ?? {};
+  return options;
+});
+
+const imageViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, onError, ...options } = props.viewerOptions?.audio ?? {};
+  return options;
+});
+
+const jsonViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, contentLoader, onError, ...options } =
+    props.viewerOptions?.audio ?? {};
+  return options;
+});
+
+const markdownViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, contentLoader, onError, ...options } =
+    props.viewerOptions?.audio ?? {};
+  return options;
+});
+
+const modelViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, onProgress, onError, ...options } =
+    props.viewerOptions?.audio ?? {};
+  return options;
+});
+
+const officeViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, onError, ...options } = props.viewerOptions?.audio ?? {};
+  return options;
+});
+
+const pdfViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, ...options } = props.viewerOptions?.audio ?? {};
+  return options;
+});
+
+const videoViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, cover, onProgress, onError, ...options } =
+    props.viewerOptions?.audio ?? {};
+  return options;
+});
 
 const hasError = ref(false);
 const errorReason = ref<string | undefined>(undefined);
@@ -75,17 +153,6 @@ watch(
     error.value = undefined;
   },
 );
-
-const viewerCheckedFlag = ref(false);
-const viewerAvailable = reactive({
-  image: false,
-  video: false,
-  model: false,
-  pdf: false,
-  markdown: false,
-  json: false,
-  dxf: false,
-});
 
 const filename = computed(() => props.file.name ?? props.file.filename);
 
@@ -167,125 +234,6 @@ const handleVideoViewerError = (error: MediaError) => {
   }
 };
 
-onBeforeMount(async () => {
-  const tasks = [];
-  if (props.enableImage) {
-    tasks.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      import(/* @vite-ignore */ "viewerjs")
-        .then(() => {
-          viewerAvailable.image = true;
-        })
-        .catch(() => {
-          viewerAvailable.image = false;
-          console.warn(
-            `[FilePreview] Missing dependency: viewerjs. Feature disabled.`,
-          );
-        }),
-    );
-  }
-  if (props.enableVideo) {
-    tasks.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      import(/* @vite-ignore */ "video.js")
-        .then(() => {
-          viewerAvailable.video = true;
-        })
-        .catch(() => {
-          viewerAvailable.video = false;
-          console.warn(
-            `[FilePreview] Missing dependency: video.js. Feature disabled.`,
-          );
-        }),
-    );
-  }
-  if (props.enableModel) {
-    tasks.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      import(/* @vite-ignore */ "@babylonjs/viewer")
-        .then(() => {
-          viewerAvailable.model = true;
-        })
-        .catch(() => {
-          viewerAvailable.model = false;
-          console.warn(
-            `[FilePreview] Missing dependency: @babylonjs/viewer. Feature disabled.`,
-          );
-        }),
-    );
-  }
-  if (props.enablePdf) {
-    tasks.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      import(/* @vite-ignore */ "vue3-pdf-app")
-        .then(() => {
-          viewerAvailable.pdf = true;
-        })
-        .catch(() => {
-          viewerAvailable.pdf = false;
-          console.warn(
-            `[FilePreview] Missing dependency: vue3-pdf-app. Feature disabled.`,
-          );
-        }),
-    );
-  }
-  if (props.enableMarkdown) {
-    tasks.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      import(/* @vite-ignore */ "mavon-editor")
-        .then(() => {
-          viewerAvailable.markdown = true;
-        })
-        .catch(() => {
-          viewerAvailable.markdown = false;
-          console.warn(
-            `[FilePreview] Missing dependency: mavon-editor. Feature disabled.`,
-          );
-        }),
-    );
-  }
-  if (props.enableJson) {
-    tasks.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      import(/* @vite-ignore */ "vue-json-viewer")
-        .then(() => {
-          viewerAvailable.json = true;
-        })
-        .catch(() => {
-          viewerAvailable.json = false;
-          console.warn(
-            `[FilePreview] Missing dependency: vue-json-viewer. Feature disabled.`,
-          );
-        }),
-    );
-  }
-  if (props.enableDxf) {
-    tasks.push(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      import(/* @vite-ignore */ "dxf-viewer")
-        .then(() => {
-          viewerAvailable.dxf = true;
-        })
-        .catch(() => {
-          viewerAvailable.dxf = false;
-          console.warn(
-            `[FilePreview] Missing dependency: dxf-viewer. Feature disabled.`,
-          );
-        }),
-    );
-  }
-  await Promise.all(tasks);
-
-  viewerCheckedFlag.value = true;
-});
-
 onMounted(() => {
   if (props.file?.url && props.file?.mimeType) {
     emits("loading-start");
@@ -297,7 +245,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="viewerCheckedFlag" class="pangju-wh-100">
+  <div class="pangju-wh-100">
     <slot v-if="hasError" name="error-viewer" :error="error">
       <error-viewer
         :reason="errorReason"
@@ -315,7 +263,7 @@ onMounted(() => {
         name="audio-viewer"
       >
         <audio-viewer
-          v-bind="options?.audio"
+          v-bind="audioViewerProps"
           :src="file.url"
           :title="filename"
           :cover="file?.cover"
@@ -325,14 +273,12 @@ onMounted(() => {
       </slot>
       <slot
         v-else-if="
-          supportedImageMimeTypes.includes(file.mimeType) &&
-          enableImage &&
-          viewerAvailable.image
+          supportedImageMimeTypes.includes(file.mimeType) && enableImage
         "
         name="image-viewer"
       >
         <image-viewer
-          :options="options?.image"
+          v-bind="imageViewerProps"
           :src="{
             url: file.url,
             filename: filename,
@@ -343,14 +289,12 @@ onMounted(() => {
       </slot>
       <slot
         v-else-if="
-          supportedVideoMimeTypes.includes(file.mimeType) &&
-          enableVideo &&
-          viewerAvailable.video
+          supportedVideoMimeTypes.includes(file.mimeType) && enableVideo
         "
         name="video-viewer"
       >
         <video-viewer
-          :options="options?.video"
+          v-bind="videoViewerProps"
           :src="{
             url: file.url,
             mimeType: file.mimeType,
@@ -361,15 +305,11 @@ onMounted(() => {
         />
       </slot>
       <slot
-        v-else-if="
-          supportedModelTypes.includes(file.mimeType) &&
-          enableModel &&
-          viewerAvailable.model
-        "
+        v-else-if="supportedModelTypes.includes(file.mimeType) && enableModel"
         name="model-viewer"
       >
         <model-viewer
-          :options="options?.model"
+          v-bind="modelViewerProps"
           :src="file.url"
           :mime-type="file.mimeType"
           :on-error="handleViewerError"
@@ -383,7 +323,7 @@ onMounted(() => {
         name="office-viewer"
       >
         <office-viewer
-          v-bind="options?.office"
+          v-bind="officeViewerProps"
           :src="{
             url: file.url,
             mimeType: file.mimeType,
@@ -396,69 +336,53 @@ onMounted(() => {
       </slot>
       <slot
         v-else-if="
-          isTargetMimeType(markdownMimType, file.mimeType) &&
-          enableMarkdown &&
-          viewerAvailable.markdown
+          isTargetMimeType(markdownMimType, file.mimeType) && enableMarkdown
         "
         name="markdown-viewer"
       >
         <markdown-viewer
-          :options="options?.markdown"
+          v-bind="markdownViewerProps"
           :src="{
             url: file.url,
             fileEncoding: fileEncoding,
           }"
-          :fetcher="markdownFetcher"
+          :content-loader="markdownContentLoader"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="
-          isTargetMimeType(dxfMimeType, file.mimeType) &&
-          enableDxf &&
-          viewerAvailable.dxf
-        "
+        v-else-if="isTargetMimeType(dxfMimeType, file.mimeType) && enableDxf"
         name="dxf-viewer"
       >
         <dxf-viewer
-          v-bind="options?.dxf"
+          v-bind="dxfViewerProps"
           :src="file.url"
-          :file-encoding="fileEncoding"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="
-          pdfMimeType === file.mimeType && enablePdf && viewerAvailable.pdf
-        "
+        v-else-if="pdfMimeType === file.mimeType && enablePdf"
         name="pdf-viewer"
       >
         <pdf-viewer
-          v-bind="options?.pdf"
-          :src="{
-            url: file.url,
-            filename: filename,
-          }"
+          v-bind="pdfViewerProps"
+          :src="file.url"
           @ready="handleViewerReady"
         />
       </slot>
       <slot
-        v-else-if="
-          isTargetMimeType(jsonMimeType, file.mimeType) &&
-          enableJson &&
-          viewerAvailable.json
-        "
+        v-else-if="isTargetMimeType(jsonMimeType, file.mimeType) && enableJson"
         name="json-viewer"
       >
         <json-viewer
-          :options="options?.json"
+          v-bind="jsonViewerProps"
           :src="{
             url: file.url,
             fileEncoding: fileEncoding,
           }"
-          :fetcher="jsonFetcher"
+          :content-loader="jsonContentLoader"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />
@@ -472,7 +396,7 @@ onMounted(() => {
             url: file.url,
             fileEncoding: fileEncoding,
           }"
-          :fetcher="textFetcher"
+          :content-loader="textContentLoader"
           :on-error="handleViewerError"
           @ready="handleViewerReady"
         />

@@ -1,39 +1,33 @@
 <script lang="ts" setup>
-import { mavonEditor } from "mavon-editor";
-import "mavon-editor/dist/css/index.css";
-import { onMounted, ref, watch } from "vue";
+import { MdPreview, MdCatalog } from "md-editor-v3";
+import "md-editor-v3/lib/preview.css";
+import { computed, onMounted, ref, watch } from "vue";
 import {
   getFileEncodingFromUrl,
   getResult,
   getSrcFromUrl,
 } from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
-import "@/assets/css/pangju.css";
+import "@/assets/css/file-viewer.css";
+import type { MarkdownPreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: UrlWithFileEncoding | string;
-    options?: Record<string, unknown>;
-    fetcher?: (url: string, encoding?: string) => string | Promise<string>;
-    onError?: (error: Error) => void;
-  }>(),
+  defineProps<
+    MarkdownPreviewOptions & {
+      src: UrlWithFileEncoding | string;
+      contentLoader?: (
+        url: string,
+        encoding?: string,
+      ) => string | Promise<string>;
+      onError?: (error: Error) => void;
+    }
+  >(),
   {
-    options: () => ({
-      subfield: false,
-      defaultOpen: "preview",
-      scrollStyle: true,
-      toolbars: {
-        fullscreen: true,
-        readmodel: true,
-        htmlcode: true,
-        help: true,
-        navigation: true,
-        subfield: true,
-        preview: true,
-      },
-    }),
-    onProgress: undefined,
-    fetcher: undefined,
+    id: "markdown-viewer",
+    viewerOptions: undefined,
+    showCatalog: true,
+    catalogWidth: 300,
+    contentLoader: undefined,
     onError: undefined,
   },
 );
@@ -42,11 +36,21 @@ defineEmits<{
   (e: "ready"): void;
 }>();
 
+const mdPreviewProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id, modelValue, editorId, ...options } = props.viewerOptions ?? {};
+  return options;
+});
+
 const content = ref<string>();
 
 const getContent = async (src: UrlWithFileEncoding | string) => {
-  if (props.fetcher) {
-    getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
+  if (props.contentLoader) {
+    getResult(
+      props.contentLoader(getSrcFromUrl(src), getFileEncodingFromUrl(src)),
+    )
       .then((res) => {
         content.value = res;
       })
@@ -85,13 +89,32 @@ watch(
 </script>
 
 <template>
-  <div class="pangju-wh-100">
-    <mavon-editor
-      v-bind="options"
-      :value="content"
-      :editable="false"
-      class="pangju-h-100"
-      @change="$emit('ready')"
-    />
-  </div>
+  <n-layout :has-sider="showCatalog" class="pangju-wh-100">
+    <n-layout-sider v-if="showCatalog" :width="catalogWidth" bordered>
+      <div class="pangju-wh-100">
+        <div class="catalog-panel-title">图 层</div>
+        <n-scrollbar style="max-height: calc(100% - 18px - 16px - 16px)">
+          <md-catalog :editor-id="id" />
+        </n-scrollbar>
+      </div>
+    </n-layout-sider>
+    <n-layout-content>
+      <md-preview
+        v-bind="mdPreviewProps"
+        :id="id"
+        class="pangju-wh-100"
+        :model-value="content"
+      ></md-preview>
+    </n-layout-content>
+  </n-layout>
 </template>
+
+<style lang="less" scoped>
+.catalog-panel-title {
+  padding: 16px;
+  font-size: 16px;
+  color: #757575;
+  font-weight: bold;
+  line-height: 18px;
+}
+</style>

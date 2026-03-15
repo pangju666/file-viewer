@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { MusicNoteRound } from "@vicons/material";
-import type { AudioViewerProps } from "@/types/viewer.ts";
-import "@/assets/css/pangju.css";
+import type { AudioPreviewOptions } from "@/types/options.ts";
+import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(
   defineProps<
-    AudioViewerProps & {
+    AudioPreviewOptions & {
       src: string;
       cover?: string;
       title?: string;

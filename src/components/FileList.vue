@@ -3,8 +3,8 @@ import { computed, onMounted, watch, ref } from "vue";
 import { downloadFile, formatFileSize, getResult } from "@/utils/utils.ts";
 import type { FileItem } from "@/types/file.ts";
 import { SearchRound } from "@vicons/material";
-import type { FileListProps } from "@/types/viewer.ts";
-import "@/assets/css/pangju.css";
+import type { FileListProps } from "@/types/options.ts";
+import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(defineProps<FileListProps>(), {
   title: "文件列表",

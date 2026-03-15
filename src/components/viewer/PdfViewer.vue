@@ -1,35 +1,34 @@
 <script setup lang="ts">
-import VuePdfApp from "vue3-pdf-app";
-import "vue3-pdf-app/dist/icons/main.css";
-import "@/assets/css/pangju.css";
-import type { PdfViewerProps } from "@/types/viewer.ts";
-import type { UrlWithFilename } from "@/types/file.ts";
+import { computed } from "vue";
+import "@/assets/css/file-viewer.css";
+import type { PdfPreviewOptions } from "@/types/options.ts";
 
-withDefaults(
+const props = withDefaults(
   defineProps<
-    PdfViewerProps & {
-      src: UrlWithFilename;
+    PdfPreviewOptions & {
+      src: string;
     }
   >(),
-  {},
+  {
+    pdfjsViewerUrl: "https://mozilla.github.io/pdf.js/web/viewer.html",
+  },
 );
 
 defineEmits<{
   (e: "ready"): void;
 }>();
+
+const pdfjsPath = computed(
+  () => `${props.pdfjsViewerUrl}?file=${encodeURIComponent(props.src)}`,
+);
 </script>
 
 <template>
-  <vue-pdf-app
-    class="pangju-wh-100"
-    :pdf="src.url"
-    :file-name="src.filename"
-    :title="showTitle"
-    :theme="theme"
-    :page-scale="pageScale"
-    :page-number="pageNumber"
-    :config="config"
-    :id-config="config"
-    @pages-rendered="$emit('ready')"
-  ></vue-pdf-app>
+  <iframe
+    :src="pdfjsPath"
+    width="100%"
+    height="100%"
+    class="pangju-no-border"
+    @load="$emit('ready')"
+  />
 </template>

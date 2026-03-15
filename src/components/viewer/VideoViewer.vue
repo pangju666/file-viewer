@@ -4,25 +4,27 @@ import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import zhCN from "video.js/dist/lang/zh-CN.json";
 import type { UrlWithMimeType } from "@/types/file.ts";
-import "@/assets/css/pangju.css";
+import "@/assets/css/file-viewer.css";
+import type { VideoPreviewOptions } from "@/types/options.ts";
 
 videojs.addLanguage("zh-CN", zhCN);
 
 const props = withDefaults(
-  defineProps<{
-    src: UrlWithMimeType | string;
-    poster?: string;
-    options?: Record<string, unknown>;
-    onError?: (error: MediaError) => void;
-    onProgress?: (player: unknown) => void;
-  }>(),
+  defineProps<
+    VideoPreviewOptions & {
+      src: UrlWithMimeType | string;
+      cover?: string;
+      onError?: (error: MediaError) => void;
+      onProgress?: (player: unknown) => void;
+    }
+  >(),
   {
-    options: () => ({
+    viewerOptions: () => ({
       language: "zh-CN",
       autoplay: false,
       controls: true,
     }),
-    poster: undefined,
+    cover: undefined,
     onError: undefined,
     onProgress: undefined,
   },
@@ -63,10 +65,7 @@ onMounted(() => {
   }
 
   videoPlayer = videojs(videoPlayRef.value, {
-    ...props.options,
-    language: props.options?.language ?? "zh-CN",
-    autoplay: props.options?.autoplay ?? false,
-    controls: props.options?.controls ?? true,
+    ...props.viewerOptions,
     sources: props.src ? [normalizeSource(props.src)] : [],
   });
 
@@ -109,7 +108,7 @@ onUnmounted(() => {
     <video
       ref="videoPlayRef"
       class="video-js pangju-wh-100"
-      :poster="poster"
+      :poster="cover"
     ></video>
   </div>
 </template>

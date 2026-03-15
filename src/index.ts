@@ -34,6 +34,18 @@ export {
 };
 
 const install = (app: App): void => {
+  app.component("AudioViewer", AudioViewer);
+  app.component("DxfViewer", DxfViewer);
+  app.component("ErrorViewer", ErrorViewer);
+  app.component("ImageViewer", ImageViewer);
+  app.component("JsonViewer", JsonViewer);
+  app.component("MarkdownViewer", MarkdownViewer);
+  app.component("ModelViewer", ModelViewer);
+  app.component("OfficeViewer", OfficeViewer);
+  app.component("PdfViewer", PdfViewer);
+  app.component("TextViewer", TextViewer);
+  app.component("UnknownViewer", UnknownViewer);
+  app.component("VideoViewer", VideoViewer);
   app.component("FileList", FileList);
   app.component("FilePreview", FilePreview);
   app.component("FileViewer", FileViewer);
@@ -51,14 +63,21 @@ export type {
 } from "./types/file";
 
 export type {
+  ImageViewerOptions,
+  JsonViewerOptions,
+  MarkdownViewerOptions,
+  AudioPreviewOptions,
+  DxfPreviewOptions,
+  ImagePreviewOptions,
+  JsonPreviewOptions,
+  MarkdownPreviewOptions,
+  ModelPreviewOptions,
+  OfficePreviewOptions,
+  PdfPreviewOptions,
+  VideoPreviewOptions,
   FileListProps,
   FilePreviewProps,
-  AudioViewerProps,
-  DxfViewerProps,
-  PdfViewerProps,
-  ViewerError,
-  OfficeViewerProps,
-} from "./types/viewer";
+} from "./types/options.ts";
 
 export {
   supportedOfficeMimeTypes,

@@ -2,12 +2,12 @@
 import { computed, nextTick, onMounted, watch } from "vue";
 import { useScriptTag } from "@vueuse/core";
 import type { OnlyOfficeUrl } from "@/types/file.ts";
-import type { OfficeViewerProps } from "@/types/viewer.ts";
-import "@/assets/css/pangju.css";
+import "@/assets/css/file-viewer.css";
+import type { OfficePreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
   defineProps<
-    OfficeViewerProps & {
+    OfficePreviewOptions & {
       src: OnlyOfficeUrl | string;
       onError?: (
         error:

@@ -1,32 +1,33 @@
 <script lang="ts" setup>
-import { watch, ref, onMounted } from "vue";
-import VueJsonViewer from "vue-json-viewer";
-import "vue-json-viewer/style.css";
+import { watch, ref, onMounted, computed } from "vue";
+import { JsonViewer as VueJsonViewer } from "vue3-json-viewer";
+import "vue3-json-viewer/dist/vue3-json-viewer.css";
 import {
   getFileEncodingFromUrl,
   getResult,
   getSrcFromUrl,
 } from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
+import type { JsonPreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: UrlWithFileEncoding | string;
-    options?: Record<string, unknown>;
-    fetcher?: (
-      url: string,
-      fileEncoding?: string,
-    ) => Record<string, unknown> | Promise<Record<string, unknown>>;
-    onError?: (error: Error) => void;
-  }>(),
+  defineProps<
+    JsonPreviewOptions & {
+      src: UrlWithFileEncoding | string;
+      contentLoader?: (
+        url: string,
+        fileEncoding?: string,
+      ) => Record<string, unknown> | Promise<Record<string, unknown>>;
+      onError?: (error: Error) => void;
+    }
+  >(),
   {
-    options: () => ({
+    viewerOptions: () => ({
       copyable: true,
-      expandDepth: 10,
       expanded: true,
-      showArrayIndex: true,
+      expandDepth: 10,
     }),
-    fetcher: undefined,
+    contentLoader: undefined,
     onError: undefined,
   },
 );
@@ -35,11 +36,21 @@ const emits = defineEmits<{
   (e: "ready"): void;
 }>();
 
+const vueJsonViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { value, ...options } = props.viewerOptions ?? {};
+  return options;
+});
+
 const content = ref<Record<string, unknown>>({});
 
 const getContent = async (src: UrlWithFileEncoding | string) => {
-  if (props.fetcher) {
-    getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
+  if (props.contentLoader) {
+    getResult(
+      props.contentLoader(getSrcFromUrl(src), getFileEncodingFromUrl(src)),
+    )
       .then((res) => {
         content.value = res;
         emits("ready");
@@ -81,13 +92,14 @@ watch(
 
 <template>
   <div class="json-viewer">
-    <vue-json-viewer v-bind="options" :value="content" />
+    <vue-json-viewer v-bind="vueJsonViewerProps" :value="content" />
   </div>
 </template>
 
 <style scoped lang="less">
 .json-viewer {
   overflow: auto;
+  width: 100%;
   height: 100%;
 }
 </style>

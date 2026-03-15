@@ -1,5 +1,5 @@
 import { mimeTypeWithCharsetRegex, utf8Charset } from "@/utils/constants";
-import type { UrlWithFileEncoding } from "@/types/file.ts";
+import type { UrlWithFileEncoding, UrlWithMimeType } from "@/types/file.ts";
 
 export async function getResult<T>(
   value: T | Promise<T> | (() => T) | (() => Promise<T>),
@@ -64,7 +64,9 @@ export function isTargetMimeType(
   );
 }
 
-export function getSrcFromUrl(src: UrlWithFileEncoding | string) {
+export function getSrcFromUrl(
+  src: UrlWithFileEncoding | UrlWithMimeType | string,
+) {
   if (typeof src === "string") {
     return src;
   }

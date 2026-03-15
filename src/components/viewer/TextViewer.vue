@@ -10,12 +10,15 @@ import type { UrlWithFileEncoding } from "@/types/file.ts";
 const props = withDefaults(
   defineProps<{
     src: UrlWithFileEncoding | string;
-    fetcher?: (url: string, encoding?: string) => string | Promise<string>;
+    contentLoader?: (
+      url: string,
+      encoding?: string,
+    ) => string | Promise<string>;
     onError?: (error: Error) => void;
   }>(),
   {
     onProgress: undefined,
-    fetcher: undefined,
+    contentLoader: undefined,
     onError: undefined,
   },
 );
@@ -27,8 +30,10 @@ const emits = defineEmits<{
 const content = ref<string>();
 
 const getContent = async (src: UrlWithFileEncoding | string) => {
-  if (props.fetcher) {
-    getResult(props.fetcher(getSrcFromUrl(src), getFileEncodingFromUrl(src)))
+  if (props.contentLoader) {
+    getResult(
+      props.contentLoader(getSrcFromUrl(src), getFileEncodingFromUrl(src)),
+    )
       .then((res) => {
         content.value = res;
         emits("ready");

@@ -15,7 +15,7 @@ export default {
       customSyntax: "postcss-html",
     },
   ],
-  ignoreFiles: ["dist/**", "node_modules/**"],
+  ignoreFiles: ["dist/**", "node_modules/**", "**/viewer.css"],
   rules: {
     "no-descending-specificity": null,
     "selector-pseudo-element-no-unknown": [

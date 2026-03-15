@@ -1,12 +1,13 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { computed, ref } from "vue";
 import FileList from "@/components/FileList.vue";
 import type { FileItem } from "@/types/file.ts";
 import FilePreview from "@/components/FilePreview.vue";
-import type { FileListProps, FilePreviewProps } from "@/types/viewer.ts";
+import type { FileListProps, FilePreviewProps } from "@/types/options.ts";
 import { getResult } from "@/utils/utils.ts";
 import { type AnyWebReadableStream, fileTypeFromStream } from "file-type";
-import "@/assets/css/pangju.css";
+import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(
   defineProps<
@@ -55,6 +56,61 @@ const emits = defineEmits<{
   (e: "click-file", file: FileItem): void;
 }>();
 
+const previewProps = computed(() => {
+  const {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    file,
+    minSplitSize,
+    maxSplitSize,
+    defaultSplitSize,
+    autoDetectType,
+    detectFileType,
+    title,
+    staticFileList,
+    showSkeleton,
+    showBackTop,
+    showSearch,
+    showTitle,
+    showTypeFilter,
+    coverHeight,
+    coverObjectFit,
+    fileTypes,
+    fileMatcher,
+    load,
+    noMore,
+    ...options
+  } = props;
+  return options;
+});
+
+const listProps = computed(() => {
+  const {
+    minSplitSize,
+    maxSplitSize,
+    defaultSplitSize,
+    autoDetectType,
+    detectFileType,
+    enableImage,
+    enableVideo,
+    enableAudio,
+    enablePdf,
+    enableOffice,
+    enableModel,
+    enableMarkdown,
+    enableText,
+    enableJson,
+    enableDxf,
+    customViewerMatcher,
+    jsonContentLoader,
+    textContentLoader,
+    markdownContentLoader,
+    viewerOptions,
+    ...options
+  } = props;
+  return options;
+});
+
 const currentFile = ref<FileItem>();
 
 const changeFile = async (file: FileItem) => {
@@ -93,21 +149,7 @@ defineExpose({
         <slot name="viewer" :current-file="currentFile">
           <file-preview
             v-if="currentFile"
-            :enable-image="enableImage"
-            :enable-video="enableVideo"
-            :enable-audio="enableAudio"
-            :enable-pdf="enablePdf"
-            :enable-office="enableOffice"
-            :enable-model="enableModel"
-            :enable-markdown="enableMarkdown"
-            :enable-text="enableText"
-            :enable-json="enableJson"
-            :enable-dxf="enableDxf"
-            :custom-viewer-matcher="customViewerMatcher"
-            :json-fetcher="jsonFetcher"
-            :text-fetcher="textFetcher"
-            :markdown-fetcher="markdownFetcher"
-            :options="options"
+            v-bind="previewProps"
             :file="currentFile"
             @loading-start="$emit('loading-start')"
             @loading-end="$emit('loading-end')"
@@ -117,22 +159,7 @@ defineExpose({
       </template>
       <template #2>
         <slot name="file-list">
-          <file-list
-            :title="title"
-            :static-file-list="staticFileList"
-            :show-skeleton="showSkeleton"
-            :show-back-top="showBackTop"
-            :show-search="showSearch"
-            :show-title="showTitle"
-            :show-type-filter="showTypeFilter"
-            :cover-height="coverHeight"
-            :cover-object-fit="coverObjectFit"
-            :file-types="fileTypes"
-            :file-matcher="fileMatcher"
-            :load="load"
-            :no-more="noMore"
-            @click-file="changeFile"
-          />
+          <file-list v-bind="listProps" @click-file="changeFile" />
         </slot>
       </template>
     </n-split>

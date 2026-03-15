@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import "@/assets/css/pangju.css";
+import "@/assets/css/file-viewer.css";
 
 withDefaults(
   defineProps<{

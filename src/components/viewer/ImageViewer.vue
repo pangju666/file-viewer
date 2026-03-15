@@ -3,21 +3,19 @@ import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
 import { nextTick, onUnmounted, ref, watch } from "vue";
 import type { UrlWithFilename } from "@/types/file.ts";
-import "@/assets/css/pangju.css";
+import "@/assets/css/file-viewer.css";
+import type { ImagePreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: UrlWithFilename | string;
-    options?: Viewer.Options;
-    onError?: (e: Event) => void;
-  }>(),
+  defineProps<
+    ImagePreviewOptions & {
+      src: UrlWithFilename | string;
+      onError?: (e: Event) => void;
+    }
+  >(),
   {
-    filename: undefined,
-    options: () => ({
-      inline: true,
-      button: false,
-      loop: false,
-      navbar: false,
+    onError: undefined,
+    viewerOptions: () => ({
       toolbar: {
         flipHorizontal: true,
         flipVertical: true,
@@ -32,7 +30,6 @@ const props = withDefaults(
         zoomOut: true,
       },
     }),
-    onError: undefined,
   },
 );
 
@@ -47,16 +44,18 @@ const imageUrl = ref<string>();
 
 const initViewer = (filename?: string) => {
   viewer = new Viewer(imageRef.value as HTMLImageElement, {
-    ...props.options,
-    title:
-      props.options?.title ??
-      ((image: HTMLImageElement, imageData: unknown) =>
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        `(${filename ?? ""}${filename ? " " : ""}${imageData.naturalWidth} × ${imageData.naturalHeight})`),
+    ...(props.viewerOptions ?? {}),
+    inline: true,
+    navbar: false,
+    button: false,
+    title: (image: HTMLImageElement, imageData: unknown) =>
+      props.viewerOptions?.title ??
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      `(${filename ?? ""}${filename ? " " : ""}${imageData.naturalWidth} × ${imageData.naturalHeight})`,
     viewed: (event: CustomEvent) => {
-      if (props?.options?.viewed) {
-        props.options.viewed(event);
+      if (props.viewerOptions?.viewed) {
+        props.viewerOptions.viewed(event);
       }
       emits("ready");
     },

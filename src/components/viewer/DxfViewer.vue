@@ -3,12 +3,13 @@ import { ref, onMounted, watch, onUnmounted } from "vue";
 import { DxfViewer, type LayerInfo } from "dxf-viewer";
 import * as THREE from "three";
 import { utf8Charset } from "@/utils/constants.ts";
-import type { DxfViewerProps } from "@/types/viewer.ts";
-import "@/assets/css/pangju.css";
+import type { DxfPreviewOptions } from "@/types/options.ts";
+import "@/assets/css/file-viewer.css";
+import RobotoLightItalicFont from "@/assets/fonts/Roboto-LightItalic.ttf";
 
 const props = withDefaults(
   defineProps<
-    DxfViewerProps & {
+    DxfPreviewOptions & {
       src: string;
       onProgress?:
         | ((
@@ -21,11 +22,11 @@ const props = withDefaults(
     }
   >(),
   {
-    showLayerSider: true,
-    layerSiderWidth: 300,
-    fileEncoding: utf8Charset,
-    fonts: () => [],
-    options: () => ({
+    showLayerList: true,
+    layerListWidth: 300,
+    fonts: () => [RobotoLightItalicFont],
+    viewerOptions: () => ({
+      fileEncoding: utf8Charset,
       clearColor: new THREE.Color("#fff"),
       autoResize: true,
       colorCorrection: true,
@@ -48,17 +49,11 @@ const dxfContainerRef = ref<HTMLElement>();
 const showAll = ref(true);
 const layers = ref<LayerInfo[]>([]);
 
-const initViewer = (fileEncoding?: string) => {
-  dxfViewer = new DxfViewer(dxfContainerRef.value as HTMLElement, {
-    ...props?.options,
-    clearColor: props?.options?.clearColor ?? new THREE.Color("#fff"),
-    autoResize: props?.options?.autoResize ?? true,
-    colorCorrection: props?.options?.colorCorrection ?? true,
-    fileEncoding: fileEncoding ?? utf8Charset,
-    sceneOptions: {
-      wireframeMesh: props?.options?.sceneOptions?.wireframeMesh ?? true,
-    },
-  });
+const initViewer = () => {
+  dxfViewer = new DxfViewer(
+    dxfContainerRef.value as HTMLElement,
+    props.viewerOptions,
+  );
   dxfViewer.Subscribe("loaded", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
@@ -109,7 +104,7 @@ const loadDxf = (dxfUrl: string) => {
 };
 
 onMounted(() => {
-  initViewer(props.fileEncoding);
+  initViewer();
 
   if (props.src) {
     loadDxf(props.src);
@@ -135,11 +130,11 @@ watch(
 </script>
 
 <template>
-  <n-layout has-sider class="pangju-wh-100">
-    <n-layout-sider v-if="showLayerSider" :width="layerSiderWidth" bordered>
-      <div>
-        <n-scrollbar>
-          <div class="layer-list-title">图 层</div>
+  <n-layout :has-sider="showLayerList" class="pangju-wh-100">
+    <n-layout-sider v-if="showLayerList" :width="layerListWidth" bordered>
+      <div class="pangju-wh-100">
+        <div class="layer-list-title">图 层</div>
+        <n-scrollbar style="max-height: calc(100% - 18px - 16px - 16px)">
           <div v-show="layers.length > 0" class="layer-list-item">
             <n-checkbox
               v-model:checked="showAll"
@@ -178,6 +173,7 @@ watch(
   font-size: 16px;
   color: #757575;
   font-weight: bold;
+  line-height: 18px;
 }
 
 .layer-list-item {
