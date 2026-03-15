@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch, onUnmounted } from "vue";
 import { DxfViewer, type LayerInfo } from "dxf-viewer";
-import * as THREE from "three";
+import { Color } from "three";
 import { utf8Charset } from "@/utils/constants.ts";
 import type { DxfPreviewOptions } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
@@ -27,7 +27,7 @@ const props = withDefaults(
     fonts: () => [RobotoLightItalicFont],
     viewerOptions: () => ({
       fileEncoding: utf8Charset,
-      clearColor: new THREE.Color("#fff"),
+      clearColor: new Color("#fff"),
       autoResize: true,
       colorCorrection: true,
       sceneOptions: {
