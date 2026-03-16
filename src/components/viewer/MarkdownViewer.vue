@@ -89,7 +89,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <n-layout :has-sider="showCatalog" class="pangju-wh-100">
+  <n-layout :has-sider="showCatalog">
     <n-layout-sider v-if="showCatalog" :width="catalogWidth" bordered>
       <div class="pangju-wh-100">
         <div class="catalog-panel-title">图 层</div>
@@ -104,6 +104,7 @@ onMounted(() => {
         :id="id"
         class="pangju-wh-100"
         :model-value="content"
+        @remount="$emit('ready')"
       ></md-preview>
     </n-layout-content>
   </n-layout>

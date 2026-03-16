@@ -22,6 +22,9 @@ const props = withDefaults(
         defaultSplitSize?: number | string;
         autoDetectType?: boolean;
         detectFileType?: (file: FileItem) => string | Promise<string>;
+        showLoading?: boolean;
+        loadingText?: string;
+        loadingSize?: "small" | "medium" | "large" | number;
       }
   >(),
   {
@@ -30,6 +33,9 @@ const props = withDefaults(
     defaultSplitSize: 0.8,
     autoDetectType: true,
     detectFileType: undefined,
+    showLoading: true,
+    loadingText: "正在加载中...",
+    loadingSize: "large",
     /* File Preview 属性 */
     enableImage: undefined,
     enableVideo: undefined,
@@ -135,11 +141,10 @@ const listProps = computed(() => {
   return options;
 });
 
+const loading = ref(false);
 const currentFile = ref<FileItem>();
 
 const changeFile = async (file: FileItem) => {
-  emits("click-file", file);
-
   currentFile.value = undefined;
   if (file && file?.file && !file?.mimeType && props.autoDetectType) {
     if (props.detectFileType) {
@@ -158,6 +163,8 @@ const changeFile = async (file: FileItem) => {
     }
   }
   currentFile.value = file;
+
+  emits("click-file", file);
 };
 
 defineExpose({
@@ -166,7 +173,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="pangju-wh-100">
+  <div>
     <n-split
       direction="horizontal"
       class="pangju-h-100"
@@ -175,11 +182,32 @@ defineExpose({
       :min="minSplitSize"
     >
       <template #1>
-        <slot name="viewer" :current-file="currentFile">
+        <n-spin
+          v-if="showLoading"
+          :size="loadingSize"
+          class="pangju-wh-100"
+          content-class="pangju-wh-100"
+          :show="loading"
+        >
+          <template #description>
+            {{ loadingText }}
+          </template>
           <file-preview
             v-if="currentFile"
             v-bind="previewProps"
             :file="currentFile"
+            class="pangju-wh-100"
+            @loading-start="loading = true"
+            @loading-end="loading = false"
+            @loading-error="loading = false"
+          />
+        </n-spin>
+        <slot v-else name="viewer" :current-file="currentFile">
+          <file-preview
+            v-if="currentFile"
+            v-bind="previewProps"
+            :file="currentFile"
+            class="pangju-wh-100"
             @loading-start="$emit('loading-start')"
             @loading-end="$emit('loading-end')"
             @loading-error="$emit('loading-error')"

@@ -49,18 +49,15 @@ const microsoftViewUrl = computed(() => {
 const onlyOfficeConfig = computed(() => ({
   documentType: getDocumentType(props.src?.mimeType),
   token: props.token,
-  type: "desktop",
-  height: "100%",
-  width: "100%",
+  type: "embedded",
   document: {
     fileType: getFileType(props.src?.mimeType),
-    key: props.src?.key ?? "only-office-editor",
-    title: props.title,
+    key: props.src?.key,
+    title: props.title ?? "",
     url: props.src?.url,
     permissions: {
-      copy: true,
-      download: true,
-      print: true,
+      chat: false,
+      comment: false,
     },
   },
   editorConfig: {
@@ -68,8 +65,9 @@ const onlyOfficeConfig = computed(() => ({
       anonymous: {
         request: false,
       },
-      chat: false,
-      comments: false,
+      close: {
+        visible: false,
+      },
     },
     lang: props.language ?? "zh",
     mode: "view",
@@ -77,6 +75,7 @@ const onlyOfficeConfig = computed(() => ({
   events: {
     onDocumentReady: () => emits("ready"),
     onError: (e: unknown) => {
+      console.log(e);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       if (e?.data) {
@@ -121,7 +120,7 @@ const getFileType = (mimeType: string) => {
 
 onMounted(() => {
   if (props.mode === "onlyOffice" && !props.onlyOfficeServerUrl) {
-    emits("error", "未配置onlyOffice的api.js文件地址");
+    emits("error", "未配置OnlyOffice服务器地址");
   }
 });
 </script>
@@ -130,7 +129,6 @@ onMounted(() => {
   <document-editor
     v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
     :id="id"
-    class="pangju-wh-100"
     :document-server-url="onlyOfficeServerUrl"
     :config="onlyOfficeConfig"
   />
@@ -139,7 +137,7 @@ onMounted(() => {
     :src="microsoftViewUrl"
     width="100%"
     height="100%"
-    class="pangju-no-border"
+    style="border: none"
     @load="$emit('ready')"
   />
 </template>

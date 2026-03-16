@@ -32,5 +32,5 @@ export type UrlWithFileEncoding = {
 };
 
 export type OnlyOfficeUrl = UrlWithMimeType & {
-  key?: string;
+  key: string;
 };

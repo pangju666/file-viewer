@@ -99,7 +99,5 @@ onMounted(() => {
 <style scoped lang="less">
 .json-viewer {
   overflow: auto;
-  width: 100%;
-  height: 100%;
 }
 </style>

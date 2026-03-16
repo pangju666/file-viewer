@@ -1,25 +1,34 @@
 <script lang="ts" setup>
 import "@/assets/css/file-viewer.css";
-import { type } from "node:os";
+import { watch } from "vue";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     title?: string;
     filename?: string;
-    url?: string;
+    src: string;
     mimeType?: string;
   }>(),
   {
     title: "不支持预览该文件",
     filename: undefined,
-    url: undefined,
     mimeType: undefined,
   },
+);
+
+const emits = defineEmits<{
+  (e: "ready"): void;
+}>();
+
+watch(
+  () => props.src,
+  () => emits("ready"),
+  { immediate: true },
 );
 </script>
 
 <template>
-  <div class="pangju-flex-center pangju-wh-100">
+  <div class="pangju-flex-center">
     <n-result status="403" size="huge" :title="title" class="unknown-viewer">
       <div class="descriptions">
         <div v-show="filename" class="description-item">
@@ -28,15 +37,15 @@ withDefaults(
             {{ filename }}
           </n-ellipsis>
         </div>
-        <div v-show="type" class="description-item">
+        <div v-show="mimeType" class="description-item">
           <div class="title">类&nbsp;&nbsp;&nbsp;型：</div>
-          <n-ellipsis>{{ type }}</n-ellipsis>
+          <n-ellipsis>{{ mimeType }}</n-ellipsis>
         </div>
-        <div v-show="url" class="description-item">
+        <div v-show="src" class="description-item">
           <div class="title">链&nbsp;&nbsp;&nbsp;接：</div>
           <n-ellipsis>
-            <a :href="url" target="_blank">
-              {{ url }}
+            <a :href="src" target="_blank">
+              {{ src }}
             </a>
           </n-ellipsis>
         </div>

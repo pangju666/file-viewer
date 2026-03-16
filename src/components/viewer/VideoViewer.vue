@@ -100,7 +100,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="pangju-wh-100">
+  <div>
     <video
       ref="videoPlayRef"
       class="video-js pangju-wh-100"

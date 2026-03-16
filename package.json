@@ -40,6 +40,7 @@
     "file-type": "^21.3.0",
     "md-editor-v3": "^6.4.0",
     "naive-ui": "^2.43.2",
+    "nanoid": "^5.1.7",
     "three": "^0.161.0",
     "video.js": "^8.23.7",
     "viewerjs": "^1.11.7",

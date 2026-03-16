@@ -389,7 +389,7 @@ onMounted(() => {
               <n-skeleton> </n-skeleton>
             </template>
             <template #action>
-              <div class="pangju-flex">
+              <div style="display: flex">
                 <n-skeleton width="30px" class="pangju-mr-10"> </n-skeleton>
                 <n-skeleton width="30px"> </n-skeleton>
               </div>

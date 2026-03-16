@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, onUnmounted, watch, ref } from "vue";
+import { onMounted, onUnmounted, watch, ref, computed } from "vue";
 import { DxfViewer, type LayerInfo } from "dxf-viewer";
 import { Color } from "three";
 import { utf8Charset } from "@/utils/constants.ts";
@@ -14,6 +14,7 @@ const props = withDefaults(
     }
   >(),
   {
+    showProgressBar: true,
     showLayerList: true,
     layerListWidth: 300,
     fonts: () => [RobotoLightItalicFont],
@@ -43,8 +44,7 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    showAll.value = true;
-    layers.value = [];
+    reset();
 
     if (newVal) {
       loadDxf(newVal);
@@ -87,15 +87,43 @@ const loadDxf = (dxfUrl: string) => {
         processedSize: number,
         totalSize: number,
       ) => {
+        const percentage = (processedSize / totalSize) * 100;
+        currentProgress.value = Math.min(Math.floor(percentage), 100);
+        if (currentProgress.value === 100) {
+          status.value = undefined;
+        }
+        switch (phase) {
+          case "font":
+            status.value = "正在加载字体...";
+            break;
+          case "prepare":
+            status.value = "准备渲染数据...";
+            break;
+          case "fetch":
+            status.value = "正在加载文件...";
+            break;
+          case "parse":
+            status.value = "正在解析文件...";
+            break;
+        }
+
         emits("progress", phase, processedSize, totalSize);
       },
       //workerFactory: DxfViewer.SetupWorker()
     })
     .catch((error) => {
       if (error) {
+        reset();
         emits("error", error);
       }
     });
+};
+
+const reset = () => {
+  status.value = undefined;
+  currentProgress.value = 0;
+  showAll.value = true;
+  layers.value = [];
 };
 
 const handleToggleLayer = (layer: LayerInfo, newState: boolean) => {
@@ -118,6 +146,11 @@ const handleToggleAll = (newState: boolean) => {
   }
 };
 
+const currentProgress = ref<number>(0);
+const status = ref<string>();
+
+const loading = computed(() => currentProgress.value === 100);
+
 onMounted(() => {
   initViewer();
 
@@ -133,41 +166,55 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <n-layout :has-sider="showLayerList" class="pangju-wh-100">
-    <n-layout-sider v-if="showLayerList" :width="layerListWidth" bordered>
-      <div class="pangju-wh-100">
-        <div class="layer-list-title">图 层</div>
-        <n-scrollbar style="max-height: calc(100% - 18px - 16px - 16px)">
-          <div v-show="layers.length > 0" class="layer-list-item">
-            <n-checkbox
-              v-model:checked="showAll"
-              label="全部图层"
-              @update:checked="handleToggleAll"
-            />
-          </div>
-          <n-flex vertical align="start">
-            <div
-              v-for="layer in layers"
-              :key="layer.name"
-              class="layer-list-item"
-            >
+  <div>
+    <div v-if="showProgressBar" style="position: relative">
+      <n-progress
+        v-show="loading"
+        class="progress-bar"
+        type="line"
+        :percentage="currentProgress"
+        indicator-placement="inside"
+        processing
+      >
+        {{ status }}
+      </n-progress>
+    </div>
+    <n-layout :has-sider="showLayerList" class="pangju-wh-100">
+      <n-layout-sider v-if="showLayerList" :width="layerListWidth" bordered>
+        <div class="pangju-wh-100">
+          <div class="layer-list-title">图 层</div>
+          <n-scrollbar style="max-height: calc(100% - 18px - 16px - 16px)">
+            <div v-show="layers.length > 0" class="layer-list-item">
               <n-checkbox
-                v-model:checked="layer.isVisible"
-                @update:checked="handleToggleLayer(layer, $event)"
-              >
-                <n-ellipsis>
-                  {{ layer.displayName }}
-                </n-ellipsis>
-              </n-checkbox>
+                v-model:checked="showAll"
+                label="全部图层"
+                @update:checked="handleToggleAll"
+              />
             </div>
-          </n-flex>
-        </n-scrollbar>
-      </div>
-    </n-layout-sider>
-    <n-layout-content>
-      <div ref="dxfContainerRef" class="pangju-wh-100"></div>
-    </n-layout-content>
-  </n-layout>
+            <n-flex vertical align="start">
+              <div
+                v-for="layer in layers"
+                :key="layer.name"
+                class="layer-list-item"
+              >
+                <n-checkbox
+                  v-model:checked="layer.isVisible"
+                  @update:checked="handleToggleLayer(layer, $event)"
+                >
+                  <n-ellipsis>
+                    {{ layer.displayName }}
+                  </n-ellipsis>
+                </n-checkbox>
+              </div>
+            </n-flex>
+          </n-scrollbar>
+        </div>
+      </n-layout-sider>
+      <n-layout-content>
+        <div ref="dxfContainerRef" class="pangju-wh-100"></div>
+      </n-layout-content>
+    </n-layout>
+  </div>
 </template>
 
 <style lang="less" scoped>
@@ -182,5 +229,10 @@ onUnmounted(() => {
 .layer-list-item {
   display: flex;
   padding: 2px 16px;
+}
+
+.progress-bar {
+  position: absolute;
+  z-index: 9999;
 }
 </style>

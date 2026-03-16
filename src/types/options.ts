@@ -26,6 +26,7 @@ export type AudioPreviewOptions = {
 };
 
 export type DxfPreviewOptions = {
+  showProgressBar?: boolean;
   showLayerList?: boolean;
   layerListWidth?: number | string;
   fonts?: string[];
@@ -62,7 +63,12 @@ export type OfficePreviewOptions = {
 };
 
 export type PdfPreviewOptions = {
-  pdfjsViewerUrl?: string;
+  id?: string;
+  token?: string;
+  mode?: "pdfjs" | "onlyOffice";
+  language?: string;
+  pdfjsViewBaseUrl?: string;
+  onlyOfficeServerUrl?: string;
 };
 
 export type VideoPreviewOptions = {

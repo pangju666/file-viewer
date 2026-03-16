@@ -92,7 +92,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="pangju-wh-100">
+  <div>
     <img v-show="false" ref="imageRef" :src="src" @error="$emit('error')" />
   </div>
 </template>

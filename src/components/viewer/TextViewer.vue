@@ -82,8 +82,6 @@ onMounted(() => {
 .plain-text-viewer {
   overflow: hidden auto;
   padding: 15px;
-  width: 100%;
-  height: 100%;
   font-size: 16px;
   color: #000;
 

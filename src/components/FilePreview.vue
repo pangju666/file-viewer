@@ -28,6 +28,7 @@ import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
 import type { FilePreviewProps } from "@/types/options.ts";
+import { nanoid } from "nanoid";
 import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(
@@ -95,10 +96,6 @@ watch(
 
 const fileUrl = ref<string>();
 
-const hasError = ref(false);
-const errorReason = ref<string | undefined>(undefined);
-const viewerError = ref<unknown>();
-
 const fileMimeType = computed(
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -109,6 +106,10 @@ const fileEncoding = computed(() => {
   const match = props.file?.mimeType.match(mimeTypeWithCharsetRegex);
   return match ? (match[1] ?? utf8Charset) : utf8Charset;
 });
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const filename = computed(() => props.file?.name ?? props.file?.file?.name);
 
 const fileUrlWithMimeType = computed(() => ({
   url: fileUrl.value,
@@ -124,12 +125,8 @@ const onlyOfficeUrl = computed(() => ({
   url: fileUrl.value,
   mimeType: fileMimeType.value,
   title: filename.value,
-  key: props.file?.id,
+  key: props.file?.id ?? nanoid(),
 }));
-
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const filename = computed(() => props.file?.name ?? props.file?.file?.name);
 
 const audioViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -204,22 +201,20 @@ const videoViewerProps = computed(() => {
   return options;
 });
 
-const matchCustomViewer = (file: FileItem) => {
-  if (props.customViewerMatcher) {
-    if (typeof props.customViewerMatcher == "function") {
-      return props.customViewerMatcher(file);
-    } else if (
-      Array.isArray(props.customViewerMatcher) &&
-      props.customViewerMatcher.length > 0
-    ) {
-      return props.customViewerMatcher.includes(file.mimeType);
-    }
-  }
-  return false;
-};
+const hasError = ref(false);
+const errorReason = ref<string | undefined>(undefined);
+const viewerError = ref<unknown>();
 
 const handleViewerReady = () => {
   emits("loading-end");
+};
+
+const reportError = (reason?: string, error?: unknown) => {
+  emits("loading-error");
+
+  errorReason.value = reason;
+  viewerError.value = error;
+  hasError.value = true;
 };
 
 const handleViewerError = (e?: unknown) => {
@@ -278,19 +273,28 @@ const handleVideoViewerError = (error: MediaError) => {
   }
 };
 
-const handleOfficeViewerError = (
-  errorDescription: string,
-  errorCode?: number,
-) => {
+const handleOfficeViewerError = (errorDescription: string) => {
   handleViewerError();
-  if (!errorCode) {
-    errorReason.value = errorDescription;
-  }
+  errorReason.value = errorDescription;
 };
 
 const handlePdfViewerError = (message: string) => {
   handleViewerError();
   errorReason.value = message;
+};
+
+const matchCustomViewer = (file: FileItem) => {
+  if (props.customViewerMatcher) {
+    if (typeof props.customViewerMatcher == "function") {
+      return props.customViewerMatcher(file);
+    } else if (
+      Array.isArray(props.customViewerMatcher) &&
+      props.customViewerMatcher.length > 0
+    ) {
+      return props.customViewerMatcher.includes(file.mimeType);
+    }
+  }
+  return false;
 };
 
 onMounted(() => {
@@ -308,28 +312,61 @@ onMounted(() => {
     fileUrl.value = URL.createObjectURL(props.file);
   }
 });
+
+defineExpose({
+  reportError,
+});
 </script>
 
 <template>
-  <div class="pangju-wh-100">
-    <slot v-if="hasError || !fileUrl || !fileMimeType" name="error-viewer">
+  <div>
+    <slot
+      v-if="hasError || !fileUrl || !fileMimeType"
+      name="error-viewer"
+      :reason="errorReason"
+      :file-name="filename"
+      :file-url="fileUrl"
+      :mime-type="fileMimeType"
+      :file-encoding="fileEncoding"
+      :error="viewerError"
+    >
       <error-viewer
+        class="pangju-wh-100"
         :reason="errorReason"
         :filename="filename"
         :url="fileUrl"
         :mime-type="fileMimeType"
       />
     </slot>
-    <slot v-else>
-      <slot v-if="matchCustomViewer(file)" name="custom-viewer"> </slot>
+    <slot
+      v-else
+      :file-name="filename"
+      :file-url="fileUrl"
+      :mime-type="fileMimeType"
+      :file-encoding="fileEncoding"
+    >
+      <slot
+        v-if="matchCustomViewer(file)"
+        name="custom-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
+      >
+      </slot>
       <slot
         v-else-if="
           supportedAudioMimeTypes.includes(fileMimeType) && enableAudio
         "
         name="audio-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <audio-viewer
           v-bind="audioViewerProps"
+          class="pangju-wh-100"
           :src="fileUrl"
           :title="filename"
           :cover="file?.cover"
@@ -342,9 +379,14 @@ onMounted(() => {
           supportedImageMimeTypes.includes(fileMimeType) && enableImage
         "
         name="image-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <image-viewer
           v-bind="imageViewerProps"
+          class="pangju-wh-100"
           :src="fileUrl"
           :title="filename"
           @ready="handleViewerReady"
@@ -356,11 +398,16 @@ onMounted(() => {
           supportedVideoMimeTypes.includes(fileMimeType) && enableVideo
         "
         name="video-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <video-viewer
           v-bind="videoViewerProps"
           :src="fileUrlWithMimeType"
           :poster="file.cover"
+          class="pangju-wh-100"
           @ready="handleViewerReady"
           @error="handleVideoViewerError"
         />
@@ -368,10 +415,15 @@ onMounted(() => {
       <slot
         v-else-if="supportedModelTypes.includes(fileMimeType) && enableModel"
         name="model-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <model-viewer
           v-bind="modelViewerProps"
           :src="fileUrlWithMimeType"
+          class="pangju-wh-100"
           @ready="handleViewerReady"
           @error="handleViewerError"
         />
@@ -381,11 +433,16 @@ onMounted(() => {
           supportedOfficeMimeTypes.includes(fileMimeType) && enableOffice
         "
         name="office-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <office-viewer
           v-bind="officeViewerProps"
           :src="onlyOfficeUrl"
           :title="filename"
+          class="pangju-wh-100"
           @ready="handleViewerReady"
           @error="handleOfficeViewerError"
         />
@@ -395,10 +452,15 @@ onMounted(() => {
           isTargetMimeType(markdownMimType, fileMimeType) && enableMarkdown
         "
         name="markdown-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <markdown-viewer
           v-bind="markdownViewerProps"
           :src="fileUrlWithFileEncoding"
+          class="pangju-wh-100"
           :content-loader="markdownContentLoader"
           @ready="handleViewerReady"
           @error="handleViewerError"
@@ -407,10 +469,15 @@ onMounted(() => {
       <slot
         v-else-if="isTargetMimeType(dxfMimeType, fileMimeType) && enableDxf"
         name="dxf-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <dxf-viewer
           v-bind="dxfViewerProps"
           :src="fileUrl"
+          class="pangju-wh-100"
           @ready="handleViewerReady"
           @error="handleViewerError"
         />
@@ -418,10 +485,16 @@ onMounted(() => {
       <slot
         v-else-if="pdfMimeType === fileMimeType && enablePdf"
         name="pdf-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <pdf-viewer
           v-bind="pdfViewerProps"
-          :src="fileUrl"
+          :src="onlyOfficeUrl"
+          :title="filename"
+          class="pangju-wh-100"
           @ready="handleViewerReady"
           @error="handlePdfViewerError"
         />
@@ -429,9 +502,14 @@ onMounted(() => {
       <slot
         v-else-if="isTargetMimeType(jsonMimeType, fileMimeType) && enableJson"
         name="json-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <json-viewer
           v-bind="jsonViewerProps"
+          class="pangju-wh-100"
           :src="fileUrlWithFileEncoding"
           :content-loader="jsonContentLoader"
           @ready="handleViewerReady"
@@ -441,21 +519,42 @@ onMounted(() => {
       <slot
         v-else-if="isTextMimeType(fileMimeType) && enableText"
         name="text-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
       >
         <text-viewer
+          class="pangju-wh-100"
           :src="fileUrlWithFileEncoding"
           :content-loader="textContentLoader"
           @ready="handleViewerReady"
           @error="handleViewerError"
         />
       </slot>
-      <slot v-else name="unknown-viewer">
+      <slot
+        v-else
+        name="unknown-viewer"
+        :file-name="filename"
+        :file-url="fileUrl"
+        :mime-type="fileMimeType"
+        :file-encoding="fileEncoding"
+      >
         <unknown-viewer
+          class="pangju-wh-100"
           :filename="filename"
-          :url="fileUrl"
+          :src="fileUrl"
           :mime-type="fileMimeType"
+          @ready="handleViewerReady"
         />
       </slot>
     </slot>
   </div>
 </template>
+
+<style lang="less" scoped>
+.loading-container {
+  position: relative;
+  z-index: 9999;
+}
+</style>

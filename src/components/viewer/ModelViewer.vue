@@ -70,7 +70,16 @@ const handleError = (error: ErrorEvent) => {
 const handleProgressChange = () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  emits("progress", viewerRef.value?.loadingProgress);
+  switch (typeof viewerRef.value?.loadingProgress) {
+    /* case "boolean":
+      progressDiv.innerHTML = viewer.loadingProgress ? "Loading..." : "";
+      break;*/
+    case "number":
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      emits("progress", viewerRef.value.loadingProgress);
+      break;
+  }
 };
 
 const handleModelChange = (e: Event) => {
@@ -97,7 +106,6 @@ onMounted(() => {
 <template>
   <babylon-viewer
     ref="viewerRef"
-    class="pangju-wh-100"
     v-bind="babylonViewerProps"
     :source="source"
     :extension="extension"

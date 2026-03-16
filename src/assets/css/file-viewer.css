@@ -33,10 +33,6 @@
     text-align: center
 }
 
-.pangju-flex {
-    display: flex
-}
-
 .pangju-flex-center {
     display: flex;
     justify-content: center;
@@ -47,10 +43,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center
-}
-
-.pangju-no-border {
-    border: none;
 }
 
 .pangju-cursor-pointer:hover {

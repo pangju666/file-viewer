@@ -1,41 +1,110 @@
-<script setup lang="ts">
-import { computed, onMounted } from "vue";
+<script lang="ts" setup>
+import { computed, onMounted, watch } from "vue";
+import type { OnlyOfficeUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { PdfPreviewOptions } from "@/types/options.ts";
+import { DocumentEditor } from "@onlyoffice/document-editor-vue";
 
 const props = withDefaults(
   defineProps<
     PdfPreviewOptions & {
-      src: string;
+      src: OnlyOfficeUrl | string;
+      title?: string;
     }
   >(),
   {
-    pdfjsViewerUrl: "https://mozilla.github.io/pdf.js/web/viewer.html",
+    token: undefined,
+    title: undefined,
+    id: "only-office-editor",
+    language: "zh",
+    mode: "pdfjs",
+    onlyOfficeServerUrl: undefined,
+    pdfjsViewBaseUrl: "https://mozilla.github.io/pdf.js/web/viewer.html",
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
-  (e: "error", message: string): void;
+  (e: "error", errorDescription: string, errorCode?: number): void;
 }>();
 
-const pdfjsPath = computed(
-  () => `${props.pdfjsViewerUrl}?file=${encodeURIComponent(props.src)}`,
+watch(
+  () => props.src,
+  (newVal) => {
+    if (props.mode === "onlyOffice" && typeof newVal === "string") {
+      emits("error", "未定义文件链接或类型");
+    }
+  },
 );
 
+const pdfjsViewUrl = computed(() => {
+  if (typeof props.src === "string") {
+    return `${props.pdfjsViewBaseUrl}?file=${encodeURIComponent(props.src)}`;
+  } else {
+    return `${props.pdfjsViewBaseUrl}?file=${encodeURIComponent(props.src.url)}`;
+  }
+});
+
+const onlyOfficeConfig = computed(() => ({
+  documentType: "pdf",
+  token: props.token,
+  type: "embedded",
+  document: {
+    fileType: "pdf",
+    key: props.src?.key,
+    title: props.title ?? "",
+    url: props.src?.url,
+    permissions: {
+      chat: false,
+      comment: false,
+    },
+  },
+  editorConfig: {
+    customization: {
+      anonymous: {
+        request: false,
+      },
+      close: {
+        visible: false,
+      },
+    },
+    lang: props.language ?? "zh",
+    mode: "view",
+  },
+  events: {
+    onDocumentReady: () => emits("ready"),
+    onError: (e: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (e?.data) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        emits("error", e.data?.errorDescription, e.data?.errorCode);
+      }
+    },
+  },
+}));
+
 onMounted(() => {
-  if (!props.pdfjsViewerUrl) {
-    emits("error", "未配置pdfjs-viewer地址");
+  if (props.mode === "onlyOffice" && !props.onlyOfficeServerUrl) {
+    emits("error", "未配置OnlyOffice服务器地址");
   }
 });
 </script>
 
 <template>
+  <document-editor
+    v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
+    :id="id"
+    :document-server-url="onlyOfficeServerUrl"
+    :config="onlyOfficeConfig"
+  />
   <iframe
-    :src="pdfjsPath"
+    v-else
+    :src="pdfjsViewUrl"
     width="100%"
     height="100%"
-    class="pangju-no-border"
+    style="border: none"
     @load="$emit('ready')"
   />
 </template>

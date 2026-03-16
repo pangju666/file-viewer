@@ -5,20 +5,20 @@ withDefaults(
   defineProps<{
     reason?: string;
     filename?: string;
-    url?: string;
+    src?: string;
     mimeType?: string;
   }>(),
   {
     reason: "文件预览失败",
     filename: undefined,
-    url: undefined,
+    src: undefined,
     mimeType: undefined,
   },
 );
 </script>
 
 <template>
-  <div class="pangju-flex-center pangju-wh-100">
+  <div class="pangju-flex-center">
     <n-result status="500" size="huge" :title="reason" class="error-viewer">
       <div class="descriptions">
         <div v-show="filename" class="description-item">
@@ -31,11 +31,11 @@ withDefaults(
           <div class="title">类&nbsp;&nbsp;&nbsp;型：</div>
           <n-ellipsis>{{ mimeType }}</n-ellipsis>
         </div>
-        <div v-show="url" class="description-item">
+        <div v-show="src" class="description-item">
           <div class="title">链&nbsp;&nbsp;&nbsp;接：</div>
           <n-ellipsis class="pangju-w-100">
-            <a :href="url" target="_blank">
-              {{ url }}
+            <a :href="src" target="_blank">
+              {{ src }}
             </a>
           </n-ellipsis>
         </div>
