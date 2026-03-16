@@ -92,7 +92,7 @@ onMounted(() => {
   <n-layout :has-sider="showCatalog">
     <n-layout-sider v-if="showCatalog" :width="catalogWidth" bordered>
       <div class="pangju-wh-100">
-        <div class="catalog-panel-title">图 层</div>
+        <div class="catalog-panel-title">目 录</div>
         <n-scrollbar style="max-height: calc(100% - 18px - 16px - 16px)">
           <md-catalog :editor-id="id" />
         </n-scrollbar>

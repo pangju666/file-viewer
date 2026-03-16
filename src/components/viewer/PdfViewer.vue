@@ -104,7 +104,7 @@ onMounted(() => {
     :src="pdfjsViewUrl"
     width="100%"
     height="100%"
-    style="border: none"
+    style="padding: 0; margin: 0; border: none"
     @load="$emit('ready')"
   />
 </template>

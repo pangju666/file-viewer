@@ -6,10 +6,11 @@ const props = withDefaults(
   defineProps<{
     title?: string;
     filename?: string;
-    src: string;
+    src?: string;
     mimeType?: string;
   }>(),
   {
+    src: undefined,
     title: "不支持预览该文件",
     filename: undefined,
     mimeType: undefined,

@@ -3,7 +3,7 @@
   "private": false,
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite --host --mode app",
+    "dev": "vite --host --mode app --force",
     "build:lib": "vite build --mode lib",
     "build:app": "vite build --mode app",
     "preview": "vite preview --outDir dist/app",

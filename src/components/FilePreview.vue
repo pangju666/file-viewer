@@ -99,17 +99,22 @@ const fileUrl = ref<string>();
 const fileMimeType = computed(
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  () => props.file?.mimeType ?? props.file?.file?.type,
+  () => props.file?.mimeType ?? props.file?.file?.type ?? undefined,
 );
 
 const fileEncoding = computed(() => {
-  const match = props.file?.mimeType.match(mimeTypeWithCharsetRegex);
+  if (!props.file?.mimeType) {
+    return utf8Charset;
+  }
+  const match = props.file.mimeType.match(mimeTypeWithCharsetRegex);
   return match ? (match[1] ?? utf8Charset) : utf8Charset;
 });
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const filename = computed(() => props.file?.name ?? props.file?.file?.name);
+const filename = computed(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  () => props.file?.name ?? props.file?.file?.name ?? undefined,
+);
 
 const fileUrlWithMimeType = computed(() => ({
   url: fileUrl.value,
@@ -324,7 +329,7 @@ defineExpose({
       v-if="hasError || !fileUrl || !fileMimeType"
       name="error-viewer"
       :reason="errorReason"
-      :file-name="filename"
+      :filename="filename"
       :file-url="fileUrl"
       :mime-type="fileMimeType"
       :file-encoding="fileEncoding"
@@ -334,13 +339,13 @@ defineExpose({
         class="pangju-wh-100"
         :reason="errorReason"
         :filename="filename"
-        :url="fileUrl"
+        :src="fileUrl"
         :mime-type="fileMimeType"
       />
     </slot>
     <slot
       v-else
-      :file-name="filename"
+      :filename="filename"
       :file-url="fileUrl"
       :mime-type="fileMimeType"
       :file-encoding="fileEncoding"
@@ -348,7 +353,7 @@ defineExpose({
       <slot
         v-if="matchCustomViewer(file)"
         name="custom-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -359,7 +364,7 @@ defineExpose({
           supportedAudioMimeTypes.includes(fileMimeType) && enableAudio
         "
         name="audio-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -379,7 +384,7 @@ defineExpose({
           supportedImageMimeTypes.includes(fileMimeType) && enableImage
         "
         name="image-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -398,7 +403,7 @@ defineExpose({
           supportedVideoMimeTypes.includes(fileMimeType) && enableVideo
         "
         name="video-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -415,7 +420,7 @@ defineExpose({
       <slot
         v-else-if="supportedModelTypes.includes(fileMimeType) && enableModel"
         name="model-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -433,7 +438,7 @@ defineExpose({
           supportedOfficeMimeTypes.includes(fileMimeType) && enableOffice
         "
         name="office-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -452,7 +457,7 @@ defineExpose({
           isTargetMimeType(markdownMimType, fileMimeType) && enableMarkdown
         "
         name="markdown-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -469,7 +474,7 @@ defineExpose({
       <slot
         v-else-if="isTargetMimeType(dxfMimeType, fileMimeType) && enableDxf"
         name="dxf-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -485,7 +490,7 @@ defineExpose({
       <slot
         v-else-if="pdfMimeType === fileMimeType && enablePdf"
         name="pdf-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -502,7 +507,7 @@ defineExpose({
       <slot
         v-else-if="isTargetMimeType(jsonMimeType, fileMimeType) && enableJson"
         name="json-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -519,7 +524,7 @@ defineExpose({
       <slot
         v-else-if="isTextMimeType(fileMimeType) && enableText"
         name="text-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
@@ -535,7 +540,7 @@ defineExpose({
       <slot
         v-else
         name="unknown-viewer"
-        :file-name="filename"
+        :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
