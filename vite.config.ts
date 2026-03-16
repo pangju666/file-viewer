@@ -47,6 +47,7 @@ export default defineConfig(({ mode }) => {
         ...baseConfig.plugins,
         dts({
           include: ["src"],
+          exclude: ["src/App.vue", "src/main.ts", "src/views/**"],
           outDir: "dist/lib/types",
         }),
       ],
