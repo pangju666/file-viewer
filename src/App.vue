@@ -3,7 +3,7 @@
     :date-locale="dateZhCN"
     :locale="zhCN"
     :theme-overrides="{ common: { fontWeightStrong: '600' } }"
-    class="full-size"
+    class="pangju-wh-100"
   >
     <router-view />
   </n-config-provider>

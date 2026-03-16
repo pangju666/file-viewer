@@ -278,9 +278,9 @@ const handleOfficeViewerError = (errorDescription: string) => {
   errorReason.value = errorDescription;
 };
 
-const handlePdfViewerError = (message: string) => {
+const handlePdfViewerError = (errorDescription: string) => {
   handleViewerError();
-  errorReason.value = message;
+  errorReason.value = errorDescription;
 };
 
 const matchCustomViewer = (file: FileItem) => {
