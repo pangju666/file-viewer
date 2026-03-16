@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { MdPreview, MdCatalog } from "md-editor-v3";
 import "md-editor-v3/lib/preview.css";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, ref, onMounted, watch } from "vue";
 import {
   getFileEncodingFromUrl,
   getResult,
@@ -19,7 +19,6 @@ const props = withDefaults(
         url: string,
         encoding?: string,
       ) => string | Promise<string>;
-      onError?: (error: Error) => void;
     }
   >(),
   {
@@ -28,13 +27,24 @@ const props = withDefaults(
     showCatalog: true,
     catalogWidth: 300,
     contentLoader: undefined,
-    onError: undefined,
   },
 );
 
-defineEmits<{
+const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: Error): void;
 }>();
+
+watch(
+  () => props.src,
+  (newVal: UrlWithFileEncoding | string) => {
+    content.value = "";
+    if (newVal) {
+      getContent(newVal);
+    }
+  },
+  { deep: true },
+);
 
 const mdPreviewProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -48,15 +58,15 @@ const content = ref<string>();
 
 const getContent = async (src: UrlWithFileEncoding | string) => {
   if (props.contentLoader) {
-    getResult(
+    getResult<string>(
       props.contentLoader(getSrcFromUrl(src), getFileEncodingFromUrl(src)),
     )
       .then((res) => {
         content.value = res;
       })
       .catch((error: Error) => {
-        if (props.onError && error) {
-          props.onError(error);
+        if (error) {
+          emits("error", error);
         }
       });
   } else {
@@ -64,8 +74,8 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
       const response = await fetch(getSrcFromUrl(src));
       content.value = await response.text();
     } catch (error) {
-      if (props.onError && error) {
-        props.onError(error as Error);
+      if (error) {
+        emits("error", error as Error);
       }
     }
   }
@@ -76,16 +86,6 @@ onMounted(() => {
     getContent(props.src);
   }
 });
-
-watch(
-  () => props.src,
-  (newVal: UrlWithFileEncoding | string) => {
-    content.value = "";
-    if (newVal) {
-      getContent(newVal);
-    }
-  },
-);
 </script>
 
 <template>

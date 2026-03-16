@@ -1,29 +1,29 @@
-export type FileDescription = {
-  name: string;
-  value: string;
-};
+export type FileSource = string | File | Blob;
+
+export type FileType =
+  | {
+      label: string;
+      value: string;
+    }
+  | string;
+
+export type FileTag = { value: string; type?: string } | string;
 
 export type FileItem = {
+  file: FileSource;
+  mimeType: string;
   id?: string;
   name?: string;
-  type?: string;
-  filename?: string;
-  mimeType: string;
-  url: string;
+  type?: FileType;
   cover?: string;
-  createTime?: number | Date;
   size?: number;
-  descriptions?: FileDescription[];
+  tags?: string[] | FileTag[];
+  descriptions?: { name: string; value: string }[];
 };
 
 export type UrlWithMimeType = {
   url: string;
   mimeType: string;
-};
-
-export type UrlWithFilename = {
-  url: string;
-  filename?: string;
 };
 
 export type UrlWithFileEncoding = {
@@ -32,6 +32,5 @@ export type UrlWithFileEncoding = {
 };
 
 export type OnlyOfficeUrl = UrlWithMimeType & {
-  title?: string;
   key?: string;
 };

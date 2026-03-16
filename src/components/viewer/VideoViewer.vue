@@ -13,9 +13,7 @@ const props = withDefaults(
   defineProps<
     VideoPreviewOptions & {
       src: UrlWithMimeType | string;
-      cover?: string;
-      onError?: (error: MediaError) => void;
-      onProgress?: (player: unknown) => void;
+      poster?: string;
     }
   >(),
   {
@@ -24,14 +22,14 @@ const props = withDefaults(
       autoplay: false,
       controls: true,
     }),
-    cover: undefined,
-    onError: undefined,
-    onProgress: undefined,
+    poster: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "progress"): void;
+  (e: "error", error: MediaError): void;
 }>();
 
 let videoPlayer: unknown = null;
@@ -81,17 +79,15 @@ onMounted(() => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const error = videoPlayer?.error();
-    if (props.onError && error) {
-      props.onError(error);
+    if (error) {
+      emits("error", error);
     }
   });
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   videoPlayer?.on("progress", () => {
-    if (props.onProgress) {
-      props.onProgress(videoPlayer);
-    }
+    emits("progress");
   });
 });
 
@@ -108,7 +104,7 @@ onUnmounted(() => {
     <video
       ref="videoPlayRef"
       class="video-js pangju-wh-100"
-      :poster="cover"
+      :poster="poster"
     ></video>
   </div>
 </template>

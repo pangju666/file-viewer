@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, watch, onUnmounted } from "vue";
+import { onMounted, onUnmounted, watch, ref } from "vue";
 import { DxfViewer, type LayerInfo } from "dxf-viewer";
 import { Color } from "three";
 import { utf8Charset } from "@/utils/constants.ts";
@@ -11,14 +11,6 @@ const props = withDefaults(
   defineProps<
     DxfPreviewOptions & {
       src: string;
-      onProgress?:
-        | ((
-            phase: "font" | "fetch" | "parse" | "prepare",
-            processedSize: number,
-            totalSize: number,
-          ) => void)
-        | null;
-      onError?: (error: Error) => void;
     }
   >(),
   {
@@ -34,14 +26,31 @@ const props = withDefaults(
         wireframeMesh: true,
       },
     }),
-    onProgress: null,
-    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: Error): void;
+  (
+    e: "progress",
+    phase: "font" | "fetch" | "parse" | "prepare",
+    processedSize: number,
+    totalSize: number,
+  ): void;
 }>();
+
+watch(
+  () => props.src,
+  (newVal) => {
+    showAll.value = true;
+    layers.value = [];
+
+    if (newVal) {
+      loadDxf(newVal);
+    }
+  },
+);
 
 let dxfViewer: DxfViewer | null = null;
 
@@ -68,6 +77,27 @@ const initViewer = () => {
   });
 };
 
+const loadDxf = (dxfUrl: string) => {
+  dxfViewer
+    ?.Load({
+      url: dxfUrl,
+      fonts: props.fonts,
+      progressCbk: (
+        phase: "font" | "fetch" | "parse" | "prepare",
+        processedSize: number,
+        totalSize: number,
+      ) => {
+        emits("progress", phase, processedSize, totalSize);
+      },
+      //workerFactory: DxfViewer.SetupWorker()
+    })
+    .catch((error) => {
+      if (error) {
+        emits("error", error);
+      }
+    });
+};
+
 const handleToggleLayer = (layer: LayerInfo, newState: boolean) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -88,21 +118,6 @@ const handleToggleAll = (newState: boolean) => {
   }
 };
 
-const loadDxf = (dxfUrl: string) => {
-  dxfViewer
-    ?.Load({
-      url: dxfUrl,
-      fonts: props.fonts,
-      progressCbk: props.onProgress,
-      //workerFactory: DxfViewer.SetupWorker()
-    })
-    .catch((error) => {
-      if (props.onError && error) {
-        props.onError(error);
-      }
-    });
-};
-
 onMounted(() => {
   initViewer();
 
@@ -115,18 +130,6 @@ onUnmounted(() => {
   dxfViewer?.Destroy();
   dxfViewer = null;
 });
-
-watch(
-  () => props.src,
-  (newVal) => {
-    showAll.value = true;
-    layers.value = [];
-
-    if (newVal) {
-      loadDxf(newVal);
-    }
-  },
-);
 </script>
 
 <template>

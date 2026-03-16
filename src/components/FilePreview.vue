@@ -8,13 +8,13 @@ import {
   markdownMimType,
   supportedOfficeMimeTypes,
   pdfMimeType,
-  textMimeTypePrefix,
   supportedAudioMimeTypes,
   jsonMimeType,
   utf8Charset,
+  mimeTypeWithCharsetRegex,
 } from "@/utils/constants.ts";
 import type { FileItem } from "@/types/file.ts";
-import { getMimeTypeCharset, isTargetMimeType } from "@/utils/utils.ts";
+import { isTargetMimeType, isTextMimeType } from "@/utils/utils.ts";
 import DxfViewer from "@/components/viewer/DxfViewer.vue";
 import JsonViewer from "@/components/viewer/JsonViewer.vue";
 import ImageViewer from "@/components/viewer/ImageViewer.vue";
@@ -27,7 +27,7 @@ import MarkdownViewer from "@/components/viewer/MarkdownViewer.vue";
 import TextViewer from "@/components/viewer/TextViewer.vue";
 import ErrorViewer from "@/components/viewer/ErrorViewer.vue";
 import OfficeViewer from "@/components/viewer/OfficeViewer.vue";
-import type { FilePreviewProps, ViewerError } from "@/types/options.ts";
+import type { FilePreviewProps } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(
@@ -61,12 +61,81 @@ const emits = defineEmits<{
   (e: "loading-error"): void;
 }>();
 
+watch(
+  () => props.file,
+  (newVal, oldVal) => {
+    fileUrl.value = undefined;
+
+    if (newVal?.file && newVal?.mimeType) {
+      hasError.value = false;
+      errorReason.value = undefined;
+      viewerError.value = undefined;
+      emits("loading-start");
+    } else {
+      hasError.value = true;
+      errorReason.value = "未定义文件链接或类型";
+      return;
+    }
+
+    if (oldVal?.file instanceof Blob && fileUrl.value) {
+      try {
+        URL.revokeObjectURL(fileUrl.value);
+      } catch (e) {
+        console.warn("Failed to revoke object URL:", e);
+      }
+    }
+
+    if (typeof newVal?.file === "string") {
+      fileUrl.value = newVal.file;
+    } else if (newVal instanceof Blob) {
+      fileUrl.value = URL.createObjectURL(newVal);
+    }
+  },
+);
+
+const fileUrl = ref<string>();
+
+const hasError = ref(false);
+const errorReason = ref<string | undefined>(undefined);
+const viewerError = ref<unknown>();
+
+const fileMimeType = computed(
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  () => props.file?.mimeType ?? props.file?.file?.type,
+);
+
+const fileEncoding = computed(() => {
+  const match = props.file?.mimeType.match(mimeTypeWithCharsetRegex);
+  return match ? (match[1] ?? utf8Charset) : utf8Charset;
+});
+
+const fileUrlWithMimeType = computed(() => ({
+  url: fileUrl.value,
+  mimeType: fileMimeType.value,
+}));
+
+const fileUrlWithFileEncoding = computed(() => ({
+  url: fileUrl.value,
+  fileEncoding: fileEncoding.value,
+}));
+
+const onlyOfficeUrl = computed(() => ({
+  url: fileUrl.value,
+  mimeType: fileMimeType.value,
+  title: filename.value,
+  key: props.file?.id,
+}));
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+const filename = computed(() => props.file?.name ?? props.file?.file?.name);
+
 const audioViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, cover, title, onError, ...options } =
-    props.viewerOptions?.audio ?? {};
+  const { src, cover, title, ...options } = props.viewerOptions?.audio ?? {};
   return options;
 });
 
@@ -74,8 +143,7 @@ const dxfViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, onProgress, onError, ...options } =
-    props.viewerOptions?.dxf ?? {};
+  const { src, ...options } = props.viewerOptions?.dxf ?? {};
   return options;
 });
 
@@ -83,7 +151,7 @@ const imageViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, onError, ...options } = props.viewerOptions?.audio ?? {};
+  const { src, title, ...options } = props.viewerOptions?.image ?? {};
   return options;
 });
 
@@ -91,8 +159,7 @@ const jsonViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, contentLoader, onError, ...options } =
-    props.viewerOptions?.audio ?? {};
+  const { src, contentLoader, ...options } = props.viewerOptions?.json ?? {};
   return options;
 });
 
@@ -100,8 +167,8 @@ const markdownViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, contentLoader, onError, ...options } =
-    props.viewerOptions?.audio ?? {};
+  const { src, contentLoader, ...options } =
+    props.viewerOptions?.markdown ?? {};
   return options;
 });
 
@@ -109,8 +176,7 @@ const modelViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, onProgress, onError, ...options } =
-    props.viewerOptions?.audio ?? {};
+  const { src, ...options } = props.viewerOptions?.model ?? {};
   return options;
 });
 
@@ -118,7 +184,7 @@ const officeViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, onError, ...options } = props.viewerOptions?.audio ?? {};
+  const { src, title, ...options } = props.viewerOptions?.office ?? {};
   return options;
 });
 
@@ -126,7 +192,7 @@ const pdfViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, ...options } = props.viewerOptions?.audio ?? {};
+  const { src, ...options } = props.viewerOptions?.pdf ?? {};
   return options;
 });
 
@@ -134,30 +200,8 @@ const videoViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, cover, onProgress, onError, ...options } =
-    props.viewerOptions?.audio ?? {};
+  const { src, poster, ...options } = props.viewerOptions?.audio ?? {};
   return options;
-});
-
-const hasError = ref(false);
-const errorReason = ref<string | undefined>(undefined);
-const error = ref<ViewerError>();
-
-watch(
-  () => props.file,
-  () => {
-    emits("loading-start");
-
-    hasError.value = false;
-    errorReason.value = undefined;
-    error.value = undefined;
-  },
-);
-
-const filename = computed(() => props.file.name ?? props.file.filename);
-
-const fileEncoding = computed(() => {
-  return getMimeTypeCharset(props.file.mimeType, utf8Charset);
 });
 
 const matchCustomViewer = (file: FileItem) => {
@@ -178,16 +222,16 @@ const handleViewerReady = () => {
   emits("loading-end");
 };
 
-const handleViewerError = (e: ViewerError) => {
+const handleViewerError = (e?: unknown) => {
   emits("loading-error");
 
-  errorReason.value = typeof e === "string" ? e : undefined;
-  error.value = e;
+  errorReason.value = undefined;
+  viewerError.value = e;
   hasError.value = true;
 };
 
 const handleAudioViewerError = (error: MediaError) => {
-  handleViewerError(error);
+  handleViewerError();
 
   switch (error?.code) {
     case MediaError.MEDIA_ERR_ABORTED:
@@ -211,7 +255,7 @@ const handleAudioViewerError = (error: MediaError) => {
 };
 
 const handleVideoViewerError = (error: MediaError) => {
-  handleViewerError(error);
+  handleViewerError();
 
   switch (error?.code) {
     case MediaError.MEDIA_ERR_ABORTED:
@@ -234,178 +278,182 @@ const handleVideoViewerError = (error: MediaError) => {
   }
 };
 
+const handleOfficeViewerError = (
+  errorDescription: string,
+  errorCode?: number,
+) => {
+  handleViewerError();
+  if (!errorCode) {
+    errorReason.value = errorDescription;
+  }
+};
+
+const handlePdfViewerError = (message: string) => {
+  handleViewerError();
+  errorReason.value = message;
+};
+
 onMounted(() => {
-  if (props.file?.url && props.file?.mimeType) {
+  if (props.file?.file && props.file?.mimeType) {
     emits("loading-start");
+  } else {
+    hasError.value = true;
+    errorReason.value = "未定义文件链接或类型";
     return;
   }
-  hasError.value = true;
-  errorReason.value = "未定义文件链接或类型";
+
+  if (typeof props.file?.file === "string") {
+    fileUrl.value = props.file.file;
+  } else if (props.file instanceof Blob) {
+    fileUrl.value = URL.createObjectURL(props.file);
+  }
 });
 </script>
 
 <template>
   <div class="pangju-wh-100">
-    <slot v-if="hasError" name="error-viewer" :error="error">
+    <slot v-if="hasError || !fileUrl || !fileMimeType" name="error-viewer">
       <error-viewer
         :reason="errorReason"
         :filename="filename"
-        :url="file.url"
-        :mime-type="file.mimeType"
+        :url="fileUrl"
+        :mime-type="fileMimeType"
       />
     </slot>
     <slot v-else>
       <slot v-if="matchCustomViewer(file)" name="custom-viewer"> </slot>
       <slot
         v-else-if="
-          supportedAudioMimeTypes.includes(file.mimeType) && enableAudio
+          supportedAudioMimeTypes.includes(fileMimeType) && enableAudio
         "
         name="audio-viewer"
       >
         <audio-viewer
           v-bind="audioViewerProps"
-          :src="file.url"
+          :src="fileUrl"
           :title="filename"
           :cover="file?.cover"
-          :on-error="handleAudioViewerError"
           @ready="handleViewerReady"
+          @error="handleAudioViewerError"
         />
       </slot>
       <slot
         v-else-if="
-          supportedImageMimeTypes.includes(file.mimeType) && enableImage
+          supportedImageMimeTypes.includes(fileMimeType) && enableImage
         "
         name="image-viewer"
       >
         <image-viewer
           v-bind="imageViewerProps"
-          :src="{
-            url: file.url,
-            filename: filename,
-          }"
-          :on-error="handleViewerError"
+          :src="fileUrl"
+          :title="filename"
           @ready="handleViewerReady"
+          @error="handleViewerError"
         />
       </slot>
       <slot
         v-else-if="
-          supportedVideoMimeTypes.includes(file.mimeType) && enableVideo
+          supportedVideoMimeTypes.includes(fileMimeType) && enableVideo
         "
         name="video-viewer"
       >
         <video-viewer
           v-bind="videoViewerProps"
-          :src="{
-            url: file.url,
-            mimeType: file.mimeType,
-          }"
+          :src="fileUrlWithMimeType"
           :poster="file.cover"
-          :on-error="handleVideoViewerError"
           @ready="handleViewerReady"
+          @error="handleVideoViewerError"
         />
       </slot>
       <slot
-        v-else-if="supportedModelTypes.includes(file.mimeType) && enableModel"
+        v-else-if="supportedModelTypes.includes(fileMimeType) && enableModel"
         name="model-viewer"
       >
         <model-viewer
           v-bind="modelViewerProps"
-          :src="file.url"
-          :mime-type="file.mimeType"
-          :on-error="handleViewerError"
+          :src="fileUrlWithMimeType"
           @ready="handleViewerReady"
+          @error="handleViewerError"
         />
       </slot>
       <slot
         v-else-if="
-          supportedOfficeMimeTypes.includes(file.mimeType) && enableOffice
+          supportedOfficeMimeTypes.includes(fileMimeType) && enableOffice
         "
         name="office-viewer"
       >
         <office-viewer
           v-bind="officeViewerProps"
-          :src="{
-            url: file.url,
-            mimeType: file.mimeType,
-            title: filename,
-            key: file.id,
-          }"
-          :on-error="handleViewerError"
+          :src="onlyOfficeUrl"
+          :title="filename"
           @ready="handleViewerReady"
+          @error="handleOfficeViewerError"
         />
       </slot>
       <slot
         v-else-if="
-          isTargetMimeType(markdownMimType, file.mimeType) && enableMarkdown
+          isTargetMimeType(markdownMimType, fileMimeType) && enableMarkdown
         "
         name="markdown-viewer"
       >
         <markdown-viewer
           v-bind="markdownViewerProps"
-          :src="{
-            url: file.url,
-            fileEncoding: fileEncoding,
-          }"
+          :src="fileUrlWithFileEncoding"
           :content-loader="markdownContentLoader"
-          :on-error="handleViewerError"
           @ready="handleViewerReady"
+          @error="handleViewerError"
         />
       </slot>
       <slot
-        v-else-if="isTargetMimeType(dxfMimeType, file.mimeType) && enableDxf"
+        v-else-if="isTargetMimeType(dxfMimeType, fileMimeType) && enableDxf"
         name="dxf-viewer"
       >
         <dxf-viewer
           v-bind="dxfViewerProps"
-          :src="file.url"
-          :on-error="handleViewerError"
+          :src="fileUrl"
           @ready="handleViewerReady"
+          @error="handleViewerError"
         />
       </slot>
       <slot
-        v-else-if="pdfMimeType === file.mimeType && enablePdf"
+        v-else-if="pdfMimeType === fileMimeType && enablePdf"
         name="pdf-viewer"
       >
         <pdf-viewer
           v-bind="pdfViewerProps"
-          :src="file.url"
+          :src="fileUrl"
           @ready="handleViewerReady"
+          @error="handlePdfViewerError"
         />
       </slot>
       <slot
-        v-else-if="isTargetMimeType(jsonMimeType, file.mimeType) && enableJson"
+        v-else-if="isTargetMimeType(jsonMimeType, fileMimeType) && enableJson"
         name="json-viewer"
       >
         <json-viewer
           v-bind="jsonViewerProps"
-          :src="{
-            url: file.url,
-            fileEncoding: fileEncoding,
-          }"
+          :src="fileUrlWithFileEncoding"
           :content-loader="jsonContentLoader"
-          :on-error="handleViewerError"
           @ready="handleViewerReady"
+          @error="handleViewerError"
         />
       </slot>
       <slot
-        v-else-if="file.mimeType.startsWith(textMimeTypePrefix) && enableText"
+        v-else-if="isTextMimeType(fileMimeType) && enableText"
         name="text-viewer"
       >
         <text-viewer
-          :src="{
-            url: file.url,
-            fileEncoding: fileEncoding,
-          }"
+          :src="fileUrlWithFileEncoding"
           :content-loader="textContentLoader"
-          :on-error="handleViewerError"
           @ready="handleViewerReady"
+          @error="handleViewerError"
         />
       </slot>
       <slot v-else name="unknown-viewer">
         <unknown-viewer
           :filename="filename"
-          :url="file.url"
-          :type="file.mimeType"
+          :url="fileUrl"
+          :mime-type="fileMimeType"
         />
       </slot>
     </slot>

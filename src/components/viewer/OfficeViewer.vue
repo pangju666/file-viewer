@@ -1,39 +1,42 @@
 <script lang="ts" setup>
-import { computed, nextTick, onMounted, watch } from "vue";
-import { useScriptTag } from "@vueuse/core";
+import { computed, onMounted, watch } from "vue";
 import type { OnlyOfficeUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { OfficePreviewOptions } from "@/types/options.ts";
+import { DocumentEditor } from "@onlyoffice/document-editor-vue";
 
 const props = withDefaults(
   defineProps<
     OfficePreviewOptions & {
       src: OnlyOfficeUrl | string;
-      onError?: (
-        error:
-          | {
-              errorCode: number;
-              errorDescription: string;
-            }
-          | string,
-      ) => void;
+      title?: string;
     }
   >(),
   {
+    token: undefined,
+    title: undefined,
+    id: "only-office-editor",
     language: "zh",
     mode: "microsoft",
-    onlyOfficeApiJsUrl: undefined,
+    onlyOfficeServerUrl: undefined,
     //microsoftViewBaseUrl: "https://view.officeapps.live.com/op/view.aspx",
     microsoftViewBaseUrl: "https://view.officeapps.live.com/op/embed.aspx",
-    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", errorDescription: string, errorCode?: number): void;
 }>();
 
-let editor: unknown | null = null;
+watch(
+  () => props.src,
+  (newVal) => {
+    if (props.mode === "onlyOffice" && typeof newVal === "string") {
+      emits("error", "未定义文件链接或类型");
+    }
+  },
+);
 
 const microsoftViewUrl = computed(() => {
   if (typeof props.src === "string") {
@@ -42,6 +45,48 @@ const microsoftViewUrl = computed(() => {
     return `${props.microsoftViewBaseUrl}?src=${encodeURIComponent(props.src?.url)}`;
   }
 });
+
+const onlyOfficeConfig = computed(() => ({
+  documentType: getDocumentType(props.src?.mimeType),
+  token: props.token,
+  type: "desktop",
+  height: "100%",
+  width: "100%",
+  document: {
+    fileType: getFileType(props.src?.mimeType),
+    key: props.src?.key ?? "only-office-editor",
+    title: props.title,
+    url: props.src?.url,
+    permissions: {
+      copy: true,
+      download: true,
+      print: true,
+    },
+  },
+  editorConfig: {
+    customization: {
+      anonymous: {
+        request: false,
+      },
+      chat: false,
+      comments: false,
+    },
+    lang: props.language ?? "zh",
+    mode: "view",
+  },
+  events: {
+    onDocumentReady: () => emits("ready"),
+    onError: (e: unknown) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (e?.data) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        emits("error", e.data?.errorDescription, e.data?.errorCode);
+      }
+    },
+  },
+}));
 
 const getDocumentType = (mimeType: string) => {
   switch (mimeType) {
@@ -74,113 +119,21 @@ const getFileType = (mimeType: string) => {
   }
 };
 
-const initEditor = (src: OnlyOfficeUrl) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  editor = new window.DocsAPI.DocEditor("only-office-container", {
-    documentType: getDocumentType(src.mimeType),
-    type: "desktop",
-    height: "100%",
-    width: "100%",
-    document: {
-      fileType: getFileType(src.mimeType),
-      key: src?.key ?? "only-office-editor",
-      title: src?.title,
-      url: src.url,
-      permissions: {
-        copy: true,
-        download: true,
-        print: true,
-      },
-    },
-    editorConfig: {
-      customization: {
-        anonymous: {
-          request: false,
-        },
-        chat: false,
-        comments: false,
-      },
-      lang: props.language ?? "zh",
-      mode: "view",
-    },
-    events: {
-      onDocumentReady: () => emits("ready"),
-      onError: (e: Event) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (props?.onError && e?.data) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          props.onError(e.data);
-        }
-      },
-    },
-  });
-};
-
-watch(
-  () => props.src,
-  (newVal) => {
-    if (props.mode === "onlyOffice") {
-      if (typeof props.src === "string" || !props.src.mimeType) {
-        return;
-      }
-
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      editor?.destroyEditor();
-      initEditor(newVal as OnlyOfficeUrl);
-    }
-  },
-  { deep: true },
-);
-
 onMounted(() => {
-  if (props.mode === "onlyOffice") {
-    if (typeof props.src === "string" || !props.src.mimeType) {
-      return;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    if (window?.DocsAPI?.DocEditor) {
-      initEditor(props.src as OnlyOfficeUrl);
-      return;
-    }
-
-    if (!props.onlyOfficeApiJsUrl) {
-      if (props.onError) {
-        props.onError('未配置onlyOffice的api.js文件地址"');
-      } else {
-        throw new Error("未配置onlyOffice的api.js文件地址");
-      }
-    }
-
-    nextTick(() => {
-      useScriptTag(props.onlyOfficeApiJsUrl as string, () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (!window?.DocsAPI?.DocEditor) {
-          if (props.onError) {
-            props.onError("DocsAPI注入失败，请检查api.js文件地址是否正确");
-          } else {
-            throw new Error("DocsAPI注入失败，请检查api.js文件地址是否正确");
-          }
-        }
-        initEditor(props.src as OnlyOfficeUrl);
-      });
-    });
+  if (props.mode === "onlyOffice" && !props.onlyOfficeServerUrl) {
+    emits("error", "未配置onlyOffice的api.js文件地址");
   }
 });
 </script>
 
 <template>
-  <div
-    v-if="mode === 'onlyOffice'"
-    id="only-office-container"
+  <document-editor
+    v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
+    :id="id"
     class="pangju-wh-100"
-  ></div>
+    :document-server-url="onlyOfficeServerUrl"
+    :config="onlyOfficeConfig"
+  />
   <iframe
     v-else
     :src="microsoftViewUrl"

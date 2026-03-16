@@ -1,18 +1,19 @@
 <script lang="ts" setup>
 import "@/assets/css/file-viewer.css";
+import { type } from "node:os";
 
 withDefaults(
   defineProps<{
     title?: string;
     filename?: string;
     url?: string;
-    type?: string;
+    mimeType?: string;
   }>(),
   {
     title: "不支持预览该文件",
     filename: undefined,
     url: undefined,
-    type: undefined,
+    mimeType: undefined,
   },
 );
 </script>

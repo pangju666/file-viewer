@@ -1,15 +1,8 @@
-import type { FileItem } from "@/types/file.ts";
+import type { FileItem, FileType } from "@/types/file.ts";
 import type { DxfViewerOptions } from "dxf-viewer";
 import Viewer from "viewerjs";
 import type { JsonViewerProps } from "vue3-json-viewer";
 import type { MdPreviewProps } from "md-editor-v3";
-
-export type ViewerError =
-  | string
-  | Event
-  | Error
-  | MediaError
-  | { errorCode: number; errorDescription: string };
 
 export type ImageViewerOptions = Omit<
   Viewer.Options,
@@ -26,6 +19,10 @@ export type MarkdownViewerOptions = Omit<
 export type AudioPreviewOptions = {
   autoplay?: boolean;
   controls?: boolean;
+  coverWidth?: number;
+  coverHeight?: number;
+  coverObjectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
+  coverIconSize?: number;
 };
 
 export type DxfPreviewOptions = {
@@ -51,14 +48,17 @@ export type MarkdownPreviewOptions = {
 };
 
 export type ModelPreviewOptions = {
+  showProgressBar?: boolean;
   viewerOptions?: Record<string, unknown>;
 };
 
 export type OfficePreviewOptions = {
+  id?: string;
+  token?: string;
   mode?: "microsoft" | "onlyOffice";
   language?: string;
   microsoftViewBaseUrl?: string;
-  onlyOfficeApiJsUrl?: string;
+  onlyOfficeServerUrl?: string;
 };
 
 export type PdfPreviewOptions = {
@@ -71,7 +71,7 @@ export type VideoPreviewOptions = {
 
 export type FileListProps = {
   title?: string;
-  staticFileList?: FileItem[];
+  fileItems?: FileItem[];
   showSkeleton?: boolean;
   showBackTop?: boolean;
   showSearch?: boolean;
@@ -79,14 +79,23 @@ export type FileListProps = {
   showTypeFilter?: boolean;
   coverHeight?: number | string;
   coverObjectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
-  fileTypes?: string[];
-  fileMatcher?: (file: FileItem, types?: string[], keyword?: string) => boolean;
+  cardSize?: "small" | "medium" | "large" | "huge";
+  cardHoverable?: boolean;
+  cardBordered?: boolean;
+  tagSize: "tiny" | "small" | "medium" | "large";
+  fileTypes?:
+    | FileType[]
+    | Promise<FileType[]>
+    | (() => FileType[])
+    | (() => Promise<FileType[]>);
+  fileMatcher?: (file: FileItem, types: string[], keyword?: string) => boolean;
   load?: (
     page: number,
-    types?: string[],
+    types: string[],
     keyword?: string,
   ) => Promise<FileItem[]> | FileItem[];
   noMore?: boolean;
+  customDownload: (fileItem: FileItem) => void;
 };
 
 export type FilePreviewProps = {

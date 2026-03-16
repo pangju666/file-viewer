@@ -18,7 +18,6 @@ const props = withDefaults(
         url: string,
         fileEncoding?: string,
       ) => Record<string, unknown> | Promise<Record<string, unknown>>;
-      onError?: (error: Error) => void;
     }
   >(),
   {
@@ -28,13 +27,24 @@ const props = withDefaults(
       expandDepth: 10,
     }),
     contentLoader: undefined,
-    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: Error): void;
 }>();
+
+watch(
+  () => props.src,
+  (newVal: UrlWithFileEncoding | string) => {
+    content.value = {};
+    if (newVal) {
+      getContent(newVal);
+    }
+  },
+  { deep: true },
+);
 
 const vueJsonViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -48,7 +58,7 @@ const content = ref<Record<string, unknown>>({});
 
 const getContent = async (src: UrlWithFileEncoding | string) => {
   if (props.contentLoader) {
-    getResult(
+    getResult<Record<string, unknown>>(
       props.contentLoader(getSrcFromUrl(src), getFileEncodingFromUrl(src)),
     )
       .then((res) => {
@@ -56,8 +66,8 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
         emits("ready");
       })
       .catch((error: Error) => {
-        if (props.onError && error) {
-          props.onError(error);
+        if (error) {
+          emits("error", error);
         }
       });
   } else {
@@ -66,8 +76,8 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
       content.value = await response.json();
       emits("ready");
     } catch (error) {
-      if (props.onError && error) {
-        props.onError(error as Error);
+      if (error) {
+        emits("error", error as Error);
       }
     }
   }
@@ -78,16 +88,6 @@ onMounted(() => {
     getContent(props.src);
   }
 });
-
-watch(
-  () => props.src,
-  (newVal: UrlWithFileEncoding | string) => {
-    content.value = {};
-    if (newVal) {
-      getContent(newVal);
-    }
-  },
-);
 </script>
 
 <template>

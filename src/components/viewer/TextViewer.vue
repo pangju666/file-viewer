@@ -14,18 +14,27 @@ const props = withDefaults(
       url: string,
       encoding?: string,
     ) => string | Promise<string>;
-    onError?: (error: Error) => void;
   }>(),
   {
-    onProgress: undefined,
     contentLoader: undefined,
-    onError: undefined,
   },
 );
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: Error): void;
 }>();
+
+watch(
+  () => props.src,
+  (newVal: UrlWithFileEncoding | string) => {
+    content.value = "";
+    if (newVal) {
+      getContent(newVal);
+    }
+  },
+  { deep: true },
+);
 
 const content = ref<string>();
 
@@ -39,8 +48,8 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
         emits("ready");
       })
       .catch((error: Error) => {
-        if (props.onError && error) {
-          props.onError(error);
+        if (error) {
+          emits("error", error);
         }
       });
   } else {
@@ -49,8 +58,8 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
       content.value = await response.text();
       emits("ready");
     } catch (error) {
-      if (props.onError && error) {
-        props.onError(error as Error);
+      if (error) {
+        emits("error", error as Error);
       }
     }
   }
@@ -61,16 +70,6 @@ onMounted(() => {
     getContent(props.src);
   }
 });
-
-watch(
-  () => props.src,
-  (newVal: UrlWithFileEncoding | string) => {
-    content.value = "";
-    if (newVal) {
-      getContent(newVal);
-    }
-  },
-);
 </script>
 
 <template>

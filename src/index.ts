@@ -54,10 +54,11 @@ const install = (app: App): void => {
 export default install as Plugin;
 
 export type {
-  FileDescription,
+  FileSource,
+  FileType,
+  FileTag,
   FileItem,
   UrlWithFileEncoding,
-  UrlWithFilename,
   OnlyOfficeUrl,
   UrlWithMimeType,
 } from "./types/file";
@@ -99,7 +100,5 @@ export {
   getSrcFromUrl,
   getFileEncodingFromUrl,
   downloadFile,
-  getMimeTypeCharset,
-  isTargetMimeType,
   formatFileSize,
 } from "./utils/utils.ts";

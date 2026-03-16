@@ -6,7 +6,11 @@ import type { FileItem } from "@/types/file.ts";
 import FilePreview from "@/components/FilePreview.vue";
 import type { FileListProps, FilePreviewProps } from "@/types/options.ts";
 import { getResult } from "@/utils/utils.ts";
-import { type AnyWebReadableStream, fileTypeFromStream } from "file-type";
+import {
+  type AnyWebReadableStream,
+  fileTypeFromBlob,
+  fileTypeFromStream,
+} from "file-type";
 import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(
@@ -26,7 +30,7 @@ const props = withDefaults(
     defaultSplitSize: 0.8,
     autoDetectType: true,
     detectFileType: undefined,
-    title: undefined,
+    /* File Preview 属性 */
     enableImage: undefined,
     enableVideo: undefined,
     enableAudio: undefined,
@@ -37,6 +41,13 @@ const props = withDefaults(
     enableText: undefined,
     enableJson: undefined,
     enableDxf: undefined,
+    jsonContentLoader: undefined,
+    textContentLoader: undefined,
+    markdownContentLoader: undefined,
+    customViewerMatcher: undefined,
+    viewerOptions: undefined,
+    /* File List 属性 */
+    title: undefined,
     showSkeleton: undefined,
     showBackTop: undefined,
     showSearch: undefined,
@@ -45,7 +56,15 @@ const props = withDefaults(
     coverObjectFit: undefined,
     showTypeFilter: undefined,
     fileTypes: undefined,
-    staticFileList: undefined,
+    cardSize: undefined,
+    cardHoverable: undefined,
+    cardBordered: undefined,
+    tagSize: undefined,
+    fileItems: undefined,
+    load: undefined,
+    fileMatcher: undefined,
+    noMore: undefined,
+    customDownload: undefined,
   },
 );
 
@@ -67,7 +86,7 @@ const previewProps = computed(() => {
     autoDetectType,
     detectFileType,
     title,
-    staticFileList,
+    fileItems,
     showSkeleton,
     showBackTop,
     showSearch,
@@ -75,10 +94,15 @@ const previewProps = computed(() => {
     showTypeFilter,
     coverHeight,
     coverObjectFit,
+    cardSize,
+    cardHoverable,
+    cardBordered,
+    tagSize,
     fileTypes,
     fileMatcher,
     load,
     noMore,
+    customDownload,
     ...options
   } = props;
   return options;
@@ -117,15 +141,20 @@ const changeFile = async (file: FileItem) => {
   emits("click-file", file);
 
   currentFile.value = undefined;
-  if (file && file.url && !file.mimeType && props.autoDetectType) {
+  if (file && file?.file && !file?.mimeType && props.autoDetectType) {
     if (props.detectFileType) {
       file.mimeType = await getResult(props.detectFileType(file));
     } else {
-      const response = await fetch(file.url);
-      const fileType = await fileTypeFromStream(
-        response.body as AnyWebReadableStream<Uint8Array>,
-      );
-      file.mimeType = fileType?.mime as string;
+      if (file?.file instanceof Blob) {
+        const fileType = await fileTypeFromBlob(file?.file);
+        file.mimeType = fileType?.mime as string;
+      } else {
+        const response = await fetch(file.file);
+        const fileType = await fileTypeFromStream(
+          response.body as AnyWebReadableStream<Uint8Array>,
+        );
+        file.mimeType = fileType?.mime as string;
+      }
     }
   }
   currentFile.value = file;

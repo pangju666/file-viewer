@@ -4,26 +4,29 @@ import { MusicNoteRound } from "@vicons/material";
 import type { AudioPreviewOptions } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
 
-const props = withDefaults(
+withDefaults(
   defineProps<
     AudioPreviewOptions & {
       src: string;
-      cover?: string;
       title?: string;
-      onError?: (error: MediaError) => void;
+      cover?: string;
     }
   >(),
   {
+    title: undefined,
     cover: "coverIcon",
+    coverWidth: 300,
+    coverHeight: 300,
+    coverObjectFit: "cover",
+    coverIconSize: 100,
     autoplay: false,
     controls: true,
-    title: undefined,
-    onError: undefined,
   },
 );
 
-defineEmits<{
+const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error", error: MediaError): void;
 }>();
 
 const coverAnimationClasses = ref<string[]>([]);
@@ -38,42 +41,53 @@ const removeCoverAnimation = () => {
 
 const handleError = (e: Event) => {
   const error: MediaError | null = (e.target as HTMLAudioElement)?.error;
-  if (props.onError && error) {
-    props.onError(error);
+  if (error) {
+    emits("error", error);
   }
 };
 </script>
 
 <template>
   <div class="audio-viewer">
-    <n-image
-      :src="cover"
-      :width="300"
-      :height="300"
-      preview-disabled
-      object-fit="cover"
-      class="cover"
-      :class="coverAnimationClasses"
-    >
-      <template #error>
-        <n-icon :size="100">
-          <MusicNoteRound />
-        </n-icon>
-      </template>
-    </n-image>
-    <n-ellipsis class="pangju-mb-10">
-      <span class="title">{{ title }}</span>
-    </n-ellipsis>
-    <audio
-      :src="src"
-      :controls="controls"
-      :autoplay="autoplay"
-      class="pangju-w-100"
-      @play="addCoverAnimation"
-      @pause="removeCoverAnimation"
-      @playing="$emit('ready')"
-      @error="handleError"
-    />
+    <slot name="cover">
+      <n-image
+        :src="cover"
+        :object-fit="coverObjectFit"
+        :width="coverWidth"
+        :height="coverHeight"
+        preview-disabled
+        class="cover"
+        :class="coverAnimationClasses"
+      >
+        <template #error>
+          <n-icon :size="coverIconSize">
+            <MusicNoteRound />
+          </n-icon>
+        </template>
+        <template #placeholder>
+          <n-icon :size="coverIconSize">
+            <MusicNoteRound />
+          </n-icon>
+        </template>
+      </n-image>
+    </slot>
+    <slot name="title" :title="title">
+      <n-ellipsis class="pangju-mb-10">
+        <span class="title">{{ title }}</span>
+      </n-ellipsis>
+    </slot>
+    <slot>
+      <audio
+        :src="src"
+        :controls="controls"
+        :autoplay="autoplay"
+        class="pangju-w-100"
+        @play="addCoverAnimation"
+        @pause="removeCoverAnimation"
+        @canplay="$emit('ready')"
+        @error="handleError"
+      />
+    </slot>
   </div>
 </template>
 

@@ -1,20 +1,19 @@
 <script lang="ts" setup>
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
-import { nextTick, onUnmounted, ref, watch } from "vue";
-import type { UrlWithFilename } from "@/types/file.ts";
+import { nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import "@/assets/css/file-viewer.css";
 import type { ImagePreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
   defineProps<
     ImagePreviewOptions & {
-      src: UrlWithFilename | string;
-      onError?: (e: Event) => void;
+      src: string;
+      title?: string;
     }
   >(),
   {
-    onError: undefined,
+    title: undefined,
     viewerOptions: () => ({
       toolbar: {
         flipHorizontal: true,
@@ -35,14 +34,32 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (e: "ready"): void;
+  (e: "error"): void;
 }>();
+
+watch(
+  () => props.src,
+  (val) => {
+    viewer?.destroy();
+    if (!val) {
+      return;
+    }
+
+    if (imageRef.value) {
+      initViewer();
+    } else {
+      nextTick(() => {
+        initViewer();
+      });
+    }
+  },
+);
 
 let viewer: Viewer | null = null;
 
 const imageRef = ref<HTMLImageElement>();
-const imageUrl = ref<string>();
 
-const initViewer = (filename?: string) => {
+const initViewer = () => {
   viewer = new Viewer(imageRef.value as HTMLImageElement, {
     ...(props.viewerOptions ?? {}),
     inline: true,
@@ -52,7 +69,7 @@ const initViewer = (filename?: string) => {
       props.viewerOptions?.title ??
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      `(${filename ?? ""}${filename ? " " : ""}${imageData.naturalWidth} × ${imageData.naturalHeight})`,
+      `(${props.title ?? ""}${props.title ? " " : ""}${imageData.naturalWidth} × ${imageData.naturalHeight})`,
     viewed: (event: CustomEvent) => {
       if (props.viewerOptions?.viewed) {
         props.viewerOptions.viewed(event);
@@ -62,38 +79,11 @@ const initViewer = (filename?: string) => {
   });
 };
 
-const handleError = (e: Event) => {
-  if (props.onError && e) {
-    props.onError(e);
-  }
-};
-
-watch(
-  () => props.src,
-  (val) => {
-    let filename = undefined;
-    if (!val) {
-      imageUrl.value = undefined;
-    } else if (typeof props.src === "string") {
-      imageUrl.value = props.src;
-    } else {
-      imageUrl.value = props.src.url;
-      filename = props.src?.filename;
-    }
-
-    viewer?.destroy();
-    if (val) {
-      if (imageRef.value) {
-        initViewer(filename);
-      } else {
-        nextTick(() => {
-          initViewer(filename);
-        });
-      }
-    }
-  },
-  { immediate: true, deep: true },
-);
+onMounted(() => {
+  nextTick(() => {
+    initViewer();
+  });
+});
 
 onUnmounted(() => {
   viewer?.destroy();
@@ -103,6 +93,6 @@ onUnmounted(() => {
 
 <template>
   <div class="pangju-wh-100">
-    <img v-show="false" ref="imageRef" :src="imageUrl" @error="handleError" />
+    <img v-show="false" ref="imageRef" :src="src" @error="$emit('error')" />
   </div>
 </template>
