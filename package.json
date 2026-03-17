@@ -3,34 +3,16 @@
   "private": false,
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite --host --mode app --force",
-    "build:lib": "vite build --mode lib",
-    "build:app": "vite build --mode app",
-    "preview": "vite preview --outDir dist/app",
+    "dev": "vite --host --force",
+    "build": "vite build",
+    "preview": "vite preview --outDir dist",
     "type-check": "vue-tsc --noEmit",
     "prettier": "prettier --write ./**/*.{html,vue,js,ts,json,md}",
     "eslint": "eslint . --fix",
     "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix",
     "prepare": "husky"
   },
-  "files": [
-    "dist/lib"
-  ],
   "type": "module",
-  "main": "./dist/lib/index.cjs.js",
-  "module": "./dist/lib/index.es.js",
-  "types": "./dist/lib/types/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/lib/types/index.d.ts",
-      "import": "./dist/lib/index.es.js",
-      "require": "./dist/lib/index.cjs.js"
-    },
-    "./index.css": "./dist/lib/file-viewer.css"
-  },
-  "peerDependencies": {
-    "vue": "^3.5.29"
-  },
   "dependencies": {
     "@babylonjs/viewer": "^8.54.1",
     "@onlyoffice/document-editor-vue": "^1.6.1",
@@ -43,6 +25,8 @@
     "three": "^0.161.0",
     "video.js": "^8.23.7",
     "viewerjs": "^1.11.7",
+    "vue": "^3.5.29",
+    "vue-router": "^5.0.3",
     "vue3-json-viewer": "^2.4.1"
   },
   "devDependencies": {
@@ -73,7 +57,6 @@
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-dts": "^4.5.4",
     "vue-eslint-parser": "^10.4.0",
-    "vue-router": "^5.0.3",
     "vue-tsc": "^3.2.5"
   },
   "husky": {
