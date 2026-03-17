@@ -1,4 +1,4 @@
-import type { FileItem, FileType } from "@/types/file.ts";
+import type { FileItem } from "@/types/file.ts";
 import type { DxfViewerOptions } from "dxf-viewer";
 import Viewer from "viewerjs";
 import type { JsonViewerProps } from "vue3-json-viewer";
@@ -73,35 +73,6 @@ export type PdfPreviewOptions = {
 
 export type VideoPreviewOptions = {
   viewerOptions?: Record<string, unknown>;
-};
-
-export type FileListProps = {
-  title?: string;
-  fileItems?: FileItem[];
-  showSkeleton?: boolean;
-  showBackTop?: boolean;
-  showSearch?: boolean;
-  showTitle?: boolean;
-  showTypeFilter?: boolean;
-  coverHeight?: number | string;
-  coverObjectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
-  cardSize?: "small" | "medium" | "large" | "huge";
-  cardHoverable?: boolean;
-  cardBordered?: boolean;
-  tagSize: "tiny" | "small" | "medium" | "large";
-  fileTypes?:
-    | FileType[]
-    | Promise<FileType[]>
-    | (() => FileType[])
-    | (() => Promise<FileType[]>);
-  fileMatcher?: (file: FileItem, types: string[], keyword?: string) => boolean;
-  load?: (
-    page: number,
-    types: string[],
-    keyword?: string,
-  ) => Promise<FileItem[]> | FileItem[];
-  noMore?: boolean;
-  customDownload: (fileItem: FileItem) => void;
 };
 
 export type FilePreviewProps = {
