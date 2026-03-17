@@ -4,6 +4,7 @@ import type { OnlyOfficeUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { OfficePreviewOptions } from "@/types/options.ts";
 import { DocumentEditor } from "@onlyoffice/document-editor-vue";
+import { undefinedFileErrorMessage } from "@/utils/constants.ts";
 
 const props = withDefaults(
   defineProps<
@@ -33,7 +34,7 @@ watch(
   () => props.src,
   (newVal) => {
     if (props.mode === "onlyOffice" && typeof newVal === "string") {
-      emits("error", "未定义文件链接或类型");
+      emits("error", undefinedFileErrorMessage);
     }
   },
 );
@@ -73,7 +74,7 @@ const onlyOfficeConfig = computed(() => ({
     mode: "view",
   },
   events: {
-    onDocumentReady: () => emits("ready"),
+    onAppReady: () => emits("ready"),
     onError: (e: unknown) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
@@ -119,7 +120,10 @@ const getFileType = (mimeType: string) => {
 
 onMounted(() => {
   if (props.mode === "onlyOffice" && !props.onlyOfficeServerUrl) {
-    emits("error", "未配置OnlyOffice服务器地址");
+    console.warn(
+      "[OfficeViewer] 未配置 OnlyOffice 服务器地址 (onlyOfficeServerUrl)。",
+    );
+    emits("error", "无法加载文档，预览服务不可用");
   }
 });
 </script>

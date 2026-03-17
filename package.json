@@ -3,7 +3,7 @@
   "private": false,
   "version": "1.0.0",
   "scripts": {
-    "build": "vite build --mode lib",
+    "build": "vite build",
     "type-check": "vue-tsc --noEmit",
     "prettier": "prettier --write ./**/*.{html,vue,js,ts,json,md}",
     "eslint": "eslint . --fix",
@@ -11,19 +11,19 @@
     "prepare": "husky"
   },
   "files": [
-    "dist/lib"
+    "dist"
   ],
   "type": "module",
-  "main": "./dist/lib/index.cjs.js",
-  "module": "./dist/lib/index.es.js",
-  "types": "./dist/lib/types/index.d.ts",
+  "main": "./dist/index.cjs.js",
+  "module": "./dist/index.es.js",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/lib/types/index.d.ts",
-      "import": "./dist/lib/index.es.js",
-      "require": "./dist/lib/index.cjs.js"
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.cjs.js"
     },
-    "./index.css": "./dist/lib/file-viewer.css"
+    "./index.css": "./dist/file-viewer.css"
   },
   "peerDependencies": {
     "vue": "^3.5.29"

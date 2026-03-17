@@ -19,10 +19,8 @@ export type MarkdownViewerOptions = Omit<
 export type AudioPreviewOptions = {
   autoplay?: boolean;
   controls?: boolean;
-  coverWidth?: number;
-  coverHeight?: number;
+  coverSize?: number;
   coverObjectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
-  coverIconSize?: number;
 };
 
 export type DxfPreviewOptions = {

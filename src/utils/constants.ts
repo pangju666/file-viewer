@@ -58,3 +58,5 @@ export const textMimeTypePrefix = "text/";
 export const utf8Charset = "utf-8";
 
 export const mimeTypeWithCharsetRegex = /charset\s*=\s*"?([^"\s;]+)"?/i;
+
+export const undefinedFileErrorMessage = "未定义文件链接或类型";

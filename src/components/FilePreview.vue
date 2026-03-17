@@ -12,6 +12,7 @@ import {
   jsonMimeType,
   utf8Charset,
   mimeTypeWithCharsetRegex,
+  undefinedFileErrorMessage,
 } from "@/utils/constants.ts";
 import type { FileItem } from "@/types/file.ts";
 import { isTargetMimeType, isTextMimeType } from "@/utils/utils.ts";
@@ -74,7 +75,7 @@ watch(
       emits("loading-start");
     } else {
       hasError.value = true;
-      errorReason.value = "未定义文件链接或类型";
+      errorReason.value = undefinedFileErrorMessage;
       return;
     }
 
@@ -82,18 +83,21 @@ watch(
       try {
         URL.revokeObjectURL(fileUrl.value);
       } catch (e) {
-        console.warn("Failed to revoke object URL:", e);
+        console.warn("释放 Object URL 失败:", e);
       }
     }
 
     if (typeof newVal?.file === "string") {
+      isBlob.value = false;
       fileUrl.value = newVal.file;
     } else if (newVal instanceof Blob) {
+      isBlob.value = true;
       fileUrl.value = URL.createObjectURL(newVal);
     }
   },
 );
 
+const isBlob = ref(false);
 const fileUrl = ref<string>();
 
 const fileMimeType = computed(
@@ -129,7 +133,6 @@ const fileUrlWithFileEncoding = computed(() => ({
 const onlyOfficeUrl = computed(() => ({
   url: fileUrl.value,
   mimeType: fileMimeType.value,
-  title: filename.value,
   key: props.file?.id ?? nanoid(),
 }));
 
@@ -307,13 +310,15 @@ onMounted(() => {
     emits("loading-start");
   } else {
     hasError.value = true;
-    errorReason.value = "未定义文件链接或类型";
+    errorReason.value = undefinedFileErrorMessage;
     return;
   }
 
   if (typeof props.file?.file === "string") {
+    isBlob.value = false;
     fileUrl.value = props.file.file;
   } else if (props.file instanceof Blob) {
+    isBlob.value = true;
     fileUrl.value = URL.createObjectURL(props.file);
   }
 });
@@ -443,7 +448,16 @@ defineExpose({
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
       >
+        <unknown-viewer
+          v-if="isBlob"
+          class="pangju-wh-100"
+          :filename="filename"
+          :src="fileUrl"
+          :mime-type="fileMimeType"
+          @ready="handleViewerReady"
+        />
         <office-viewer
+          v-else
           v-bind="officeViewerProps"
           :src="onlyOfficeUrl"
           :title="filename"
@@ -490,12 +504,21 @@ defineExpose({
       <slot
         v-else-if="pdfMimeType === fileMimeType && enablePdf"
         name="pdf-viewer"
-        :filename="filename"
+        :tile="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
       >
+        <unknown-viewer
+          v-if="isBlob"
+          class="pangju-wh-100"
+          :filename="filename"
+          :src="fileUrl"
+          :mime-type="fileMimeType"
+          @ready="handleViewerReady"
+        />
         <pdf-viewer
+          v-else
           v-bind="pdfViewerProps"
           :src="onlyOfficeUrl"
           :title="filename"

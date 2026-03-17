@@ -81,6 +81,7 @@ export type {
 } from "./types/options.ts";
 
 export {
+  undefinedFileErrorMessage,
   supportedOfficeMimeTypes,
   dxfMimeType,
   supportedModelTypes,
