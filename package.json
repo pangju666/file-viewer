@@ -3,43 +3,30 @@
   "private": false,
   "version": "1.0.0",
   "scripts": {
+    "dev": "vite --host --force",
     "build": "vite build",
+    "preview": "vite preview --outDir dist",
     "type-check": "vue-tsc --noEmit",
     "prettier": "prettier --write ./**/*.{html,vue,js,ts,json,md}",
     "eslint": "eslint . --fix",
     "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix",
     "prepare": "husky"
   },
-  "files": [
-    "dist"
-  ],
   "type": "module",
-  "main": "./dist/index.cjs.js",
-  "module": "./dist/index.es.js",
-  "types": "./dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.cjs.js"
-    },
-    "./index.css": "./dist/file-viewer.css"
-  },
-  "peerDependencies": {
-    "vue": "^3.5.29"
-  },
   "dependencies": {
     "@babylonjs/viewer": "^8.54.1",
     "@onlyoffice/document-editor-vue": "^1.6.1",
     "@vicons/material": "^0.13.0",
     "dxf-viewer": "^1.0.46",
-    "file-type": "^21.3.3",
+    "file-type": "^21.3.0",
     "md-editor-v3": "^6.4.0",
     "naive-ui": "^2.43.2",
     "nanoid": "^5.1.7",
     "three": "^0.161.0",
     "video.js": "^8.23.7",
     "viewerjs": "^1.11.7",
+    "vue": "^3.5.29",
+    "vue-router": "^5.0.3",
     "vue3-json-viewer": "^2.4.1"
   },
   "devDependencies": {
@@ -67,7 +54,7 @@
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^31.0.0",
     "vite": "^7.3.1",
-    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-compression": "^0.5.1",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.2.5"
   },
