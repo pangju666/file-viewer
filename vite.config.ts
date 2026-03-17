@@ -2,14 +2,12 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
-import viteCompression from "vite-plugin-compression";
 import { resolve } from "node:path";
 import dts from "vite-plugin-dts";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 
-export default defineConfig(({ mode }) => {
-  // ================= 基础通用配置 =================
-  const baseConfig = {
+export default defineConfig(() => {
+  return {
     resolve: {
       alias: {
         "~": resolve(__dirname, "./"),
@@ -36,53 +34,31 @@ export default defineConfig(({ mode }) => {
         //dts: "~/types/components.d.ts",
         resolvers: [NaiveUiResolver()],
       }),
+      dts({
+        include: ["src"],
+        exclude: ["src/App.vue", "src/main.ts", "src/views/**"],
+        outDir: "dist/types",
+      }),
     ],
-  };
-
-  // ================= 配置 1: 组件库模式 (Library) =================
-  if (mode === "lib") {
-    return {
-      ...baseConfig,
-      plugins: [
-        ...baseConfig.plugins,
-        dts({
-          include: ["src"],
-          exclude: ["src/App.vue", "src/main.ts", "src/views/**"],
-          outDir: "dist/lib/types",
-        }),
-      ],
-      build: {
-        outDir: "dist/lib",
-        emptyOutDir: true,
-        lib: {
-          entry: resolve(__dirname, "src/index.ts"),
-          fileName: (format) => `index.${format}.js`,
-          formats: ["es", "cjs"],
-        },
-        rollupOptions: {
-          external: ["vue", "vue-router", /^node:.*/],
-          output: {
-            exports: "named",
-            globals: {
-              vue: "Vue",
-            },
+    build: {
+      outDir: "dist",
+      emptyOutDir: true,
+      lib: {
+        entry: resolve(__dirname, "src/index.ts"),
+        fileName: (format) => `index.${format}.js`,
+        formats: ["es", "cjs"],
+      },
+      rollupOptions: {
+        external: ["vue", "vue-router", /^node:.*/],
+        output: {
+          exports: "named",
+          globals: {
+            vue: "Vue",
           },
         },
-        minify: "esbuild",
-        sourcemap: true,
       },
-    };
-  }
-
-  // ================= 配置 2: 独立服务模式 (Application) =================
-  return {
-    ...baseConfig,
-    plugins: [...baseConfig.plugins, viteCompression({ algorithm: "gzip" })],
-    build: {
-      emptyOutDir: true,
-      outDir: "dist/app",
-      sourceMap: false,
       minify: "esbuild",
+      sourcemap: true,
     },
   };
 });
