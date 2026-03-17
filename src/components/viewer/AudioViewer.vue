@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { MusicNoteRound } from "@vicons/material";
 import type { AudioPreviewOptions } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
 
-withDefaults(
+const props = withDefaults(
   defineProps<
     AudioPreviewOptions & {
       src: string;
@@ -15,10 +15,8 @@ withDefaults(
   {
     title: undefined,
     cover: "coverIcon",
-    coverWidth: 300,
-    coverHeight: 300,
+    coverSize: 180,
     coverObjectFit: "cover",
-    coverIconSize: 100,
     autoplay: false,
     controls: true,
   },
@@ -30,6 +28,10 @@ const emits = defineEmits<{
 }>();
 
 const coverAnimationClasses = ref<string[]>([]);
+
+const coverMarginBottomStyle = computed(() => ({
+  marginBottom: `${props.coverSize / 2}px`,
+}));
 
 const addCoverAnimation = () => {
   coverAnimationClasses.value = ["cover-animation"];
@@ -52,20 +54,21 @@ const handleError = (e: Event) => {
     <slot name="cover">
       <n-image
         :src="cover"
+        :style="coverMarginBottomStyle"
         :object-fit="coverObjectFit"
-        :width="coverWidth"
-        :height="coverHeight"
+        :width="coverSize"
+        :height="coverSize"
         preview-disabled
         class="cover"
         :class="coverAnimationClasses"
       >
         <template #error>
-          <n-icon :size="coverIconSize">
+          <n-icon :size="coverSize">
             <MusicNoteRound />
           </n-icon>
         </template>
         <template #placeholder>
-          <n-icon :size="coverIconSize">
+          <n-icon :size="coverSize">
             <MusicNoteRound />
           </n-icon>
         </template>
@@ -108,7 +111,7 @@ const handleError = (e: Event) => {
   }
 
   .cover {
-    margin-bottom: 10px;
+    display: block;
     border-radius: 999px;
   }
 
