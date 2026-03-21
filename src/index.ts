@@ -60,6 +60,7 @@ export type {
   FileItem,
   UrlWithFileEncoding,
   OnlyOfficeUrl,
+  PdfUrl,
   UrlWithMimeType,
 } from "./types/file";
 
@@ -76,6 +77,7 @@ export type {
   OfficePreviewOptions,
   PdfPreviewOptions,
   VideoPreviewOptions,
+  TextPreviewOptions,
   FileListProps,
   FilePreviewProps,
 } from "./types/options.ts";

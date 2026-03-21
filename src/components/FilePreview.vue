@@ -49,11 +49,8 @@ const props = withDefaults(
     enableText: true,
     enableJson: true,
     enableDxf: true,
-    jsonContentLoader: undefined,
-    textContentLoader: undefined,
-    markdownContentLoader: undefined,
     customViewerMatcher: undefined,
-    viewerOptions: undefined,
+    viewerProps: undefined,
   },
 );
 
@@ -68,7 +65,7 @@ watch(
   (newVal, oldVal) => {
     fileUrl.value = undefined;
 
-    if (newVal?.file && newVal?.mimeType) {
+    if (newVal?.source && newVal?.mimeType) {
       hasError.value = false;
       errorReason.value = undefined;
       viewerError.value = undefined;
@@ -79,7 +76,7 @@ watch(
       return;
     }
 
-    if (oldVal?.file instanceof Blob && fileUrl.value) {
+    if (oldVal?.source instanceof Blob && fileUrl.value) {
       try {
         URL.revokeObjectURL(fileUrl.value);
       } catch (e) {
@@ -87,12 +84,12 @@ watch(
       }
     }
 
-    if (typeof newVal?.file === "string") {
+    if (typeof newVal?.source === "string") {
       isBlob.value = false;
-      fileUrl.value = newVal.file;
-    } else if (newVal instanceof Blob) {
+      fileUrl.value = newVal.source;
+    } else if (newVal.source instanceof Blob) {
       isBlob.value = true;
-      fileUrl.value = URL.createObjectURL(newVal);
+      fileUrl.value = URL.createObjectURL(newVal.source);
     }
   },
 );
@@ -103,7 +100,7 @@ const fileUrl = ref<string>();
 const fileMimeType = computed(
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  () => props.file?.mimeType ?? props.file?.file?.type ?? undefined,
+  () => props.file?.mimeType ?? props.file?.source?.type ?? undefined,
 );
 
 const fileEncoding = computed(() => {
@@ -117,7 +114,7 @@ const fileEncoding = computed(() => {
 const filename = computed(
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  () => props.file?.name ?? props.file?.file?.name ?? undefined,
+  () => props.file?.name ?? props.file?.source?.name ?? undefined,
 );
 
 const fileUrlWithMimeType = computed(() => ({
@@ -140,7 +137,7 @@ const audioViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, cover, title, ...options } = props.viewerOptions?.audio ?? {};
+  const { src, cover, title, ...options } = props.viewerProps?.audio ?? {};
   return options;
 });
 
@@ -148,7 +145,7 @@ const dxfViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, ...options } = props.viewerOptions?.dxf ?? {};
+  const { src, ...options } = props.viewerProps?.dxf ?? {};
   return options;
 });
 
@@ -156,7 +153,7 @@ const imageViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, title, ...options } = props.viewerOptions?.image ?? {};
+  const { src, title, ...options } = props.viewerProps?.image ?? {};
   return options;
 });
 
@@ -164,7 +161,15 @@ const jsonViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, contentLoader, ...options } = props.viewerOptions?.json ?? {};
+  const { src, ...options } = props.viewerProps?.json ?? {};
+  return options;
+});
+
+const textViewerProps = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { src, ...options } = props.viewerProps?.text ?? {};
   return options;
 });
 
@@ -172,8 +177,7 @@ const markdownViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, contentLoader, ...options } =
-    props.viewerOptions?.markdown ?? {};
+  const { src, ...options } = props.viewerProps?.markdown ?? {};
   return options;
 });
 
@@ -181,7 +185,7 @@ const modelViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, ...options } = props.viewerOptions?.model ?? {};
+  const { src, ...options } = props.viewerProps?.model ?? {};
   return options;
 });
 
@@ -189,7 +193,7 @@ const officeViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, title, ...options } = props.viewerOptions?.office ?? {};
+  const { src, title, ...options } = props.viewerProps?.office ?? {};
   return options;
 });
 
@@ -197,7 +201,7 @@ const pdfViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, ...options } = props.viewerOptions?.pdf ?? {};
+  const { src, ...options } = props.viewerProps?.pdf ?? {};
   return options;
 });
 
@@ -205,7 +209,7 @@ const videoViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { src, poster, ...options } = props.viewerOptions?.audio ?? {};
+  const { src, poster, ...options } = props.viewerProps?.audio ?? {};
   return options;
 });
 
@@ -217,7 +221,7 @@ const handleViewerReady = () => {
   emits("loading-end");
 };
 
-const reportError = (reason?: string, error?: unknown) => {
+const setError = (reason?: string, error?: unknown) => {
   emits("loading-error");
 
   errorReason.value = reason;
@@ -299,14 +303,14 @@ const matchCustomViewer = (file: FileItem) => {
       Array.isArray(props.customViewerMatcher) &&
       props.customViewerMatcher.length > 0
     ) {
-      return props.customViewerMatcher.includes(file.mimeType);
+      return props.customViewerMatcher.includes(fileMimeType.value);
     }
   }
   return false;
 };
 
 onMounted(() => {
-  if (props.file?.file && props.file?.mimeType) {
+  if (props.file?.source && props.file?.mimeType) {
     emits("loading-start");
   } else {
     hasError.value = true;
@@ -314,17 +318,17 @@ onMounted(() => {
     return;
   }
 
-  if (typeof props.file?.file === "string") {
+  if (typeof props.file?.source === "string") {
     isBlob.value = false;
-    fileUrl.value = props.file.file;
+    fileUrl.value = props.file.source;
   } else if (props.file instanceof Blob) {
     isBlob.value = true;
-    fileUrl.value = URL.createObjectURL(props.file);
+    fileUrl.value = URL.createObjectURL(props.file.source);
   }
 });
 
 defineExpose({
-  reportError,
+  setError,
 });
 </script>
 
@@ -332,7 +336,7 @@ defineExpose({
   <div>
     <slot
       v-if="hasError || !fileUrl || !fileMimeType"
-      name="error-viewer"
+      name="error"
       :reason="errorReason"
       :filename="filename"
       :file-url="fileUrl"
@@ -348,16 +352,10 @@ defineExpose({
         :mime-type="fileMimeType"
       />
     </slot>
-    <slot
-      v-else
-      :filename="filename"
-      :file-url="fileUrl"
-      :mime-type="fileMimeType"
-      :file-encoding="fileEncoding"
-    >
+    <div class="pangju-wh-100">
       <slot
         v-if="matchCustomViewer(file)"
-        name="custom-viewer"
+        name="custom"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -368,7 +366,7 @@ defineExpose({
         v-else-if="
           supportedAudioMimeTypes.includes(fileMimeType) && enableAudio
         "
-        name="audio-viewer"
+        name="audio"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -388,7 +386,7 @@ defineExpose({
         v-else-if="
           supportedImageMimeTypes.includes(fileMimeType) && enableImage
         "
-        name="image-viewer"
+        name="image"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -407,7 +405,7 @@ defineExpose({
         v-else-if="
           supportedVideoMimeTypes.includes(fileMimeType) && enableVideo
         "
-        name="video-viewer"
+        name="video"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -424,7 +422,7 @@ defineExpose({
       </slot>
       <slot
         v-else-if="supportedModelTypes.includes(fileMimeType) && enableModel"
-        name="model-viewer"
+        name="model"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -442,7 +440,7 @@ defineExpose({
         v-else-if="
           supportedOfficeMimeTypes.includes(fileMimeType) && enableOffice
         "
-        name="office-viewer"
+        name="office"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -470,7 +468,7 @@ defineExpose({
         v-else-if="
           isTargetMimeType(markdownMimType, fileMimeType) && enableMarkdown
         "
-        name="markdown-viewer"
+        name="markdown"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -480,14 +478,13 @@ defineExpose({
           v-bind="markdownViewerProps"
           :src="fileUrlWithFileEncoding"
           class="pangju-wh-100"
-          :content-loader="markdownContentLoader"
           @ready="handleViewerReady"
           @error="handleViewerError"
         />
       </slot>
       <slot
         v-else-if="isTargetMimeType(dxfMimeType, fileMimeType) && enableDxf"
-        name="dxf-viewer"
+        name="dxf"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -503,7 +500,7 @@ defineExpose({
       </slot>
       <slot
         v-else-if="pdfMimeType === fileMimeType && enablePdf"
-        name="pdf-viewer"
+        name="pdf"
         :tile="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -529,7 +526,7 @@ defineExpose({
       </slot>
       <slot
         v-else-if="isTargetMimeType(jsonMimeType, fileMimeType) && enableJson"
-        name="json-viewer"
+        name="json"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -539,30 +536,29 @@ defineExpose({
           v-bind="jsonViewerProps"
           class="pangju-wh-100"
           :src="fileUrlWithFileEncoding"
-          :content-loader="jsonContentLoader"
           @ready="handleViewerReady"
           @error="handleViewerError"
         />
       </slot>
       <slot
         v-else-if="isTextMimeType(fileMimeType) && enableText"
-        name="text-viewer"
+        name="text"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
         :file-encoding="fileEncoding"
       >
         <text-viewer
+          v-bind="textViewerProps"
           class="pangju-wh-100"
           :src="fileUrlWithFileEncoding"
-          :content-loader="textContentLoader"
           @ready="handleViewerReady"
           @error="handleViewerError"
         />
       </slot>
       <slot
         v-else
-        name="unknown-viewer"
+        name="unknown"
         :filename="filename"
         :file-url="fileUrl"
         :mime-type="fileMimeType"
@@ -576,13 +572,6 @@ defineExpose({
           @ready="handleViewerReady"
         />
       </slot>
-    </slot>
+    </div>
   </div>
 </template>
-
-<style lang="less" scoped>
-.loading-container {
-  position: relative;
-  z-index: 9999;
-}
-</style>

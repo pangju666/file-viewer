@@ -31,7 +31,7 @@
   "dependencies": {
     "@babylonjs/viewer": "^8.54.1",
     "@onlyoffice/document-editor-vue": "^1.6.1",
-    "@vicons/material": "^0.13.0",
+    "@vicons/ionicons5": "^0.13.0",
     "dxf-viewer": "^1.0.46",
     "file-type": "^21.3.3",
     "md-editor-v3": "^6.4.0",

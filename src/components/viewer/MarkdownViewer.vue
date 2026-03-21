@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { MdPreview, MdCatalog } from "md-editor-v3";
 import "md-editor-v3/lib/preview.css";
-import { computed, ref, onMounted, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import {
   getFileEncodingFromUrl,
   getResult,
@@ -15,15 +15,11 @@ const props = withDefaults(
   defineProps<
     MarkdownPreviewOptions & {
       src: UrlWithFileEncoding | string;
-      contentLoader?: (
-        url: string,
-        encoding?: string,
-      ) => string | Promise<string>;
     }
   >(),
   {
-    id: "markdown-viewer",
-    viewerOptions: undefined,
+    id: undefined,
+    mdPreviewProps: undefined,
     showCatalog: true,
     catalogWidth: 300,
     contentLoader: undefined,
@@ -43,14 +39,14 @@ watch(
       getContent(newVal);
     }
   },
-  { deep: true },
+  { deep: true, immediate: true },
 );
 
-const mdPreviewProps = computed(() => {
+const bindMdPreviewProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, modelValue, editorId, ...options } = props.viewerOptions ?? {};
+  const { id, modelValue, editorId, ...options } = props.mdPreviewProps ?? {};
   return options;
 });
 
@@ -80,12 +76,6 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
     }
   }
 };
-
-onMounted(() => {
-  if (props.src) {
-    getContent(props.src);
-  }
-});
 </script>
 
 <template>
@@ -100,7 +90,7 @@ onMounted(() => {
     </n-layout-sider>
     <n-layout-content>
       <md-preview
-        v-bind="mdPreviewProps"
+        v-bind="bindMdPreviewProps"
         :id="id"
         class="pangju-wh-100"
         :model-value="content"

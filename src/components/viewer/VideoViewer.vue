@@ -17,7 +17,7 @@ const props = withDefaults(
     }
   >(),
   {
-    viewerOptions: () => ({
+    playerOptions: () => ({
       language: "zh-CN",
       autoplay: false,
       controls: true,
@@ -28,7 +28,6 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (e: "ready"): void;
-  (e: "progress"): void;
   (e: "error", error: MediaError): void;
 }>();
 
@@ -63,7 +62,7 @@ onMounted(() => {
   }
 
   videoPlayer = videojs(videoPlayRef.value, {
-    ...props.viewerOptions,
+    ...props.playerOptions,
     sources: props.src ? [normalizeSource(props.src)] : [],
   });
 
@@ -86,9 +85,9 @@ onMounted(() => {
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  videoPlayer?.on("progress", () => {
+  /*videoPlayer?.on("progress", () => {
     emits("progress");
-  });
+  });*/
 });
 
 onUnmounted(() => {

@@ -18,7 +18,7 @@ const props = withDefaults(
     showLayerList: true,
     layerListWidth: 300,
     fonts: () => [RobotoLightItalicFont],
-    viewerOptions: () => ({
+    dxfViewerOptions: () => ({
       fileEncoding: utf8Charset,
       clearColor: new Color("#fff"),
       autoResize: true,
@@ -61,7 +61,7 @@ const layers = ref<LayerInfo[]>([]);
 const initViewer = () => {
   dxfViewer = new DxfViewer(
     dxfContainerRef.value as HTMLElement,
-    props.viewerOptions,
+    props.dxfViewerOptions,
   );
   dxfViewer.Subscribe("loaded", () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

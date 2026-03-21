@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, watch } from "vue";
-import type { OnlyOfficeUrl } from "@/types/file.ts";
+import type { PdfUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { PdfPreviewOptions } from "@/types/options.ts";
 import { DocumentEditor } from "@onlyoffice/document-editor-vue";
@@ -9,7 +9,7 @@ import { undefinedFileErrorMessage } from "@/utils/constants.ts";
 const props = withDefaults(
   defineProps<
     PdfPreviewOptions & {
-      src: OnlyOfficeUrl | string;
+      src: PdfUrl | string;
       title?: string;
     }
   >(),
@@ -17,7 +17,7 @@ const props = withDefaults(
     token: undefined,
     title: undefined,
     id: "only-office-editor",
-    language: "zh",
+    region: "zh-CN",
     mode: "pdfjs",
     onlyOfficeServerUrl: undefined,
     pdfjsViewBaseUrl: "https://mozilla.github.io/pdf.js/web/viewer.html",
@@ -52,8 +52,12 @@ const onlyOfficeConfig = computed(() => ({
   type: "embedded",
   document: {
     fileType: "pdf",
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     key: props.src?.key,
     title: props.title ?? "",
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     url: props.src?.url,
     permissions: {
       chat: false,

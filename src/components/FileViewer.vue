@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { computed, ref } from "vue";
+import { type Component, computed, ref } from "vue";
 import FileList from "@/components/FileList.vue";
-import type { FileItem } from "@/types/file.ts";
+import type { FileItem, FileType } from "@/types/file.ts";
 import FilePreview from "@/components/FilePreview.vue";
 import type { FileListProps, FilePreviewProps } from "@/types/options.ts";
 import { getResult } from "@/utils/utils.ts";
@@ -47,28 +47,26 @@ const props = withDefaults(
     enableText: undefined,
     enableJson: undefined,
     enableDxf: undefined,
-    jsonContentLoader: undefined,
-    textContentLoader: undefined,
-    markdownContentLoader: undefined,
     customViewerMatcher: undefined,
-    viewerOptions: undefined,
+    viewerProps: undefined,
     /* File List 属性 */
     title: undefined,
-    showSkeleton: undefined,
+    data: undefined,
     showBackTop: undefined,
     showSearch: undefined,
     showTitle: undefined,
+    showFilter: undefined,
     coverHeight: undefined,
     coverObjectFit: undefined,
-    showTypeFilter: undefined,
-    fileTypes: undefined,
+    coverLazy: undefined,
+    coverFallbackSrc: undefined,
+    coverFallbackIcon: undefined,
     cardSize: undefined,
     cardHoverable: undefined,
     cardBordered: undefined,
-    tagSize: undefined,
-    fileItems: undefined,
-    load: undefined,
-    fileMatcher: undefined,
+    types: undefined,
+    filter: undefined,
+    onLoad: undefined,
     noMore: undefined,
     customDownload: undefined,
   },
@@ -92,21 +90,22 @@ const previewProps = computed(() => {
     autoDetectType,
     detectFileType,
     title,
-    fileItems,
-    showSkeleton,
+    data,
     showBackTop,
     showSearch,
     showTitle,
-    showTypeFilter,
+    showFilter,
     coverHeight,
     coverObjectFit,
+    coverLazy,
+    coverFallbackSrc,
+    coverFallbackIcon,
     cardSize,
     cardHoverable,
     cardBordered,
-    tagSize,
-    fileTypes,
-    fileMatcher,
-    load,
+    types,
+    filter,
+    onLoad,
     noMore,
     customDownload,
     ...options
@@ -146,15 +145,18 @@ const currentFile = ref<FileItem>();
 
 const changeFile = async (file: FileItem) => {
   currentFile.value = undefined;
-  if (file && file?.file && !file?.mimeType && props.autoDetectType) {
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (!file?.mimeType && !file?.source?.type && props.autoDetectType) {
     if (props.detectFileType) {
       file.mimeType = await getResult(props.detectFileType(file));
     } else {
-      if (file?.file instanceof Blob) {
-        const fileType = await fileTypeFromBlob(file?.file);
+      if (file?.source instanceof Blob) {
+        const fileType = await fileTypeFromBlob(file?.source);
         file.mimeType = fileType?.mime as string;
-      } else {
-        const response = await fetch(file.file);
+      } else if (typeof file?.source === "string") {
+        const response = await fetch(file.source);
         const fileType = await fileTypeFromStream(
           response.body as AnyWebReadableStream<Uint8Array>,
         );
@@ -162,6 +164,7 @@ const changeFile = async (file: FileItem) => {
       }
     }
   }
+
   currentFile.value = file;
 
   emits("click-file", file);
@@ -186,12 +189,10 @@ defineExpose({
           v-if="showLoading"
           :size="loadingSize"
           class="pangju-wh-100"
+          :description="loadingText"
           content-class="pangju-wh-100"
           :show="loading"
         >
-          <template #description>
-            {{ loadingText }}
-          </template>
           <file-preview
             v-if="currentFile"
             v-bind="previewProps"
@@ -202,7 +203,7 @@ defineExpose({
             @loading-error="loading = false"
           />
         </n-spin>
-        <slot v-else name="viewer" :current-file="currentFile">
+        <slot v-else name="preview" :current-file="currentFile">
           <file-preview
             v-if="currentFile"
             v-bind="previewProps"
@@ -215,7 +216,7 @@ defineExpose({
         </slot>
       </template>
       <template #2>
-        <slot name="file-list">
+        <slot name="list">
           <file-list v-bind="listProps" @click-file="changeFile" />
         </slot>
       </template>

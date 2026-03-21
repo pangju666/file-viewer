@@ -14,7 +14,7 @@ const props = withDefaults(
   >(),
   {
     showProgressBar: true,
-    viewerOptions: undefined,
+    babylonViewerAttributes: undefined,
   },
 );
 
@@ -27,17 +27,25 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    source.value = getSrcFromUrl(newVal);
-    if (typeof newVal !== "string") {
-      extension.value = getExtension(newVal?.mimeType);
+    if (newVal) {
+      source.value = getSrcFromUrl(newVal);
+
+      if (typeof newVal === "string") {
+        extension.value = undefined;
+      } else {
+        extension.value = getExtension(newVal?.mimeType);
+      }
+    } else {
+      source.value = undefined;
+      extension.value = undefined;
     }
   },
   { deep: true },
 );
 
-const babylonViewerProps = computed(() => {
+const bindBabylonViewerAttributes = computed(() => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { source, extension, ...options } = props.viewerOptions ?? {};
+  const { source, extension, ...options } = props.babylonViewerAttributes ?? {};
   return options;
 });
 
@@ -70,15 +78,10 @@ const handleError = (error: ErrorEvent) => {
 const handleProgressChange = () => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  switch (typeof viewerRef.value?.loadingProgress) {
-    /* case "boolean":
-      progressDiv.innerHTML = viewer.loadingProgress ? "Loading..." : "";
-      break;*/
-    case "number":
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      emits("progress", viewerRef.value.loadingProgress);
-      break;
+  if (typeof viewerRef.value?.loadingProgress === "number") {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    emits("progress", viewerRef.value.loadingProgress);
   }
 };
 
@@ -106,7 +109,7 @@ onMounted(() => {
 <template>
   <babylon-viewer
     ref="viewerRef"
-    v-bind="babylonViewerProps"
+    v-bind="bindBabylonViewerAttributes"
     :source="source"
     :extension="extension"
     @loadingprogresschange="handleProgressChange"

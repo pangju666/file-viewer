@@ -14,7 +14,7 @@ importers:
       '@onlyoffice/document-editor-vue':
         specifier: ^1.6.1
         version: 1.6.1(vue@3.5.30(typescript@5.9.3))
-      '@vicons/material':
+      '@vicons/ionicons5':
         specifier: ^0.13.0
         version: 0.13.0
       dxf-viewer:
@@ -965,8 +965,8 @@ packages:
   '@vavt/util@2.1.1':
     resolution: {integrity: sha512-QYn/B2qiQhAGZVBoe5/6pPcA3NiGcxIm9htpVBjcdIOZQaWe+8kE/akEgLPrHxv5dbQQawnyHBokadW1d1z1tw==}
 
-  '@vicons/material@0.13.0':
-    resolution: {integrity: sha512-lKVxFNprM+CaBkUH3gt6VjIeiMsKQl2zARQMwTCZruQl2vRHzyeZiKeCflWS99CEfv2JzX/6y697smxlzyxcVw==}
+  '@vicons/ionicons5@0.13.0':
+    resolution: {integrity: sha512-zvZKBPjEXKN7AXNo2Na2uy+nvuv6SP4KAMQxpKL2vfHMj0fSvuw7JZcOPCjQC3e7ayssKnaoFVAhbYcW6v41qQ==}
 
   '@videojs/http-streaming@3.17.4':
     resolution: {integrity: sha512-XAvdG2dolBuV2Fx8bu1kjmQ2D4TonGzZH68Pgv/O9xMSFWdZtITSMFismeQLEAtMmGwze8qNJp3RgV+jStrJqg==}
@@ -3518,7 +3518,7 @@ snapshots:
 
   '@vavt/util@2.1.1': {}
 
-  '@vicons/material@0.13.0': {}
+  '@vicons/ionicons5@0.13.0': {}
 
   '@videojs/http-streaming@3.17.4(video.js@8.23.7)':
     dependencies:

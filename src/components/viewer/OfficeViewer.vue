@@ -17,7 +17,7 @@ const props = withDefaults(
     token: undefined,
     title: undefined,
     id: "only-office-editor",
-    language: "zh",
+    region: "zh-CN",
     mode: "microsoft",
     onlyOfficeServerUrl: undefined,
     //microsoftViewBaseUrl: "https://view.officeapps.live.com/op/view.aspx",
@@ -48,13 +48,21 @@ const microsoftViewUrl = computed(() => {
 });
 
 const onlyOfficeConfig = computed(() => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   documentType: getDocumentType(props.src?.mimeType),
   token: props.token,
   type: "embedded",
   document: {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     fileType: getFileType(props.src?.mimeType),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     key: props.src?.key,
     title: props.title ?? "",
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     url: props.src?.url,
     permissions: {
       chat: false,
@@ -70,7 +78,7 @@ const onlyOfficeConfig = computed(() => ({
         visible: false,
       },
     },
-    lang: props.language ?? "zh",
+    region: props.region ?? "zh-CN",
     mode: "view",
   },
   events: {

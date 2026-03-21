@@ -2,27 +2,28 @@
 import { computed, onMounted, watch, ref } from "vue";
 import { downloadFile, formatFileSize, getResult } from "@/utils/utils.ts";
 import type { FileItem, FileTag, FileType } from "@/types/file.ts";
-import { SearchRound } from "@vicons/material";
+import { Image, Search } from "@vicons/ionicons5";
 import type { FileListProps } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(defineProps<FileListProps>(), {
   title: "文件列表",
-  showSkeleton: true,
   showBackTop: true,
   showSearch: true,
   showTitle: true,
+  showFilter: true,
   coverHeight: 150,
   coverObjectFit: "fill",
-  showTypeFilter: true,
-  fileTypes: undefined,
+  coverFallbackSrc: undefined,
+  coverFallbackIcon: Image,
+  coverLazy: true,
+  types: undefined,
   cardSize: "small",
   cardHoverable: true,
   cardBordered: true,
-  tagSize: "small",
-  fileItems: () => [],
-  load: undefined,
-  fileMatcher: undefined,
+  data: undefined,
+  onLoad: undefined,
+  filter: undefined,
   noMore: undefined,
   customDownload: undefined,
 });
@@ -30,6 +31,8 @@ const props = withDefaults(defineProps<FileListProps>(), {
 const emits = defineEmits<{
   (e: "click-file", file: FileItem): void;
 }>();
+
+const sourceFileItems = ref<FileItem[]>([]);
 
 const currentPage = ref<number>(1);
 const loading = ref<boolean>(false);
@@ -46,7 +49,7 @@ const isEmpty = computed(
 );
 
 const isNoMore = computed(() => {
-  if (!props.load) {
+  if (!props.onLoad) {
     return true;
   }
   if (props.noMore != null) {
@@ -56,12 +59,36 @@ const isNoMore = computed(() => {
 });
 
 watch(
-  () => props.fileTypes,
+  () => props.data,
+  async (newVal) => {
+    if (!props.onLoad && newVal) {
+      sourceFileItems.value = (await getResult<FileItem[]>(newVal)) ?? [];
+      fileItemList.value = sourceFileItems.value;
+      if (!props.types) {
+        fileTypesOptions.value = fileItemList.value.map((item) => ({
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          label: item?.label ?? item?.value ?? item,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          value: item?.value ?? item,
+        }));
+      }
+    }
+  },
+);
+
+watch(
+  () => props.types,
   async (newVal) => {
     if (newVal) {
-      const fileLabels = await getResult<FileType[]>(newVal);
-      fileTypesOptions.value = fileLabels.map((item) => ({
+      const fileTypes = await getResult<FileType[]>(newVal);
+      fileTypesOptions.value = fileTypes.map((item) => ({
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         label: item?.label ?? item?.value ?? item,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         value: item?.value ?? item,
       }));
     }
@@ -71,7 +98,7 @@ watch(
 watch(
   () => selectFileTypes.value,
   (val) => {
-    if (!props.load) {
+    if (!props.onLoad) {
       filterFileItems(inputValue.value, val);
     } else {
       loadFileList(inputValue.value, val, true);
@@ -84,7 +111,7 @@ const loadFileList = async (
   types?: string[],
   reset = false,
 ) => {
-  if (!props.load) {
+  if (!props.onLoad) {
     return;
   }
   if (!reset && loading.value) {
@@ -103,7 +130,7 @@ const loadFileList = async (
   loading.value = true;
   try {
     const result = await getResult(
-      props.load(currentPage.value, types ?? [], keyword),
+      props.onLoad(currentPage.value, types ?? [], keyword),
     );
 
     if (result.length === 0) {
@@ -122,8 +149,8 @@ const loadFileList = async (
   }
 };
 
-const searchFileList = () => {
-  if (!props.load) {
+const refreshData = () => {
+  if (!props.onLoad) {
     filterFileItems(inputValue.value, selectFileTypes.value);
   } else {
     loadFileList(inputValue.value, selectFileTypes.value, true);
@@ -131,22 +158,23 @@ const searchFileList = () => {
 };
 
 const filterFileItems = (keyword?: string, types?: string[]) => {
-  fileItemList.value = (props.fileItems ?? []).filter((item) => {
-    if (!props.fileMatcher) {
+  fileItemList.value = sourceFileItems.value.filter((item) => {
+    if (!props.filter) {
       let flag = true;
-      if (keyword) {
-        flag = item.name?.includes(keyword) ?? false;
+      if (item?.name && keyword) {
+        flag = item.name.includes(keyword) ?? false;
       }
-      if (types && types.length > 0) {
-        if (typeof item?.type === "string") {
+      if (item?.type && types && types.length > 0) {
+        if (typeof item.type === "string") {
           flag = types.includes(item.type);
-        } else if (item?.type?.value) {
+        } else if (item.type?.value) {
           flag = types.includes(item.type.value);
         }
       }
       return flag;
+    } else {
+      return props.filter(item, types ?? [], keyword);
     }
-    return props.fileMatcher(item, types ?? [], keyword);
   });
 };
 
@@ -171,7 +199,7 @@ const existFileTag = (tag?: FileTag) => {
 };
 
 const handleScrollLoad = () => {
-  if (isNoMore.value || !props.load || loading.value) {
+  if (isNoMore.value || !props.onLoad || loading.value) {
     return;
   }
   loadFileList(inputValue.value, selectFileTypes.value, false);
@@ -181,53 +209,80 @@ const handleClickDownload = (fileItem: FileItem) => {
   if (props.customDownload) {
     props.customDownload(fileItem);
   } else {
-    if (typeof fileItem?.file === "string") {
-      downloadFile(fileItem?.file, fileItem?.name ?? "");
-    } else if (fileItem?.file instanceof Blob) {
-      const downloadUrl = URL.createObjectURL(fileItem?.file);
+    if (typeof fileItem?.source === "string") {
+      downloadFile(fileItem?.source, fileItem?.name ?? "");
+    } else if (fileItem?.source instanceof Blob) {
+      const downloadUrl = URL.createObjectURL(fileItem?.source);
       downloadFile(downloadUrl, fileItem?.name ?? "");
       URL.revokeObjectURL(downloadUrl);
     }
   }
 };
 
-onMounted(() => {
-  if (!props.load) {
-    fileItemList.value = props.fileItems ?? [];
+onMounted(async () => {
+  if (props.types) {
+    const fileTypes = await getResult<FileType[]>(props.types);
+    fileTypesOptions.value = fileTypes.map((item) => ({
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      label: item?.label ?? item?.value ?? item,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      value: item?.value ?? item,
+    }));
+  }
+
+  if (!props.onLoad && props.data) {
+    sourceFileItems.value = (await getResult<FileItem[]>(props.data)) ?? [];
+    fileItemList.value = sourceFileItems.value;
+    if (!props.types) {
+      fileTypesOptions.value = fileItemList.value.map((item) => ({
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        label: item?.label ?? item?.value ?? item,
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        value: item?.value ?? item,
+      }));
+    }
   } else {
     internalNoMore.value = false;
-    loadFileList(inputValue.value, selectFileTypes.value, true);
+    await loadFileList(inputValue.value, selectFileTypes.value, true);
   }
+});
+
+defineExpose({
+  refreshData,
 });
 </script>
 
 <template>
   <div class="container">
-    <slot name="title">
-      <div v-if="showTitle" class="title">{{ title }}</div>
+    <slot v-if="showTitle" name="title">
+      <div class="title">{{ title }}</div>
     </slot>
-    <slot name="search">
-      <div v-if="showSearch" class="search-input">
+    <slot v-if="showSearch" name="search">
+      <div class="search-input">
         <n-input
           v-model:value="inputValue"
           round
           placeholder="请输入文件名"
-          @keydown.enter="searchFileList"
+          @keydown.enter="refreshData"
         >
           <template #suffix>
             <n-icon
               :size="24"
               class="pangju-cursor-pointer"
-              @click="searchFileList"
+              @click="refreshData"
             >
-              <SearchRound />
+              <Search />
             </n-icon>
           </template>
         </n-input>
       </div>
     </slot>
-    <slot name="filter">
-      <div v-if="showTypeFilter" class="label-select">
+    <slot v-if="showFilter" name="filter">
+      <div class="label-select">
         <n-select
           v-model:value="selectFileTypes"
           multiple
@@ -242,7 +297,7 @@ onMounted(() => {
         :distance="10"
         @load="handleScrollLoad"
       >
-        <slot :file-list="fileItemList">
+        <slot name="list" :file-list="fileItemList">
           <n-card
             v-for="(fileItem, i) in fileItemList"
             :key="i"
@@ -259,50 +314,64 @@ onMounted(() => {
             @click="emits('click-file', fileItem)"
           >
             <template #header>
-              <slot name="file-card-header" :file-item="fileItem">
+              <slot name="file-name" :file-item="fileItem">
                 <div
-                  v-if="fileItem?.name || fileItem?.file?.name"
+                  v-if="fileItem?.name || fileItem?.source?.name"
                   class="pangju-mr-10"
                 >
                   <n-ellipsis>
-                    {{ fileItem?.name ?? fileItem?.file?.name }}
+                    {{ fileItem?.name ?? fileItem?.source?.name }}
                   </n-ellipsis>
                 </div>
               </slot>
             </template>
             <template #header-extra>
-              <slot name="file-card-header-extra" :file-item="fileItem">
+              <slot name="file-type" :file-item="fileItem">
                 <n-tag
                   v-if="existFileType(fileItem)"
                   :bordered="false"
                   type="info"
                   size="small"
                 >
-                  {{ fileItem.type?.label ?? fileItem.type }}
+                  {{ fileItem?.type?.label ?? fileItem?.type }}
                 </n-tag>
               </slot>
             </template>
             <template #cover>
-              <slot name="file-card-cover" :file-item="fileItem">
-                <div v-if="fileItem.cover" class="pangju-p-10 pangju-h-center">
+              <slot name="file-cover" :file-item="fileItem">
+                <div class="pangju-p-10 pangju-h-center">
                   <n-image
-                    lazy
+                    :lazy="coverLazy"
                     preview-disabled
                     :object-fit="coverObjectFit"
                     :height="coverHeight"
-                    :src="fileItem.cover"
-                  />
+                    :src="fileItem?.cover"
+                  >
+                    <template #error>
+                      <img
+                        v-if="coverFallbackSrc"
+                        :src="coverFallbackSrc"
+                        :height="coverHeight"
+                        :style="{ objectFit: coverObjectFit }"
+                      />
+                      <n-icon
+                        v-else
+                        :size="coverHeight"
+                        :component="coverFallbackIcon"
+                      />
+                    </template>
+                  </n-image>
                 </div>
               </slot>
             </template>
             <template #footer>
-              <slot name="file-card-footer" :file-item="fileItem">
-                <n-space v-if="fileItem.tags" class="file-tags">
+              <slot name="file-tags" :file-item="fileItem">
+                <n-space v-if="fileItem?.tags" class="file-tags">
                   <n-tag
                     v-for="(tag, j) in fileItem?.tags"
                     :key="'file-item-tag-' + i + '-' + j"
                     :type="tag?.type ?? 'info'"
-                    :size="tagSize"
+                    size="small"
                   >
                     <span v-if="existFileTag(tag)">{{
                       tag?.value ?? tag
@@ -314,7 +383,7 @@ onMounted(() => {
             <template #action>
               <div class="pangju-flex-space-between">
                 <div>
-                  <slot name="file-card-action" :file-item="fileItem">
+                  <slot name="file-action" :file-item="fileItem">
                     <n-button
                       size="tiny"
                       class="pangju-mr-10"
@@ -329,16 +398,19 @@ onMounted(() => {
                       >下载</n-button
                     >
                   </slot>
+                  <slot name="file-action-extra" :file-item="fileItem"></slot>
                 </div>
-                <slot name="file-card-action-extra" :file-item="fileItem">
-                  <div v-if="fileItem.size">
-                    {{ formatFileSize(fileItem.size) }}
+                <slot name="file-size" :file-item="fileItem">
+                  <div v-if="fileItem?.size || fileItem?.source?.size">
+                    {{
+                      formatFileSize(fileItem?.size || fileItem?.source?.size)
+                    }}
                   </div>
                 </slot>
               </div>
             </template>
             <template #default>
-              <slot name="file-card-default" :file-item="fileItem">
+              <slot name="file-descriptions" :file-item="fileItem">
                 <div v-if="fileItem?.descriptions" class="file-descriptions">
                   <div
                     v-for="(description, j) in fileItem?.descriptions"
@@ -360,12 +432,8 @@ onMounted(() => {
             </template>
           </n-card>
         </slot>
-        <slot name="loading" :loading="loading">
-          <n-spin v-if="loading && !showSkeleton" class="pangju-flex-center">
-            <template #description> 加载中... </template>
-          </n-spin>
+        <slot v-if="loading" name="loading">
           <n-card
-            v-if="loading && showSkeleton"
             :hoverable="cardHoverable"
             :bordered="cardBordered"
             embedded
@@ -401,19 +469,18 @@ onMounted(() => {
             </template>
           </n-card>
         </slot>
-        <slot name="empty" :is-empty="isEmpty">
+        <slot v-if="isEmpty" name="empty">
           <n-empty
-            v-if="isEmpty"
             class="pangju-h-100 pangju-flex-center"
             description="文件列表为空"
           >
           </n-empty>
         </slot>
-        <slot name="noMore" :no-more="isNoMore">
-          <div v-if="isNoMore" class="pangju-h-center">没有更多了</div>
+        <slot v-if="isNoMore" name="noMore">
+          <div class="pangju-h-center">没有更多了</div>
         </slot>
-        <slot name="backTop">
-          <n-back-top v-if="showBackTop" :right="20" style="z-index: 9999" />
+        <slot v-if="showBackTop" name="backTop">
+          <n-back-top :right="20" style="z-index: 9999" />
         </slot>
       </n-infinite-scroll>
     </div>

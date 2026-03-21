@@ -12,8 +12,7 @@
 
 # Description
 
-The simply encapsulated file preview service can be accessed as a service parameter after it is deployed
-locally through nginx
+A highly integrated file preview component built with Vue 3 and Naive UI, designed to consolidate various common format previewing capabilities into a unified and highly customizable user experience.
 
 # Usage
 
@@ -87,34 +86,19 @@ Microsoft's online document preview service
     - Texture address: http://xxxxx.com/{file md5}/{file name}.jpg
 - The **name**、**type** parameter is required
 
-## Supported File Types
+## 📂 Supported File Types
 
-| File Type                                                                 | extension | classification              |
-|---------------------------------------------------------------------------|-----------|-----------------------------|
-| application/vnd.openxmlformats-officedocument.wordprocessingml.document   | docx      | document                    |
-| application/vnd.openxmlformats-officedocument.spreadsheetml.sheet         | xlsx      | document                    |
-| application/vnd.openxmlformats-officedocument.presentationml.presentation | pptx      | document                    |
-| application/msword                                                        | doc       | document                    |
-| application/vnd.ms-excel                                                  | xls       | document                    |
-| application/vnd.ms-powerpoint                                             | ppt       | document                    |
-| audio/mpeg                                                                | mp3       | audio                       |
-| audio/wav                                                                 | wav       | audio                       |
-| audio/ogg                                                                 | ogg       | audio                       |
-| audio/x-aac                                                               | aac       | audio                       |
-| audio/x-flac                                                              | flac      | audio                       |
-| video/mp4                                                                 | mp4       | video                       |
-| video/ogg                                                                 | ogg       | video                       |
-| video/webm                                                                | webm      | video                       |
-| model/obj                                                                 | obj       | video                       |
-| model/gltf-binary                                                         | glb       | video                       |
-| model/x.stl-binary                                                        | stl       | video                       |
-| text/x-web-markdown                                                       | md        | document                    |
-| application/vnd.google-earth.kml+xml                                      | kml       | geographic files            |
-| image/vnd.dxf                                                             | dxf       | engineering design drawings |
-| application/json                                                          | json      | text                        |
-| text/*                                                                    | txt       | image                       |
-| image/jpeg                                                                | jpeg、jpg  | image                       |
-| image/png                                                                 | png       | image                       |
-| image/gif                                                                 | gif       | image                       |
-| image/webp                                                                | webp      | image                       |
-| image/svg+xml                                                             | svg       | image                       |
+| Category | MIME Types | Extensions | Preview Tech |
+| --- | --- | --- | --- |
+| **Image** | `image/*` (jpeg, png, gif, bmp, webp, svg, avif) | .jpg, .png, .gif, .bmp, .webp, .svg, .avif | [viewerjs](https://github.com/fengyuanchen/viewerjs) |
+| **Video** | `video/*` (mp4, webm, ogg), `application/x-mpegURL` | .mp4, .webm, .ogv, .m3u8 | [video.js](https://github.com/videojs/video.js) |
+| **Audio** | `audio/*` (mp3, wav, ogg, aac, flac) | .mp3, .wav, .ogg, .aac, .flac | HTML5 Audio |
+| **PDF** | `application/pdf` | .pdf | [pdf.js](https://github.com/mozilla/pdf.js) / [OnlyOffice](https://www.onlyoffice.com/) |
+| **Office** | `application/msword`, `application/vnd.openxmlformats-officedocument.*` | .doc, .docx, .xls, .xlsx, .ppt, .pptx | Microsoft Office Online / [OnlyOffice](https://www.onlyoffice.com/) |
+| **3D Model** | `model/gltf+json`, `model/obj`, `model/x.stl-binary` | .gltf, .glb, .obj, .stl | [Three.js](https://github.com/mrdoob/three.js) / [Babylon.js](https://github.com/BabylonJS/Babylon.js) |
+| **DXF** | `image/vnd.dxf` | .dxf | [dxf-viewer](https://github.com/g-h-c/dxf-viewer) |
+| **JSON** | `application/json` | .json | [vue3-json-viewer](https://github.com/chen0820/vue3-json-viewer) |
+| **Markdown** | `text/x-web-markdown` | .md | [md-editor-v3](https://github.com/imzane/md-editor-v3) |
+| **Plain Text** | `text/*` | .txt, .js, .ts, .css, .html etc. | Built-in TextViewer |
+
+## 🧩 Component API

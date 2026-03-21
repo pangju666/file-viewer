@@ -2,16 +2,21 @@ export type FileSource = string | File | Blob;
 
 export type FileType =
   | {
-      label: string;
+      label?: string;
       value: string;
     }
   | string;
 
-export type FileTag = { value: string; type?: string } | string;
+export type FileTag =
+  | {
+      value: string;
+      type?: "default" | "primary" | "info" | "success" | "warning" | "error";
+    }
+  | string;
 
 export type FileItem = {
-  file: FileSource;
-  mimeType: string;
+  source: FileSource;
+  mimeType?: string;
   id?: string;
   name?: string;
   type?: FileType;
@@ -32,5 +37,10 @@ export type UrlWithFileEncoding = {
 };
 
 export type OnlyOfficeUrl = UrlWithMimeType & {
+  key: string;
+};
+
+export type PdfUrl = {
+  url: string;
   key: string;
 };

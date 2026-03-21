@@ -1,20 +1,19 @@
 <script lang="ts" setup>
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import {
   getFileEncodingFromUrl,
   getResult,
   getSrcFromUrl,
 } from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
+import type { TextPreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: UrlWithFileEncoding | string;
-    contentLoader?: (
-      url: string,
-      encoding?: string,
-    ) => string | Promise<string>;
-  }>(),
+  defineProps<
+    TextPreviewOptions & {
+      src: UrlWithFileEncoding | string;
+    }
+  >(),
   {
     contentLoader: undefined,
   },
@@ -33,7 +32,7 @@ watch(
       getContent(newVal);
     }
   },
-  { deep: true },
+  { deep: true, immediate: true },
 );
 
 const content = ref<string>();
@@ -64,12 +63,6 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
     }
   }
 };
-
-onMounted(() => {
-  if (props.src) {
-    getContent(props.src);
-  }
-});
 </script>
 
 <template>
