@@ -41,34 +41,15 @@ const normalizeSource = (src: UrlWithMimeType | string) => {
   return { src: src.url, type: src.mimeType };
 };
 
-watch(
-  () => props.src,
-  (newVal) => {
-    if (newVal) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      videoPlayer?.src(normalizeSource(newVal));
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      videoPlayer?.load();
-    }
-  },
-  { deep: true },
-);
-
-onMounted(() => {
-  if (!videoPlayRef.value) {
-    return;
-  }
-
-  videoPlayer = videojs(videoPlayRef.value, {
+const initPlayer = () => {
+  videoPlayer = videojs(videoPlayRef.value as HTMLVideoElement, {
     ...props.playerOptions,
-    sources: props.src ? [normalizeSource(props.src)] : [],
+    sources: [normalizeSource(props.src)],
   });
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  videoPlayer?.on("loadeddata", () => {
+  videoPlayer?.on("canplay", () => {
     emits("ready");
   });
 
@@ -82,6 +63,35 @@ onMounted(() => {
       emits("error", error);
     }
   });
+};
+
+watch(
+  () => props.src,
+  (newVal) => {
+    if (newVal) {
+      if (!videoPlayer) {
+        initPlayer();
+      } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        videoPlayer?.src(normalizeSource(newVal));
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        videoPlayer?.load();
+      }
+    }
+  },
+  { deep: true },
+);
+
+onMounted(() => {
+  if (!videoPlayRef.value) {
+    return;
+  }
+
+  if (props.src) {
+    initPlayer();
+  }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

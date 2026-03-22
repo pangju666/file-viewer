@@ -335,7 +335,7 @@ defineExpose({
 <template>
   <div>
     <slot
-      v-if="hasError || !fileUrl || !fileMimeType"
+      v-if="hasError"
       name="error"
       :reason="errorReason"
       :filename="filename"
@@ -352,7 +352,7 @@ defineExpose({
         :mime-type="fileMimeType"
       />
     </slot>
-    <div class="pangju-wh-100">
+    <div v-else class="pangju-wh-100">
       <slot
         v-if="matchCustomViewer(file)"
         name="custom"
@@ -477,7 +477,7 @@ defineExpose({
         <markdown-viewer
           v-bind="markdownViewerProps"
           :src="fileUrlWithFileEncoding"
-          style="width: 100%; height: 100%"
+          class="pangju-wh-100"
           @ready="handleViewerReady"
           @error="handleViewerError"
         />

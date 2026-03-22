@@ -1,13 +1,17 @@
 <script lang="ts" setup>
 import { computed, onMounted, watch, ref } from "vue";
 import { downloadFile, formatFileSize, getResult } from "@/utils/utils.ts";
-import type { FileItem, FileTag, FileType } from "@/types/file.ts";
+import type { FileItem, FileType } from "@/types/file.ts";
 import { Image, Search } from "@vicons/ionicons5";
 import type { FileListProps } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
 
 const props = withDefaults(defineProps<FileListProps>(), {
   title: "文件列表",
+  showDescriptions: true,
+  showCover: true,
+  showTags: true,
+  showType: true,
   showBackTop: true,
   showSearch: true,
   showTitle: true,
@@ -180,30 +184,6 @@ const filterFileItems = (keyword?: string, types?: string[]) => {
   });
 };
 
-const existFileType = (fileItem?: FileItem) => {
-  if (!fileItem?.type) {
-    return false;
-  } else if (typeof fileItem.type === "string") {
-    return fileItem.type;
-  } else {
-    return fileItem.type?.label;
-  }
-};
-
-const existFileTag = (tag?: FileTag) => {
-  if (!tag) {
-    return false;
-  } else if (typeof tag === "string") {
-    return tag;
-  } else {
-    return tag.value;
-  }
-};
-
-const getCoverSrc = (fileItem?: FileItem) => {
-  return fileItem?.cover ?? null;
-};
-
 const handleScrollLoad = () => {
   if (isNoMore.value || !props.onLoad || loading.value) {
     return;
@@ -317,10 +297,9 @@ defineExpose({
               footer: true,
               action: true,
             }"
-            @click="emits('click-file', fileItem)"
           >
             <template #header>
-              <slot name="file-name" :file-item="fileItem">
+              <slot name="card-header" :file-item="fileItem">
                 <div
                   v-if="fileItem?.name || fileItem?.source?.name"
                   class="pangju-mr-10"
@@ -332,26 +311,36 @@ defineExpose({
               </slot>
             </template>
             <template #header-extra>
-              <slot name="file-type" :file-item="fileItem">
+              <slot name="card-header-extra" :file-item="fileItem">
                 <n-tag
-                  v-if="existFileType(fileItem)"
+                  v-if="
+                    showType &&
+                    (fileItem?.type?.label ||
+                      fileItem?.type?.value ||
+                      fileItem?.type)
+                  "
                   :bordered="false"
                   type="info"
                   size="small"
                 >
-                  {{ fileItem?.type?.label ?? fileItem?.type }}
+                  {{
+                    fileItem?.type?.label ??
+                    fileItem?.type?.value ??
+                    fileItem?.type
+                  }}
                 </n-tag>
               </slot>
             </template>
             <template #cover>
-              <slot name="file-cover" :file-item="fileItem">
-                <div class="pangju-p-10 pangju-h-center">
+              <slot name="card-cover" :file-item="fileItem">
+                <div v-if="showCover" class="pangju-p-10 pangju-h-center">
                   <n-image
                     :lazy="coverLazy"
                     preview-disabled
                     :object-fit="coverObjectFit"
                     :height="coverHeight"
-                    :src="getCoverSrc(fileItem)"
+                    :src="fileItem?.cover ?? 'cover'"
+                    @click="emits('click-file', fileItem)"
                   >
                     <template v-if="coverLazy" #placeholder>
                       <img
@@ -384,15 +373,15 @@ defineExpose({
               </slot>
             </template>
             <template #footer>
-              <slot name="file-tags" :file-item="fileItem">
-                <n-space v-if="fileItem?.tags" class="file-tags">
+              <slot name="card-footer" :file-item="fileItem">
+                <n-space v-if="showTags && fileItem?.tags" class="file-tags">
                   <n-tag
                     v-for="(tag, j) in fileItem?.tags"
                     :key="'file-item-tag-' + i + '-' + j"
                     :type="tag?.type ?? 'info'"
                     size="small"
                   >
-                    <span v-if="existFileTag(tag)">{{
+                    <span v-if="tag?.value || tag">{{
                       tag?.value ?? tag
                     }}</span>
                   </n-tag>
@@ -400,9 +389,9 @@ defineExpose({
               </slot>
             </template>
             <template #action>
-              <div class="pangju-flex-space-between">
-                <div>
-                  <slot name="file-action" :file-item="fileItem">
+              <slot name="card-action" :file-item="fileItem">
+                <div class="pangju-flex-space-between">
+                  <div>
                     <n-button
                       size="tiny"
                       class="pangju-mr-10"
@@ -416,21 +405,24 @@ defineExpose({
                       @click.stop="handleClickDownload(fileItem)"
                       >下载</n-button
                     >
-                  </slot>
-                  <slot name="file-action-extra" :file-item="fileItem"></slot>
-                </div>
-                <slot name="file-size" :file-item="fileItem">
-                  <div v-if="fileItem?.size || fileItem?.source?.size">
-                    {{
-                      formatFileSize(fileItem?.size || fileItem?.source?.size)
-                    }}
+                    <slot name="card-action-extra" :file-item="fileItem"></slot>
                   </div>
-                </slot>
-              </div>
+                  <slot name="card-action-right" :file-item="fileItem">
+                    <div v-if="fileItem?.size || fileItem?.source?.size">
+                      {{
+                        formatFileSize(fileItem?.size || fileItem?.source?.size)
+                      }}
+                    </div>
+                  </slot>
+                </div>
+              </slot>
             </template>
             <template #default>
-              <slot name="file-descriptions" :file-item="fileItem">
-                <div v-if="fileItem?.descriptions" class="file-descriptions">
+              <slot name="card-default" :file-item="fileItem">
+                <div
+                  v-if="showDescriptions && fileItem?.descriptions"
+                  class="file-descriptions"
+                >
                   <div
                     v-for="(description, j) in fileItem?.descriptions"
                     :key="'file-item-description-' + i + '-' + j"
@@ -495,10 +487,10 @@ defineExpose({
           >
           </n-empty>
         </slot>
-        <slot v-if="isNoMore" name="noMore">
+        <slot v-if="isNoMore" name="no-more">
           <div class="pangju-h-center">没有更多了</div>
         </slot>
-        <slot v-if="showBackTop" name="backTop">
+        <slot v-if="showBackTop" name="back-top">
           <n-back-top :right="20" style="z-index: 9999" />
         </slot>
       </n-infinite-scroll>

@@ -32,7 +32,6 @@ export const supportedImageMimeTypes = [
 export const supportedVideoMimeTypes = [
   "video/mp4",
   "video/webm",
-  "video/ogg",
   "application/x-mpegURL",
   "application/vnd.apple.mpegurl",
   "application/dash+xml",

@@ -97,6 +97,10 @@ export type FileListProps = {
     | Promise<FileItem[]>
     | (() => FileItem[])
     | (() => Promise<FileItem[]>);
+  showDescriptions?: boolean;
+  showCover?: boolean;
+  showTags?: boolean;
+  showType?: boolean;
   showBackTop?: boolean;
   showSearch?: boolean;
   showTitle?: boolean;

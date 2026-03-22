@@ -77,14 +77,14 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
       }
     }
   }
+};
 
+onMounted(() => {
   editorRef.value?.togglePreviewOnly(true);
   if (props.showCatalog) {
     editorRef.value?.toggleCatalog(true);
   }
-};
 
-onMounted(() => {
   if (props.src) {
     getContent(props.src);
   }
@@ -92,14 +92,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <md-editor
-    v-bind="bindMdEditorProps"
-    ref="editorRef"
-    :model-value="content"
-    :toolbars="[]"
-    :footers="[]"
-    @remount="$emit('ready')"
-  ></md-editor>
+  <div>
+    <md-editor
+      v-bind="bindMdEditorProps"
+      ref="editorRef"
+      style="width: 100%; height: 100%"
+      :model-value="content"
+      :toolbars="[]"
+      :footers="[]"
+      @remount="$emit('ready')"
+    ></md-editor>
+  </div>
 </template>
 
 <style>
