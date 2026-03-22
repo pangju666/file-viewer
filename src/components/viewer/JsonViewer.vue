@@ -14,14 +14,10 @@ const props = withDefaults(
   defineProps<
     JsonPreviewOptions & {
       src: UrlWithFileEncoding | string;
-      contentLoader?: (
-        url: string,
-        fileEncoding?: string,
-      ) => Record<string, unknown> | Promise<Record<string, unknown>>;
     }
   >(),
   {
-    viewerOptions: () => ({
+    jsonViewerProps: () => ({
       copyable: true,
       expanded: true,
       expandDepth: 10,
@@ -39,6 +35,7 @@ watch(
   () => props.src,
   (newVal: UrlWithFileEncoding | string) => {
     content.value = {};
+
     if (newVal) {
       getContent(newVal);
     }
@@ -46,11 +43,11 @@ watch(
   { deep: true },
 );
 
-const vueJsonViewerProps = computed(() => {
+const bindVueJsonViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { value, ...options } = props.viewerOptions ?? {};
+  const { value, ...options } = props.jsonViewerProps ?? {};
   return options;
 });
 
@@ -92,7 +89,7 @@ onMounted(() => {
 
 <template>
   <div class="json-viewer">
-    <vue-json-viewer v-bind="vueJsonViewerProps" :value="content" />
+    <vue-json-viewer v-bind="bindVueJsonViewerProps" :value="content" />
   </div>
 </template>
 

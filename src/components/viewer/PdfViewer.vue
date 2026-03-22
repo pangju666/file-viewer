@@ -1,15 +1,20 @@
 <script lang="ts" setup>
 import { computed, onMounted, watch } from "vue";
-import type { OnlyOfficeUrl } from "@/types/file.ts";
+import type { PdfUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { PdfPreviewOptions } from "@/types/options.ts";
 import { DocumentEditor } from "@onlyoffice/document-editor-vue";
-import { undefinedFileErrorMessage } from "@/utils/constants.ts";
+import {
+  filenameAlphabet,
+  undefinedFileErrorMessage,
+  undefinedKeyErrorMessage,
+} from "@/utils/constants.ts";
+import { customAlphabet, nanoid } from "nanoid";
 
 const props = withDefaults(
   defineProps<
     PdfPreviewOptions & {
-      src: OnlyOfficeUrl | string;
+      src: PdfUrl | string;
       title?: string;
     }
   >(),
@@ -17,7 +22,8 @@ const props = withDefaults(
     token: undefined,
     title: undefined,
     id: "only-office-editor",
-    language: "zh",
+    region: "zh-CN",
+    lang: "zh",
     mode: "pdfjs",
     onlyOfficeServerUrl: undefined,
     pdfjsViewBaseUrl: "https://mozilla.github.io/pdf.js/web/viewer.html",
@@ -32,8 +38,16 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    if (props.mode === "onlyOffice" && typeof newVal === "string") {
-      emits("error", undefinedFileErrorMessage);
+    if (props.mode === "onlyOffice") {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (!newVal?.url) {
+        emits("error", undefinedFileErrorMessage);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+      } else if (!newVal?.key) {
+        emits("error", undefinedKeyErrorMessage);
+      }
     }
   },
 );
@@ -52,10 +66,17 @@ const onlyOfficeConfig = computed(() => ({
   type: "embedded",
   document: {
     fileType: "pdf",
-    key: props.src?.key,
-    title: props.title ?? "",
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    key: props.src?.key ?? nanoid(),
+    title: props.title ?? `${customAlphabet(filenameAlphabet)}.pdf`,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     url: props.src?.url,
     permissions: {
+      copy: true,
+      download: true,
+      print: true,
       chat: false,
       comment: false,
     },
@@ -69,7 +90,8 @@ const onlyOfficeConfig = computed(() => ({
         visible: false,
       },
     },
-    lang: props.language ?? "zh",
+    lang: props.lang,
+    region: props.region,
     mode: "view",
   },
   events: {
@@ -97,18 +119,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <document-editor
-    v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
-    :id="id"
-    :document-server-url="onlyOfficeServerUrl"
-    :config="onlyOfficeConfig"
-  />
-  <iframe
-    v-else
-    :src="pdfjsViewUrl"
-    width="100%"
-    height="100%"
-    style="padding: 0; margin: 0; border: none"
-    @load="$emit('ready')"
-  />
+  <div style="overflow: hidden">
+    <document-editor
+      v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
+      :id="id"
+      :document-server-url="onlyOfficeServerUrl"
+      :config="onlyOfficeConfig"
+    />
+    <iframe
+      v-else
+      :src="pdfjsViewUrl"
+      width="100%"
+      height="100%"
+      style="padding: 0; margin: 0; border: none"
+      @load="$emit('ready')"
+    />
+  </div>
 </template>

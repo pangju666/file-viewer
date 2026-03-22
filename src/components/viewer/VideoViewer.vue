@@ -17,7 +17,7 @@ const props = withDefaults(
     }
   >(),
   {
-    viewerOptions: () => ({
+    playerOptions: () => ({
       language: "zh-CN",
       autoplay: false,
       controls: true,
@@ -28,7 +28,6 @@ const props = withDefaults(
 
 const emits = defineEmits<{
   (e: "ready"): void;
-  (e: "progress"): void;
   (e: "error", error: MediaError): void;
 }>();
 
@@ -42,34 +41,15 @@ const normalizeSource = (src: UrlWithMimeType | string) => {
   return { src: src.url, type: src.mimeType };
 };
 
-watch(
-  () => props.src,
-  (newVal) => {
-    if (newVal) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      videoPlayer?.src(normalizeSource(newVal));
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      videoPlayer?.load();
-    }
-  },
-  { deep: true },
-);
-
-onMounted(() => {
-  if (!videoPlayRef.value) {
-    return;
-  }
-
-  videoPlayer = videojs(videoPlayRef.value, {
-    ...props.viewerOptions,
-    sources: props.src ? [normalizeSource(props.src)] : [],
+const initPlayer = () => {
+  videoPlayer = videojs(videoPlayRef.value as HTMLVideoElement, {
+    ...props.playerOptions,
+    sources: [normalizeSource(props.src)],
   });
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  videoPlayer?.on("loadeddata", () => {
+  videoPlayer?.on("canplay", () => {
     emits("ready");
   });
 
@@ -83,12 +63,41 @@ onMounted(() => {
       emits("error", error);
     }
   });
+};
+
+watch(
+  () => props.src,
+  (newVal) => {
+    if (newVal) {
+      if (!videoPlayer) {
+        initPlayer();
+      } else {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        videoPlayer?.src(normalizeSource(newVal));
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        videoPlayer?.load();
+      }
+    }
+  },
+  { deep: true },
+);
+
+onMounted(() => {
+  if (!videoPlayRef.value) {
+    return;
+  }
+
+  if (props.src) {
+    initPlayer();
+  }
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  videoPlayer?.on("progress", () => {
+  /*videoPlayer?.on("progress", () => {
     emits("progress");
-  });
+  });*/
 });
 
 onUnmounted(() => {

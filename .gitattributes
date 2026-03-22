@@ -15,3 +15,7 @@
 *.png   binary
 *.vsd   binary
 *.ttf   binary
+*.bcmap binary
+*.icc   binary
+*.pfb   binary
+*.wasm  binary

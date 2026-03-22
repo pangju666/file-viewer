@@ -4,7 +4,12 @@ import type { OnlyOfficeUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { OfficePreviewOptions } from "@/types/options.ts";
 import { DocumentEditor } from "@onlyoffice/document-editor-vue";
-import { undefinedFileErrorMessage } from "@/utils/constants.ts";
+import {
+  filenameAlphabet,
+  undefinedFileErrorMessage,
+  undefinedKeyErrorMessage,
+} from "@/utils/constants.ts";
+import { customAlphabet, nanoid } from "nanoid";
 
 const props = withDefaults(
   defineProps<
@@ -17,7 +22,8 @@ const props = withDefaults(
     token: undefined,
     title: undefined,
     id: "only-office-editor",
-    language: "zh",
+    region: "zh-CN",
+    lang: "zh",
     mode: "microsoft",
     onlyOfficeServerUrl: undefined,
     //microsoftViewBaseUrl: "https://view.officeapps.live.com/op/view.aspx",
@@ -33,8 +39,16 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    if (props.mode === "onlyOffice" && typeof newVal === "string") {
-      emits("error", undefinedFileErrorMessage);
+    if (props.mode === "onlyOffice") {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (!newVal?.url || !newVal?.mimeType) {
+        emits("error", undefinedFileErrorMessage);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+      } else if (!newVal?.key) {
+        emits("error", undefinedKeyErrorMessage);
+      }
     }
   },
 );
@@ -48,15 +62,28 @@ const microsoftViewUrl = computed(() => {
 });
 
 const onlyOfficeConfig = computed(() => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   documentType: getDocumentType(props.src?.mimeType),
   token: props.token,
   type: "embedded",
   document: {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     fileType: getFileType(props.src?.mimeType),
-    key: props.src?.key,
-    title: props.title ?? "",
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    key: props.src?.key ?? nanoid(),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    title: props.title ?? generateFilename(props.src?.mimeType),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     url: props.src?.url,
     permissions: {
+      copy: true,
+      download: true,
+      print: true,
       chat: false,
       comment: false,
     },
@@ -70,7 +97,8 @@ const onlyOfficeConfig = computed(() => ({
         visible: false,
       },
     },
-    lang: props.language ?? "zh",
+    lang: props.lang,
+    region: props.region,
     mode: "view",
   },
   events: {
@@ -118,6 +146,23 @@ const getFileType = (mimeType: string) => {
   }
 };
 
+const generateFilename = (mimeType: string) => {
+  switch (mimeType) {
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      return `${customAlphabet(filenameAlphabet)}.docx`;
+    case "application/msword":
+      return `${customAlphabet(filenameAlphabet)}.doc`;
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      return `${customAlphabet(filenameAlphabet)}.xlsx`;
+    case "application/vnd.ms-excel":
+      return `${customAlphabet(filenameAlphabet)}.xls`;
+    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+      return `${customAlphabet(filenameAlphabet)}.pptx`;
+    case "application/vnd.ms-powerpoint":
+      return `${customAlphabet(filenameAlphabet)}.ppt`;
+  }
+};
+
 onMounted(() => {
   if (props.mode === "onlyOffice" && !props.onlyOfficeServerUrl) {
     console.warn(
@@ -129,18 +174,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <document-editor
-    v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
-    :id="id"
-    :document-server-url="onlyOfficeServerUrl"
-    :config="onlyOfficeConfig"
-  />
-  <iframe
-    v-else
-    :src="microsoftViewUrl"
-    width="100%"
-    height="100%"
-    style="padding: 0; margin: 0; border: none"
-    @load="$emit('ready')"
-  />
+  <div style="overflow: hidden">
+    <document-editor
+      v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
+      :id="id"
+      :document-server-url="onlyOfficeServerUrl"
+      :config="onlyOfficeConfig"
+    />
+    <iframe
+      v-else
+      :src="microsoftViewUrl"
+      width="100%"
+      height="100%"
+      style="padding: 0; margin: 0; border: none"
+      @load="$emit('ready')"
+    />
+  </div>
 </template>

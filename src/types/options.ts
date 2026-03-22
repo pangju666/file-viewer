@@ -3,6 +3,7 @@ import type { DxfViewerOptions } from "dxf-viewer";
 import Viewer from "viewerjs";
 import type { JsonViewerProps } from "vue3-json-viewer";
 import type { MdPreviewProps } from "md-editor-v3";
+import type { Component } from "vue";
 
 export type ImageViewerOptions = Omit<
   Viewer.Options,
@@ -19,8 +20,10 @@ export type MarkdownViewerOptions = Omit<
 export type AudioPreviewOptions = {
   autoplay?: boolean;
   controls?: boolean;
-  coverSize?: number;
+  coverHeight?: number;
   coverObjectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
+  coverFallbackSrc?: string;
+  coverFallbackIcon?: Component;
 };
 
 export type DxfPreviewOptions = {
@@ -28,7 +31,7 @@ export type DxfPreviewOptions = {
   showLayerList?: boolean;
   layerListWidth?: number | string;
   fonts?: string[];
-  viewerOptions?: DxfViewerOptions;
+  dxfViewerOptions?: DxfViewerOptions;
 };
 
 export type ImagePreviewOptions = {
@@ -36,26 +39,41 @@ export type ImagePreviewOptions = {
 };
 
 export type JsonPreviewOptions = {
-  viewerOptions?: JsonViewerOptions;
+  contentLoader?: (
+    url: string,
+    fileEncoding: string,
+  ) => Record<string, unknown> | Promise<Record<string, unknown>>;
+  jsonViewerProps?: JsonViewerOptions;
 };
 
 export type MarkdownPreviewOptions = {
   showCatalog?: boolean;
-  catalogWidth?: string | number;
-  id?: string;
-  viewerOptions?: MarkdownViewerOptions;
+  catalogWidth?: number;
+  mdPreviewProps?: MarkdownViewerOptions;
+  contentLoader?: (
+    url: string,
+    fileEncoding: string,
+  ) => string | Promise<string>;
+};
+
+export type TextPreviewOptions = {
+  contentLoader?: (
+    url: string,
+    fileEncoding: string,
+  ) => string | Promise<string>;
 };
 
 export type ModelPreviewOptions = {
   showProgressBar?: boolean;
-  viewerOptions?: Record<string, unknown>;
+  babylonViewerAttributes?: Record<string, unknown>;
 };
 
 export type OfficePreviewOptions = {
   id?: string;
   token?: string;
   mode?: "microsoft" | "onlyOffice";
-  language?: string;
+  region?: string;
+  lang?: string;
   microsoftViewBaseUrl?: string;
   onlyOfficeServerUrl?: string;
 };
@@ -64,13 +82,14 @@ export type PdfPreviewOptions = {
   id?: string;
   token?: string;
   mode?: "pdfjs" | "onlyOffice";
-  language?: string;
+  region?: string;
+  lang?: string;
   pdfjsViewBaseUrl?: string;
   onlyOfficeServerUrl?: string;
 };
 
 export type VideoPreviewOptions = {
-  viewerOptions?: Record<string, unknown>;
+  playerOptions?: Record<string, unknown>;
 };
 
 export type FilePreviewProps = {
@@ -85,19 +104,7 @@ export type FilePreviewProps = {
   enableJson?: boolean;
   enableDxf?: boolean;
   customViewerMatcher?: string[] | ((file: FileItem) => boolean);
-  jsonContentLoader?: (
-    url: string,
-    encoding?: string,
-  ) => Record<string, unknown> | Promise<Record<string, unknown>>;
-  textContentLoader?: (
-    url: string,
-    encoding?: string,
-  ) => string | Promise<string>;
-  markdownContentLoader?: (
-    url: string,
-    encoding?: string,
-  ) => string | Promise<string>;
-  viewerOptions?: {
+  viewerProps?: {
     audio?: AudioPreviewOptions;
     dxf?: DxfPreviewOptions;
     image?: ImagePreviewOptions;
@@ -107,5 +114,6 @@ export type FilePreviewProps = {
     office?: OfficePreviewOptions;
     pdf?: PdfPreviewOptions;
     video?: VideoPreviewOptions;
+    text?: TextPreviewOptions;
   };
 };

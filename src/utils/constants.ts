@@ -32,7 +32,6 @@ export const supportedImageMimeTypes = [
 export const supportedVideoMimeTypes = [
   "video/mp4",
   "video/webm",
-  "video/ogg",
   "application/x-mpegURL",
   "application/vnd.apple.mpegurl",
   "application/dash+xml",
@@ -60,3 +59,8 @@ export const utf8Charset = "utf-8";
 export const mimeTypeWithCharsetRegex = /charset\s*=\s*"?([^"\s;]+)"?/i;
 
 export const undefinedFileErrorMessage = "未定义文件链接或类型";
+
+export const undefinedKeyErrorMessage = "未定义文件唯一标识符";
+
+export const filenameAlphabet =
+  "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

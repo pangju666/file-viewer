@@ -22,17 +22,17 @@ withDefaults(
     <n-result status="500" size="huge" :title="reason" class="error-viewer">
       <div class="descriptions">
         <div v-show="filename" class="description-item">
-          <div class="title">文件名：</div>
+          <div class="title">文件名称：</div>
           <n-ellipsis>
             {{ filename }}
           </n-ellipsis>
         </div>
         <div v-show="mimeType" class="description-item">
-          <div class="title">类&nbsp;&nbsp;&nbsp;型：</div>
+          <div class="title">文件类型：</div>
           <n-ellipsis>{{ mimeType }}</n-ellipsis>
         </div>
         <div v-show="src" class="description-item">
-          <div class="title">链&nbsp;&nbsp;&nbsp;接：</div>
+          <div class="title">文件链接：</div>
           <n-ellipsis class="pangju-w-100">
             <a :href="src" target="_blank">
               {{ src }}
@@ -50,6 +50,8 @@ withDefaults(
   max-width: 100%;
 
   .descriptions {
+    margin: 0 auto;
+    max-width: 80%;
     font-size: 16px;
 
     .description-item {
@@ -57,7 +59,7 @@ withDefaults(
       margin-bottom: 15px;
 
       .title {
-        width: 65px;
+        width: 80px;
         font-weight: bold;
         word-break: keep-all;
       }

@@ -6,15 +6,14 @@ import {
   getSrcFromUrl,
 } from "@/utils/utils.ts";
 import type { UrlWithFileEncoding } from "@/types/file.ts";
+import type { TextPreviewOptions } from "@/types/options.ts";
 
 const props = withDefaults(
-  defineProps<{
-    src: UrlWithFileEncoding | string;
-    contentLoader?: (
-      url: string,
-      encoding?: string,
-    ) => string | Promise<string>;
-  }>(),
+  defineProps<
+    TextPreviewOptions & {
+      src: UrlWithFileEncoding | string;
+    }
+  >(),
   {
     contentLoader: undefined,
   },
@@ -29,6 +28,7 @@ watch(
   () => props.src,
   (newVal: UrlWithFileEncoding | string) => {
     content.value = "";
+
     if (newVal) {
       getContent(newVal);
     }
