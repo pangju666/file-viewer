@@ -18,10 +18,6 @@
 | **Markdown文档** | .md                                                                                     |                                                                                                                                                                                                
 | **纯文本**        | .txt, .js, .ts, .css, .html 等                                                           |
 
-## 预览图
-
-![预览图](docs-images/file-viewer.webp)
-
 ## 在线示例
 
 ## 📦 安装
@@ -248,6 +244,8 @@ const fileItems = [
 > 1. `autoDetectType`属性为`true`
 > 2. [`FileItem`](#fileitem)的`mimeType`属性`undefined`或为`null`
 > 3. 当`source`为`Blob`或`File`类型时`type`属性`undefined`或为`null`
+
+![预览图](docs-images/file-viewer.webp)
 
 #### 属性
 

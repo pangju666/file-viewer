@@ -149,17 +149,17 @@ const getFileType = (mimeType: string) => {
 const generateFilename = (mimeType: string) => {
   switch (mimeType) {
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return `${customAlphabet(filenameAlphabet)}.docx`;
+      return `${customAlphabet(filenameAlphabet)()}.docx`;
     case "application/msword":
-      return `${customAlphabet(filenameAlphabet)}.doc`;
+      return `${customAlphabet(filenameAlphabet)()}.doc`;
     case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-      return `${customAlphabet(filenameAlphabet)}.xlsx`;
+      return `${customAlphabet(filenameAlphabet)()}.xlsx`;
     case "application/vnd.ms-excel":
-      return `${customAlphabet(filenameAlphabet)}.xls`;
+      return `${customAlphabet(filenameAlphabet)()}.xls`;
     case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-      return `${customAlphabet(filenameAlphabet)}.pptx`;
+      return `${customAlphabet(filenameAlphabet)()}.pptx`;
     case "application/vnd.ms-powerpoint":
-      return `${customAlphabet(filenameAlphabet)}.ppt`;
+      return `${customAlphabet(filenameAlphabet)()}.ppt`;
   }
 };
 

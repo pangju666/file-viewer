@@ -69,7 +69,7 @@ const onlyOfficeConfig = computed(() => ({
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     key: props.src?.key ?? nanoid(),
-    title: props.title ?? `${customAlphabet(filenameAlphabet)}.pdf`,
+    title: props.title ?? `${customAlphabet(filenameAlphabet)()}.pdf`,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     url: props.src?.url,
