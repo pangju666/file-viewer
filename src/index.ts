@@ -84,6 +84,8 @@ export type {
 
 export {
   undefinedFileErrorMessage,
+  undefinedKeyErrorMessage,
+  filenameAlphabet,
   supportedOfficeMimeTypes,
   dxfMimeType,
   supportedModelTypes,
