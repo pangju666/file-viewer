@@ -20,6 +20,8 @@
 
 ## 预览图
 
+![预览图](docs-images/file-viewer.webp)
+
 ## 在线示例
 
 ## 📦 安装
@@ -247,10 +249,6 @@ const fileItems = [
 > 2. [`FileItem`](#fileitem)的`mimeType`属性`undefined`或为`null`
 > 3. 当`source`为`Blob`或`File`类型时`type`属性`undefined`或为`null`
 
-#### 预览图
-
-![预览图](docs-images/file-viewer.webp)
-
 #### 属性
 
 除了继承自[`FileList`](#filelist)和[`FilePreview`](#filepreview)的属性外，还包含以下属性：
@@ -261,32 +259,32 @@ const fileItems = [
 | `maxSplitSize`     | `number \| string`                              | `0.9`                                                                       | 预览面板最大宽度比例（源自[`Naive UI Split`](https://www.naiveui.com/zh-CN/os-theme/components/split#Split-Props)的`max`属性)          |
 | `defaultSplitSize` | `number \| string`                              | `0.8`                                                                       | 预览面板默认宽度比例（源自[`Naive UI Split`](https://www.naiveui.com/zh-CN/os-theme/components/split#Split-Props)的`default-size`属性) |
 | `autoDetectType`   | `boolean`                                       | `true`                                                                      | 是否根据文件内容自动检测 `MIME Type`                                                                                               |
-| `detectFileType`   | `(file: FileItem) => string \| Promise<string>` | 使用[`file-type`](https://www.npmjs.com/package/file-type?activeTab=readme)实现 | 自定义文件类型检测函数（当`autoDetectType`为`true`时生效）                                                                               |
+| `detectFileType`   | `(file: FileItem) => string \| Promise<string>` | 使用[`file-type`](https://www.npmjs.com/package/file-type?activeTab=readme)实现 | 自定义文件类型检测函数（当`autoDetectType`为`true`时生效），类型参考[FileItem](#fileitem)                                                     |
 | `showLoading`      | `boolean`                                       | `true`                                                                      | 是否显示加载提示                                                                                                               |
 | `loadingText`      | `string`                                        | `"正在加载中..."`                                                                | 加载提示文本（源自[`Naive UI Spin`](https://www.naiveui.com/zh-CN/os-theme/components/spin#Spin-Props)的`description`属性)         |
 | `loadingSize`      | `"small" \| "medium" \| "large" \| number`      | `"large"`                                                                   | 加载图标大小（源自[`Naive UI Spin`](https://www.naiveui.com/zh-CN/os-theme/components/spin#Spin-Props)的`size`属性)                |
 
 #### 事件
 
-| 名称              | 参数                 | 说明                                      |
-|-----------------|--------------------|-----------------------------------------|
-| `loading-start` | `()`               | 开始加载文件时触发（`showLoading`为`false`时才会触发）   |
-| `loading-end`   | `()`               | 文件加载完成时触发（`showLoading`为`false`时才会触发）   |
-| `loading-error` | `()`               | 文件加载失败时触发（`showLoading`为`false`时才会触发）   |
-| `click-file`    | `(file: FileItem)` | 点击列表中的文件时触发（`showLoading`为`false`时才会触发） |
+| 名称              | 参数                 | 说明                                                                |
+|-----------------|--------------------|-------------------------------------------------------------------|
+| `loading-start` | `()`               | 开始加载文件时触发（`showLoading`为`false`时才会触发）                             |
+| `loading-end`   | `()`               | 文件加载完成时触发（`showLoading`为`false`时才会触发）                             |
+| `loading-error` | `()`               | 文件加载失败时触发（`showLoading`为`false`时才会触发）                             |
+| `click-file`    | `(file: FileItem)` | 点击列表中的文件时触发（`showLoading`为`false`时才会触发），类型参考[FileItem](#fileitem) |
 
 #### 方法
 
-| 名称           | 参数                 | 说明                      |
-|--------------|--------------------|-------------------------|
-| `changeFile` | `(file: FileItem)` | 修改当前预览文件（主要结合自定义文件列表使用） |
+| 名称           | 参数                 | 说明                                                |
+|--------------|--------------------|---------------------------------------------------|
+| `changeFile` | `(file: FileItem)` | 修改当前预览文件（主要结合自定义文件列表使用），类型参考[FileItem](#fileitem) |
 
 #### 插槽
 
-| 名称        | 参数                        | 说明                                  |
-|-----------|---------------------------|-------------------------------------|
-| `list`    | `()`                      | 右侧文件列表的展示                           |
-| `preview` | `(currentFile: FileItem)` | 左侧预览区域的展示（`showLoading`为`false`时生效） |
+| 名称        | 参数                        | 说明                                                            |
+|-----------|---------------------------|---------------------------------------------------------------|
+| `list`    | `()`                      | 右侧文件列表的展示                                                     |
+| `preview` | `(currentFile: FileItem)` | 左侧预览区域的展示（`showLoading`为`false`时生效），类型参考[FileItem](#fileitem) |
 
 ### FileList
 
@@ -307,7 +305,7 @@ const fileItems = [
 | 属性                     | 类型                                                                                       | 默认值                                 | 说明                                                                                                                     |
 |------------------------|------------------------------------------------------------------------------------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------|
 | `title`                | `string`                                                                                 | `"文件列表"`                            | 标题                                                                                                                     |
-| `data`                 | `FileItem[] \| Promise<FileItem[]> \| (() => FileItem[]) \| (() => Promise<FileItem[]>)` | `undefined`                         | 文件数据（如果传入`onLoad`，则该属性无效）                                                                                              |
+| `data`                 | `FileItem[] \| Promise<FileItem[]> \| (() => FileItem[]) \| (() => Promise<FileItem[]>)` | `undefined`                         | 文件数据（如果传入`onLoad`，则该属性无效），类型参考[FileItem](#fileitem)                                                                    |
 | `showBackTop`          | `boolean`                                                                                | `true`                              | 是否显示回到顶部按钮                                                                                                             |
 | `showSearch`           | `boolean`                                                                                | `true`                              | 是否显示搜索框                                                                                                                |
 | `showTitle`            | `boolean`                                                                                | `true`                              | 是否显示标题                                                                                                                 |
@@ -322,17 +320,17 @@ const fileItems = [
 | `cardSize`             | `"small" \| "medium" \| "large" \| "huge"`                                               | `"small"`                           | 文件卡片大小（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`size`属性)                |
 | `cardHoverable`        | `boolean`                                                                                | `true`                              | 文件卡片是否可悬浮（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`hoverable`属性)        |
 | `cardBordered`         | `boolean`                                                                                | `true`                              | 文件卡片是否有边框（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`bordered`属性)         |
-| `types`                | `FileType[] \| Promise<FileType[]> \| (() => FileType[]) \| (() => Promise<FileType[]>)` | `undefined`                         | 文件类型数据（用于默认的过滤器组件数据）                                                                                                   |
-| `filter`               | `(file: FileItem, types: string[], keyword?: string) => boolean`                         | 使用文件名和文件类型（`type`而不是`mimeType`）进行过滤 | 自定义文件数据搜索/过滤方法（如果传入`onLoad`，则该属性无效）                                                                                    |
-| `onLoad`               | `(page: number, types: string[], keyword?: string) => Promise<FileItem[]> \| FileItem[]` | `undefined`                         | 异步加载文件数据方法（传入后`filter`和`data`将失效，全权由`onLoad`来定义如何获取和过滤结果）                                                              |
+| `types`                | `FileType[] \| Promise<FileType[]> \| (() => FileType[]) \| (() => Promise<FileType[]>)` | `undefined`                         | 文件类型数据（用于默认的过滤器组件数据），类型参考[FileType](#filetype)                                                                         |
+| `filter`               | `(file: FileItem, types: string[], keyword?: string) => boolean`                         | 使用文件名和文件类型（`type`而不是`mimeType`）进行过滤 | 自定义文件数据搜索/过滤方法（如果传入`onLoad`，则该属性无效），类型参考[FileItem](#fileitem)                                                          |
+| `onLoad`               | `(page: number, types: string[], keyword?: string) => Promise<FileItem[]> \| FileItem[]` | `undefined`                         | 异步加载文件数据方法（传入后`filter`和`data`将失效，全权由`onLoad`来定义如何获取和过滤结果），类型参考[FileItem](#fileitem)                                    |
 | `noMore`               | `boolean`                                                                                | `undefined`                         | 是否已加载全部数据（如果未传入`onLoad`，则该属性无效）                                                                                        |
-| `customDownload`       | `(fileItem: FileItem) => void`                                                           | 使用`a`标签下载                           | 自定义下载方法                                                                                                                |
+| `customDownload`       | `(fileItem: FileItem) => void`                                                           | 使用`a`标签下载                           | 自定义下载方法，类型参考[FileItem](#fileitem)                                                                                      |
 
 #### 事件
 
-| 名称           | 参数                 | 说明          |
-|--------------|--------------------|-------------|
-| `click-file` | `(file: FileItem)` | 点击列表中的文件时触发 |
+| 名称           | 参数                 | 说明                                    |
+|--------------|--------------------|---------------------------------------|
+| `click-file` | `(file: FileItem)` | 点击列表中的文件时触发，类型参考[FileItem](#fileitem) |
 
 #### 方法
 
@@ -351,15 +349,15 @@ const fileItems = [
 | `empty`             | `()`                     | 文件列表为空的展示                                            |
 | `noMore`            | `()`                     | 没有更多数据的展示                                            |
 | `backTop`           | `()`                     | 回到顶部按钮的展示                                            |
-| `list`              | `(fileList: FileItem[])` | 文件列表的展示                                              |
-| `file-name`         | `(fileItem: FileItem)`   | 文件名称的展示                                              |
-| `file-type`         | `(fileItem: FileItem)`   | 文件类型的展示                                              |
-| `file-cover`        | `(fileItem: FileItem)`   | 文件封面的展示                                              |
-| `file-tags`         | `(fileItem: FileItem)`   | 文件标签集合的展示                                            |
-| `file-action`       | `(fileItem: FileItem)`   | 文件操作的展示                                              |
-| `file-action-extra` | `(fileItem: FileItem)`   | 文件额外操作的展示                                            |
-| `file-size`         | `(fileItem: FileItem)`   | 文件大小格式化的展示                                           |
-| `file-descriptions` | `(fileItem: FileItem)`   | 文件描述的展示                                              |
+| `list`              | `(fileList: FileItem[])` | 文件列表的展示，类型参考[FileItem](#fileitem)                    |
+| `file-name`         | `(fileItem: FileItem)`   | 文件名称的展示，类型参考[FileItem](#fileitem)                    |
+| `file-type`         | `(fileItem: FileItem)`   | 文件类型的展示，类型参考[FileItem](#fileitem)                    |
+| `file-cover`        | `(fileItem: FileItem)`   | 文件封面的展示，类型参考[FileItem](#fileitem)                    |
+| `file-tags`         | `(fileItem: FileItem)`   | 文件标签集合的展示，类型参考[FileItem](#fileitem)                  |
+| `file-action`       | `(fileItem: FileItem)`   | 文件操作的展示，类型参考[FileItem](#fileitem)                    |
+| `file-action-extra` | `(fileItem: FileItem)`   | 文件额外操作的展示，类型参考[FileItem](#fileitem)                  |
+| `file-size`         | `(fileItem: FileItem)`   | 文件大小格式化的展示，类型参考[FileItem](#fileitem)                 |
+| `file-descriptions` | `(fileItem: FileItem)`   | 文件描述的展示，类型参考[FileItem](#fileitem)                    |
 
 ### FilePreview
 
@@ -397,7 +395,7 @@ const fileItems = [
 | `enableText`          | `boolean`                                                                                                                                                                                                                                                                                                                                     | `true`      | 是否启用`纯文本`文件预览                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `enableJson`          | `boolean`                                                                                                                                                                                                                                                                                                                                     | `true`      | 是否启用`JSON`文件预览                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `enableDxf`           | `boolean`                                                                                                                                                                                                                                                                                                                                     | `true`      | 是否启用`DXF 矢量图`文件预览                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| `customViewerMatcher` | `string[] \| ((file: FileItem) => boolean)`                                                                                                                                                                                                                                                                                                   | `undefined` | 自定义文件预览匹配逻辑（用于判断是否使用自定义预览组件）                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `customViewerMatcher` | `string[] \| ((file: FileItem) => boolean)`                                                                                                                                                                                                                                                                                                   | `undefined` | 自定义文件预览匹配逻辑（用于判断是否使用自定义预览组件），类型参考[FileItem](#fileitem)                                                                                                                                                                                                                                                                                                                                                                               |
 | `viewerOptions`       | `{ audio?: Record<string, unknown>; dxf?: Record<string, unknown>; image?: Record<string, unknown>; json?: Record<string, unknown>; markdown?: Record<string, unknown>; model?: Record<string, unknown>; office?: Record<string, unknown>; pdf?: Record<string, unknown>; video?: Record<string, unknown>; text?: Record<string, unknown>; }` | `undefined` | 各类型文件预览组件的专属配置对象：<br>• `audio`: [`音频`预览组件](#audioviewer)<br>• `video`: [`视频`预览组件](#videoviewer)<br>• `image`: [`图片`预览组件](#imageviewer)<br>• `pdf`: [`PDF`预览组件](#pdfviewer)<br>• `office`: [`Office`预览组件](#officeviewer)<br>• `model`: [`3D模型`预览组件](#modelviewer)<br>• `dxf`: [`DXF`预览组件](#dxfviewer)<br>• `json`: [`JSON`预览组件](#jsonviewer)<br>• `markdown`: [`Markdown`预览组件](#markdownviewer)<br>• `text`: [`纯文本`预览组件](#textviewer) |
 
 #### 事件

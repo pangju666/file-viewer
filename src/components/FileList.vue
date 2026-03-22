@@ -353,20 +353,7 @@ defineExpose({
                     :height="coverHeight"
                     :src="getCoverSrc(fileItem)"
                   >
-                    <template #error>
-                      <img
-                        v-if="coverFallbackSrc"
-                        :src="coverFallbackSrc"
-                        :height="coverHeight"
-                        :style="{ objectFit: coverObjectFit }"
-                      />
-                      <n-icon
-                        v-else
-                        :size="coverHeight"
-                        :component="coverFallbackIcon"
-                      />
-                    </template>
-                    <template #placeholder>
+                    <template v-if="coverLazy" #placeholder>
                       <img
                         v-if="coverPlaceholderSrc"
                         :src="coverPlaceholderSrc"
@@ -377,6 +364,19 @@ defineExpose({
                         v-else
                         :size="coverHeight"
                         :component="coverPlaceholderIcon"
+                      />
+                    </template>
+                    <template v-else #error>
+                      <img
+                        v-if="coverFallbackSrc"
+                        :src="coverFallbackSrc"
+                        :height="coverHeight"
+                        :style="{ objectFit: coverObjectFit }"
+                      />
+                      <n-icon
+                        v-else
+                        :size="coverHeight"
+                        :component="coverFallbackIcon"
                       />
                     </template>
                   </n-image>
