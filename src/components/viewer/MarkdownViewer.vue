@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { MdPreview, MdCatalog } from "md-editor-v3";
-import "md-editor-v3/lib/preview.css";
-import { computed, ref, watch } from "vue";
+import { MdEditor } from "md-editor-v3";
+import "md-editor-v3/lib/style.css";
+import { computed, onMounted, ref, watch } from "vue";
 import {
   getFileEncodingFromUrl,
   getResult,
@@ -18,10 +18,9 @@ const props = withDefaults(
     }
   >(),
   {
-    id: undefined,
     mdPreviewProps: undefined,
     showCatalog: true,
-    catalogWidth: 300,
+    catalogWidth: 350,
     contentLoader: undefined,
   },
 );
@@ -35,21 +34,24 @@ watch(
   () => props.src,
   (newVal: UrlWithFileEncoding | string) => {
     content.value = "";
+
     if (newVal) {
       getContent(newVal);
     }
   },
-  { deep: true, immediate: true },
+  { deep: true },
 );
 
-const bindMdPreviewProps = computed(() => {
+const bindMdEditorProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, modelValue, editorId, ...options } = props.mdPreviewProps ?? {};
+  const { toolbars, modelValue, footers, ...options } =
+    props.mdPreviewProps ?? {};
   return options;
 });
 
+const editorRef = ref();
 const content = ref<string>();
 
 const getContent = async (src: UrlWithFileEncoding | string) => {
@@ -75,37 +77,33 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
       }
     }
   }
+
+  editorRef.value?.togglePreviewOnly(true);
+  if (props.showCatalog) {
+    editorRef.value?.toggleCatalog(true);
+  }
 };
+
+onMounted(() => {
+  if (props.src) {
+    getContent(props.src);
+  }
+});
 </script>
 
 <template>
-  <n-layout :has-sider="showCatalog">
-    <n-layout-sider v-if="showCatalog" :width="catalogWidth" bordered>
-      <div class="pangju-wh-100">
-        <div class="catalog-panel-title">目 录</div>
-        <n-scrollbar style="max-height: calc(100% - 18px - 16px - 16px)">
-          <md-catalog :editor-id="id" />
-        </n-scrollbar>
-      </div>
-    </n-layout-sider>
-    <n-layout-content>
-      <md-preview
-        v-bind="bindMdPreviewProps"
-        :id="id"
-        class="pangju-wh-100"
-        :model-value="content"
-        @remount="$emit('ready')"
-      ></md-preview>
-    </n-layout-content>
-  </n-layout>
+  <md-editor
+    v-bind="bindMdEditorProps"
+    ref="editorRef"
+    :model-value="content"
+    :toolbars="[]"
+    :footers="[]"
+    @remount="$emit('ready')"
+  ></md-editor>
 </template>
 
-<style lang="less" scoped>
-.catalog-panel-title {
-  padding: 16px;
-  font-size: 16px;
-  color: #757575;
-  font-weight: bold;
-  line-height: 18px;
+<style>
+.md-editor-catalog-editor {
+  width: v-bind(catalogWidth) px;
 }
 </style>

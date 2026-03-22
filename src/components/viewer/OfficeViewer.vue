@@ -33,10 +33,16 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    if (props.mode === "onlyOffice" && typeof newVal === "string") {
+    if (
+      props.mode === "onlyOffice" &&
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      (!newVal?.url || !newVal?.mimeType || !newVal?.key)
+    ) {
       emits("error", undefinedFileErrorMessage);
     }
   },
+  { immediate: true },
 );
 
 const microsoftViewUrl = computed(() => {
@@ -137,18 +143,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <document-editor
-    v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
-    :id="id"
-    :document-server-url="onlyOfficeServerUrl"
-    :config="onlyOfficeConfig"
-  />
-  <iframe
-    v-else
-    :src="microsoftViewUrl"
-    width="100%"
-    height="100%"
-    style="padding: 0; margin: 0; border: none"
-    @load="$emit('ready')"
-  />
+  <div style="overflow: hidden">
+    <document-editor
+      v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
+      :id="id"
+      :document-server-url="onlyOfficeServerUrl"
+      :config="onlyOfficeConfig"
+    />
+    <iframe
+      v-else
+      :src="microsoftViewUrl"
+      width="100%"
+      height="100%"
+      style="padding: 0; margin: 0; border: none"
+      @load="$emit('ready')"
+    />
+  </div>
 </template>

@@ -247,6 +247,10 @@ const fileItems = [
 > 2. [`FileItem`](#fileitem)的`mimeType`属性`undefined`或为`null`
 > 3. 当`source`为`Blob`或`File`类型时`type`属性`undefined`或为`null`
 
+#### 预览图
+
+![预览图](docs-images/file-viewer.webp)
+
 #### 属性
 
 除了继承自[`FileList`](#filelist)和[`FilePreview`](#filepreview)的属性外，还包含以下属性：
@@ -284,8 +288,6 @@ const fileItems = [
 | `list`    | `()`                      | 右侧文件列表的展示                           |
 | `preview` | `(currentFile: FileItem)` | 左侧预览区域的展示（`showLoading`为`false`时生效） |
 
-#### 预览图
-
 ### FileList
 
 文件列表组件，默认使用卡片形式展示[`文件信息`](#fileitem)
@@ -296,29 +298,35 @@ const fileItems = [
 > 
 > `onLoad`属性优先级大于`data`属性。
 
+#### 预览图
+
+![预览图](docs-images/file-list.webp)
+
 #### 属性
 
-| 属性                  | 类型                                                                                       | 默认值                        | 说明                                                                                                                         |
-|---------------------|------------------------------------------------------------------------------------------|----------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| `title`             | `string`                                                                                 | `"文件列表"`                   | 标题                                                                                                                         |
-| `data`              | `FileItem[] \| Promise<FileItem[]> \| (() => FileItem[]) \| (() => Promise<FileItem[]>)` | `undefined`                | 文件数据（如果传入`onLoad`，则该属性无效）                                                                                                  |
-| `showBackTop`       | `boolean`                                                                                | `true`                     | 是否显示回到顶部按钮                                                                                                                 |
-| `showSearch`        | `boolean`                                                                                | `true`                     | 是否显示搜索框                                                                                                                    |
-| `showTitle`         | `boolean`                                                                                | `true`                     | 是否显示标题                                                                                                                     |
-| `showFilter`        | `boolean`                                                                                | `true`                     | 是否显示过滤器                                                                                                                    |
-| `coverHeight`       | `number \| string`                                                                       | `150`                      | 封面图片高度（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`height`属性)               |
-| `coverObjectFit`    | `"fill" \| "contain" \| "cover" \| "none" \| "scale-down"`                               | `"fill"`                   | 封面图片缩放模式（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`object-fit`属性)         |
-| `coverLazy`         | `boolean`                                                                                | `true`                     | 是否懒加载封面图片（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`lazy`属性)              |
-| `coverFallbackSrc`  | `string`                                                                                 | `undefined`                | 封面图片加载失败时显示的地址（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`fallback-src`属性) |
-| `coverFallbackIcon` | `Component`                                                                              | `Image(@vicons/ionicons5)` | 封面图片加载失败时显示的图标组件（源自[`Naive UI Icon`](https://www.naiveui.com/zh-CN/os-theme/components/icon#Icon-Props)的`component`属性)     |
-| `cardSize`          | `"small" \| "medium" \| "large" \| "huge"`                                               | `"small"`                  | 文件卡片大小（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`size`属性)                    |
-| `cardHoverable`     | `boolean`                                                                                | `true`                     | 文件卡片是否可悬浮（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`hoverable`属性)            |
-| `cardBordered`      | `boolean`                                                                                | `true`                     | 文件卡片是否有边框（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`bordered`属性)             |
-| `types`             | `FileType[] \| Promise<FileType[]> \| (() => FileType[]) \| (() => Promise<FileType[]>)` | `undefined`                | 文件类型数据（用于默认的过滤器组件数据）                                                                                                       |
-| `filter`            | `(file: FileItem, types: string[], keyword?: string) => boolean`                         | `undefined`                | 自定义文件数据搜索/过滤方法（如果传入`onLoad`，则该属性无效）                                                                                        |
-| `onLoad`            | `(page: number, types: string[], keyword?: string) => Promise<FileItem[]> \| FileItem[]` | `undefined`                | 异步加载文件数据方法（传入后`filter`和`data`将失效，全权由`onLoad`来定义如何获取和过滤结果）                                                                  |
-| `noMore`            | `boolean`                                                                                | `undefined`                | 是否已加载全部数据（如果未传入`onLoad`，则该属性无效）                                                                                            |
-| `customDownload`    | `(fileItem: FileItem) => void`                                                           | `undefined`                | 自定义下载方法，默认使用`a`标签下载                                                                                                        |
+| 属性                     | 类型                                                                                       | 默认值                                 | 说明                                                                                                                     |
+|------------------------|------------------------------------------------------------------------------------------|-------------------------------------|------------------------------------------------------------------------------------------------------------------------|
+| `title`                | `string`                                                                                 | `"文件列表"`                            | 标题                                                                                                                     |
+| `data`                 | `FileItem[] \| Promise<FileItem[]> \| (() => FileItem[]) \| (() => Promise<FileItem[]>)` | `undefined`                         | 文件数据（如果传入`onLoad`，则该属性无效）                                                                                              |
+| `showBackTop`          | `boolean`                                                                                | `true`                              | 是否显示回到顶部按钮                                                                                                             |
+| `showSearch`           | `boolean`                                                                                | `true`                              | 是否显示搜索框                                                                                                                |
+| `showTitle`            | `boolean`                                                                                | `true`                              | 是否显示标题                                                                                                                 |
+| `showFilter`           | `boolean`                                                                                | `true`                              | 是否显示过滤器                                                                                                                |
+| `coverHeight`          | `number \| string`                                                                       | `150`                               | 封面图片高度（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`height`属性)           |
+| `coverObjectFit`       | `"fill" \| "contain" \| "cover" \| "none" \| "scale-down"`                               | `"fill"`                            | 封面图片缩放模式（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`object-fit`属性)     |
+| `coverLazy`            | `boolean`                                                                                | `false`                             | 是否懒加载封面图片（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`lazy`属性)          |
+| `coverFallbackSrc`     | `string`                                                                                 | `undefined`                         | 封面图片加载失败时显示的地址                                                                                                         |
+| `coverFallbackIcon`    | `Component`                                                                              | `Image(@vicons/ionicons5)`          | 封面图片加载失败时显示的图标组件（源自[`Naive UI Icon`](https://www.naiveui.com/zh-CN/os-theme/components/icon#Icon-Props)的`component`属性) |
+| `coverPlaceholderSrc`  | `string`                                                                                 | `undefined`                         | 封面图片加载中显示的地址                                                                                                           |
+| `coverPlaceholderIcon` | `Component`                                                                              | `Image(@vicons/ionicons5)`          | 封面图片加载中显示的图标组件（源自[`Naive UI Icon`](https://www.naiveui.com/zh-CN/os-theme/components/icon#Icon-Props)的`component`属性)   |
+| `cardSize`             | `"small" \| "medium" \| "large" \| "huge"`                                               | `"small"`                           | 文件卡片大小（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`size`属性)                |
+| `cardHoverable`        | `boolean`                                                                                | `true`                              | 文件卡片是否可悬浮（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`hoverable`属性)        |
+| `cardBordered`         | `boolean`                                                                                | `true`                              | 文件卡片是否有边框（源自[`Naive UI Card`](https://www.naiveui.com/zh-CN/os-theme/components/card#Card-Props)的`bordered`属性)         |
+| `types`                | `FileType[] \| Promise<FileType[]> \| (() => FileType[]) \| (() => Promise<FileType[]>)` | `undefined`                         | 文件类型数据（用于默认的过滤器组件数据）                                                                                                   |
+| `filter`               | `(file: FileItem, types: string[], keyword?: string) => boolean`                         | 使用文件名和文件类型（`type`而不是`mimeType`）进行过滤 | 自定义文件数据搜索/过滤方法（如果传入`onLoad`，则该属性无效）                                                                                    |
+| `onLoad`               | `(page: number, types: string[], keyword?: string) => Promise<FileItem[]> \| FileItem[]` | `undefined`                         | 异步加载文件数据方法（传入后`filter`和`data`将失效，全权由`onLoad`来定义如何获取和过滤结果）                                                              |
+| `noMore`               | `boolean`                                                                                | `undefined`                         | 是否已加载全部数据（如果未传入`onLoad`，则该属性无效）                                                                                        |
+| `customDownload`       | `(fileItem: FileItem) => void`                                                           | 使用`a`标签下载                           | 自定义下载方法                                                                                                                |
 
 #### 事件
 
@@ -352,8 +360,6 @@ const fileItems = [
 | `file-action-extra` | `(fileItem: FileItem)`   | 文件额外操作的展示                                            |
 | `file-size`         | `(fileItem: FileItem)`   | 文件大小格式化的展示                                           |
 | `file-descriptions` | `(fileItem: FileItem)`   | 文件描述的展示                                              |
-
-#### 预览图
 
 ### FilePreview
 
@@ -426,11 +432,13 @@ const fileItems = [
 | `text`     | `(filename?: string, fileUrl: string, mimeType: string, fileEncoding: string)`                                   | `纯文本`文件预览时的展示         |
 | `unknown`  | `(filename?: string, fileUrl: string, mimeType: string, fileEncoding: string)`                                   | 没有对应预览组件的文件预览时的展示     |
 
-#### 预览图
-
 ### AudioViewer
 
 `音频`预览组件，使用`audio`标签实现
+
+#### 预览图
+
+![预览图](docs-images/audio-viewer.webp)
 
 #### 属性
 
@@ -438,7 +446,7 @@ const fileItems = [
 |---------------------|------------------------------------------------------------|----------------------------------|----------------------------------------------------------------------------------------------------------------------------|
 | `src`               | `string`                                                   | `undefined`                      | 音频文件的`URL`                                                                                                                 |
 | `title`             | `string`                                                   | `undefined`                      | 音频的标题                                                                                                                      |
-| `cover`             | `string`                                                   | `undefined`                      | 音频封面图片`URL`                                                                                                                |
+| `cover`             | `string`                                                   | `cover`                          | 音频封面图片`URL`                                                                                                                |
 | `autoplay`          | `boolean`                                                  | `false`                          | 是否启用自动播放（源自`audio`标签）                                                                                                      |
 | `controls`          | `boolean`                                                  | `true`                           | 是否启用控制面板（源自`audio`标签）                                                                                                      |
 | `coverHeight`       | `number`                                                   | `180`                            | 封面图片高度（源自[`Naive UI Image`](https://www.naiveui.com/zh-CN/os-theme/components/image#Image-Props)的`width`属性)                |
@@ -453,11 +461,13 @@ const fileItems = [
 | `ready` | `()`                  | 音频可以播放时触发                      |
 | `error` | `(error: MediaError)` | 音频播放失败时触发（`error`由`audio`标签抛出） |
 
-#### 预览图
-
 ### VideoViewer
 
 `视频`预览组件，使用[`video.js`](https://www.npmjs.com/package/video.js)实现
+
+#### 预览图
+
+![预览图](docs-images/video-viewer.webp)
 
 #### 属性
 
@@ -474,8 +484,6 @@ const fileItems = [
 | `ready` | `()`                  | 视频可以播放时触发                      |
 | `error` | `(error: MediaError)` | 视频播放失败时触发（`error`由`videojs`抛出） |
 
-#### 预览图
-
 ### ImageViewer
 
 `图片`预览组件，使用[`Viewer.js`](https://www.npmjs.com/package/viewerjs)实现
@@ -484,7 +492,11 @@ const fileItems = [
 >
 > `Viewer.js`的`{ inline: true, navbar: false, button: false }`为固定配置。
 > 
-> `Viewer.js`的`title`属性默认为(`${props.title} ${imageData.naturalWidth}x${imageData.naturalHeight}`)
+> `Viewer.js`的`title`属性默认为（`${props.title} ${imageData.naturalWidth}x${imageData.naturalHeight}`）
+
+#### 预览图
+
+![预览图](docs-images/image-viewer.webp)
 
 #### 属性
 
@@ -501,8 +513,6 @@ const fileItems = [
 | `ready` | `()` | 图片加载完成时触发（由`Viewer.js`的`viewed`事件发出） |
 | `error` | `()` | 浏览器加载图片失败时触发                         |
 
-#### 预览图
-
 ### DxfViewer
 
 `DXF`预览组件，使用[`dxf-viewer`](https://www.npmjs.com/package/dxf-viewer)实现
@@ -511,7 +521,7 @@ const fileItems = [
 > 
 > 建议不要修改`viewerOptions`属性，我没找到官方文档，默认配置也是我参考示例代码写的。
 >
-> 如果存在中文乱码的情况，配置`fonts`属性传入一些中文字体（官方示例有几个字体：[传送门](https://github.com/vagran/dxf-viewer-example-src/tree/master/src/assets/fonts)），我默认只配置了一个`Roboto-LightItalic`字体。
+> 需要配置`fonts`属性传入一些字体（官方示例有几个字体：[传送门](https://github.com/vagran/dxf-viewer-example-src/tree/master/src/assets/fonts)），否则文字无法正常显示。
 
 #### 属性
 
@@ -521,7 +531,7 @@ const fileItems = [
 | `showProgressBar`  | `boolean`                 | `true`                                                                                                                                          | 是否显示加载进度条                                                                                                                  |
 | `showLayerList`    | `boolean`                 | `true`                                                                                                                                          | 是否显示图层列表                                                                                                                   |
 | `layerListWidth`   | `number \| string`        | `300`                                                                                                                                           | 图层列表宽度（源自[`Naive UI Layout-Sider`](https://www.naiveui.com/zh-CN/os-theme/components/layout#Layout-Sider-Props)的`width`属性) |
-| `fonts`            | `string[] \| null`        | `[Roboto-LightItalic]`                                                                                                                          | 渲染使用到的字体                                                                                                                   |
+| `fonts`            | `string[]`                | `[]`                                                                                                                                            | 渲染使用到的字体                                                                                                                   |
 | `dxfViewerOptions` | `Record<string, unknown>` | `{ fileEncoding: "utf-8", clearColor: new Three.Color("#fff"), autoResize: true, colorCorrection: true, sceneOptions: { wireframeMesh: true }}` | `DxfViewer`构造方法的`options`，请参考[`DXF Viewer 源码 第691行`](https://github.com/vagran/dxf-viewer/blob/master/src/DxfViewer.js)    |
 
 #### 事件
@@ -532,11 +542,37 @@ const fileItems = [
 | `error`    | `(error: Error)`                                                                               | `DXF`加载失败时触发(`error`由`dxf-viewer`的`Load`方法抛出)                                                                                                                                                                                                      |
 | `progress` | `(phase: "font" \| "fetch" \| "parse" \| "prepare", processedSize: number, totalSize: number)` | `DXF`加载时抛出。<br>**参数说明**：<br>• `phase`: 当前加载阶段<br>&nbsp;&nbsp;- `font`: 加载字体资源<br>&nbsp;&nbsp;- `fetch`: 下载文件数据<br>&nbsp;&nbsp;- `parse`: 解析文件内容<br>&nbsp;&nbsp;- `prepare`: 准备渲染数据<br>• `processedSize`: 已加载/处理的大小（字节）<br>• `totalSize`: 资源总大小（字节） |
 
-#### 预览图
+#### 示例
+
+![预览图](docs-images/dxf-viewer.webp)
+
+```vue
+<template>
+  <dxf-viewer src="https://raw.githubusercontent.com/gdsestimating/dxf-parser/refs/heads/master/samples/data/api-cw750-details.dxf" class="pangju-wh-100" :fonts="fonts" />
+</template>
+
+<script setup>
+import {DxfViewer} from "@pangju/file-viewer";
+import {ref} from "vue";
+
+import HanaMinAFont from "@/assets/fonts/HanaMinA.ttf";
+import NanumGothicRegularFont from "@/assets/fonts/HanaMinA.ttf";
+import NotoSansDisplaySemiCondensedLightItalicFont from "@/assets/fonts/HanaMinA.ttf";
+import RobotoLightItalicFont from "@/assets/fonts/HanaMinA.ttf";
+
+const fonts = ref([
+  HanaMinAFont, NanumGothicRegularFont, NotoSansDisplaySemiCondensedLightItalicFont, RobotoLightItalicFont
+]);
+</script>
+```
 
 ### JsonViewer
 
 `JSON`预览组件，使用[`vue3-json-viewer`](https://www.npmjs.com/package/vue3-json-viewer)实现
+
+#### 预览图
+
+![预览图](docs-images/json-viewer.webp)
 
 #### 属性
 
@@ -553,22 +589,23 @@ const fileItems = [
 | `ready` | `()`             | 文件内容加载完成时触发                    |
 | `error` | `(error: Error)` | 文件内容加载失败时触发（`error`由`fetch`抛出） |
 
-#### 预览图
-
 ### MarkdownViewer
 
 `Markdown`预览组件，使用[`md-editor-v3`](https://www.npmjs.com/package/md-editor-v3)实现
 
+#### 预览图
+
+![预览图](docs-images/markdown-viewer.webp)
+
 #### 属性
 
-| 属性               | 类型                                                                 | 默认值         | 说明                                                                                                                       |
-|------------------|--------------------------------------------------------------------|-------------|--------------------------------------------------------------------------------------------------------------------------|
-| `src`            | `string \| { url: string; fileEncoding?: string }`                 | `undefined` | `Markdown`文件的`URL`                                                                                                       |
-| `showCatalog`    | `boolean`                                                          | `true`      | 是否显示目录                                                                                                                   |
-| `catalogWidth`   | `string \| number`                                                 | `300`       | 目录宽度（源自[`Naive UI Layout-Sider`](https://www.naiveui.com/zh-CN/os-theme/components/layout#Layout-Sider-Props)的`width`属性) |
-| `id`             | `string`                                                           | `undefined` | `MdPreview`组件的`id`                                                                                                       |
-| `contentLoader`  | `(url: string, fileEncoding: string) => string \| Promise<string>` | 使用`fetch`下载 | 自定义从`URL`加载文件内容的方法                                                                                                       |
-| `mdPreviewProps` | `Record<string, unknown>`                                          | `undefined` | [`MdPreview 属性`](https://imzbf.github.io/md-editor-v3/zh-CN/api/#%F0%9F%94%96%20MdPreview%20Props)                       |
+| 属性               | 类型                                                                 | 默认值         | 说明                                                                                                 |
+|------------------|--------------------------------------------------------------------|-------------|----------------------------------------------------------------------------------------------------|
+| `src`            | `string \| { url: string; fileEncoding?: string }`                 | `undefined` | `Markdown`文件的`URL`                                                                                 |
+| `showCatalog`    | `boolean`                                                          | `true`      | 是否显示目录                                                                                             |
+| `catalogWidth`   | `number`                                                           | `350`       | 目录宽度                                                                                               |
+| `contentLoader`  | `(url: string, fileEncoding: string) => string \| Promise<string>` | 使用`fetch`下载 | 自定义从`URL`加载文件内容的方法                                                                                 |
+| `mdPreviewProps` | `Record<string, unknown>`                                          | `undefined` | [`MdPreview 属性`](https://imzbf.github.io/md-editor-v3/zh-CN/api/#%F0%9F%94%96%20MdPreview%20Props) |
 
 #### 事件
 
@@ -577,11 +614,13 @@ const fileItems = [
 | `ready` | `()`             | 文件内容加载完成时触发                    |
 | `error` | `(error: Error)` | 文件内容加载失败时触发（`error`由`fetch`抛出） |
 
-#### 预览图
-
 ### TextViewer
 
 `纯文本`预览组件，使用`pre`元素实现
+
+#### 示例图
+
+![预览图](docs-images/text-viewer.webp)
 
 #### 属性
 
@@ -597,8 +636,6 @@ const fileItems = [
 | `ready` | `()`             | 文件内容加载完成时触发                    |
 | `error` | `(error: Error)` | 文件内容加载失败时触发（`error`由`fetch`抛出） |
 
-#### 预览图
-
 ### PdfViewer
 
 PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office365/servicedescriptions/office-online-service-description/office-online-service-description)或[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)实现
@@ -608,19 +645,21 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 > 使用`pdfjs`模式最好在项目的`public`目录放一份自己构建的代码，或者用`nginx`配置一份自己构建的版本。
 >
 > 使用[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)模式需要自己部署服务端环境。
+>
+> `mode`为`onlyOffice`时，`key`必须唯一（如果不存在唯一标识符，则可以使用[`nanoid`](https://www.npmjs.com/package/nanoid)来生成唯一标识符）。
 
 #### 属性
 
-| 属性                    | 类型                                       | 默认值                                                | 说明                                                                                                                                    |
-|-----------------------|------------------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `src`                 | `string \| { url: string; key: string }` | `undefined`                                        | `Pdf`文件的`URL`（）                                                                                                                       |
-| `title`               | `string`                                 | `undefined`                                        | `Pdf`文件的标题                                                                                                                            |
-| `id`                  | `string`                                 | `only-office-editor`                               | `DocumentEditor`的`id`                                                                                                                 |
-| `token`               | `string`                                 | `undefined`                                        | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
-| `mode`                | `"pdfjs" \| "onlyOffice"`                | `pdfjs`                                            | `pdfjs`使用`iframe`调用`PDF.js Viewer`实现，`onlyOffice`使用`OnlyOffice`实现                                                                     |
-| `region`              | `string`                                 | `zh-CN`                                            | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
-| `pdfjsViewBaseUrl`    | `string`                                 | `https://mozilla.github.io/pdf.js/web/viewer.html` | `PDF.js Viewer`地址（最好改成自己部署的地址，或`public`目录下的路径）                                                                                        |
-| `onlyOfficeServerUrl` | `string`                                 | `undefined`                                        | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
+| 属性                    | 类型                                       | 默认值                                                  | 说明                                                                                                                                    |
+|-----------------------|------------------------------------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `src`                 | `string \| { url: string; key: string }` | `undefined`                                          | `Pdf`文件的`URL`（`mode`为`onlyOffice`时需要传入`{ url: string; key: string }`类型）                                                               |
+| `title`               | `string`                                 | `undefined`                                          | `Pdf`文件的标题（仅在`mode`为`onlyOffice`时生效）                                                                                                  |
+| `id`                  | `string`                                 | `"only-office-pdf-editor"`                           | `DocumentEditor`的`id`                                                                                                                 |
+| `token`               | `string`                                 | `undefined`                                          | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
+| `mode`                | `"pdfjs" \| "onlyOffice"`                | `"pdfjs"`                                            | `pdfjs`使用`iframe`调用`PDF.js Viewer`实现，`onlyOffice`使用`OnlyOffice`实现                                                                     |
+| `region`              | `string`                                 | `"zh-CN"`                                            | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
+| `pdfjsViewBaseUrl`    | `string`                                 | `"https://mozilla.github.io/pdf.js/web/viewer.html"` | `PDF.js Viewer`地址（最好改成自己部署的地址，或`public`目录下的路径）                                                                                        |
+| `onlyOfficeServerUrl` | `string`                                 | `undefined`                                          | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
 
 #### 事件
 
@@ -629,26 +668,65 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 | `ready` | `()`                                             | 预览页面渲染完成时触发                                                                                                                      |
 | `error` | `(errorDescription: string, errorCode?: number)` | `Pdf`文件加载失败时触发（`errorDescription`是错误信息，`errorCode`是[错误代码](https://github.com/ONLYOFFICE/sdkjs/blob/master/common/errorCodes.js)） |
 
+#### 示例
+
+使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office365/servicedescriptions/office-online-service-description/office-online-service-description)
+
+![预览图](docs-images/pdf-viewer-pdfjs.webp)
+
+```vue
+<template>
+  <pdf-viewer src="https://disk.sample.cat/samples/pdf/sample-a4.pdf" mode="pdfjs" class="pangju-wh-100" />
+</template>
+
+<script setup>
+  import {PdfViewer} from "@pangju/file-viewer";
+</script>
+```
+
+使用[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)
+
+![预览图](docs-images/pdf-viewer-onlyoffice.webp)
+
+```vue
+<template>
+  <pdf-viewer :src="pdfUrl" title="Sample A4 PDF" mode="onlyOffice" only-office-server-url="http://localhost:10000" class="pangju-wh-100"/>
+</template>
+
+<script setup>
+  import {PdfViewer} from "@pangju/file-viewer";
+  import {ref} from "vue";
+
+  const pdfUrl = ref({
+    url: "https://disk.sample.cat/samples/pdf/sample-a4.pdf",
+    mimeType: "application/pdf",
+    key: "1234"
+  })
+</script>
+```
+
 ### OfficeViewer
 
-`Office`文档预览组件，使用[Microsoft Office Online](https://learn.microsoft.com/zh-cn/office365/servicedescriptions/office-online-service-description/office-online-service-description)或[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)实现
+`Office`文档预览组件，使用[`Microsoft Office Online`](https://learn.microsoft.com/zh-cn/office365/servicedescriptions/office-online-service-description/office-online-service-description)或[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)实现
 
 > 💡 **提示**：
 >
 > 使用[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)模式需要自己部署服务端环境。
+> 
+> `mode`为`onlyOffice`时，`key`必须唯一（如果不存在唯一标识符，则可以使用[`nanoid`](https://www.npmjs.com/package/nanoid)来生成唯一标识符）。
 
 #### 属性
 
-| 属性                     | 类型                                                         | 默认值                                              | 说明                                                                                                                                    |
-|------------------------|------------------------------------------------------------|--------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `src`                  | `string \| { url: string; mimeType: string; key: string }` | `undefined`                                      | `Office`文件的`URL`（）                                                                                                                    |
-| `title`                | `string`                                                   | `undefined`                                      | `Office`文件的标题                                                                                                                         |
-| `id`                   | `string`                                                   | `only-office-editor`                             | `DocumentEditor`的`id`                                                                                                                 |
-| `token`                | `string`                                                   | `undefined`                                      | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
-| `mode`                 | `"microsoft" \| "onlyOffice"`                              | `microsoft`                                      | `microsoft`使用`iframe`调用`Microsoft Office Online`实现，`onlyOffice`使用`OnlyOffice`实现                                                       |
-| `region`               | `string`                                                   | `zh-CN`                                          | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
-| `microsoftViewBaseUrl` | `string`                                                   | `https://view.officeapps.live.com/op/embed.aspx` | `Microsoft Office Online`地址（一般不需要改）                                                                                                   |
-| `onlyOfficeServerUrl`  | `string`                                                   | `undefined`                                      | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
+| 属性                     | 类型                                                         | 默认值                                                | 说明                                                                                                                                    |
+|------------------------|------------------------------------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `src`                  | `string \| { url: string; mimeType: string; key: string }` | `undefined`                                        | `Office`文件的`URL`（`mode`为`onlyOffice`时需要传入`{ url: string; mimeType: string; key: string }`类型）                                          |
+| `title`                | `string`                                                   | `undefined`                                        | `Office`文件的标题（仅在`mode`为`onlyOffice`时生效）                                                                                               |
+| `id`                   | `string`                                                   | `"only-office-editor"`                             | `DocumentEditor`的`id`                                                                                                                 |
+| `token`                | `string`                                                   | `undefined`                                        | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
+| `mode`                 | `"microsoft" \| "onlyOffice"`                              | `"microsoft"`                                      | `microsoft`使用`iframe`调用`Microsoft Office Online`实现，`onlyOffice`使用`OnlyOffice`实现                                                       |
+| `region`               | `string`                                                   | `"zh-CN"`                                          | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
+| `microsoftViewBaseUrl` | `string`                                                   | `"https://view.officeapps.live.com/op/embed.aspx"` | `Microsoft Office Online`地址（一般不需要改）                                                                                                   |
+| `onlyOfficeServerUrl`  | `string`                                                   | `undefined`                                        | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
 
 #### 事件
 
@@ -657,7 +735,42 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 | `ready` | `()`                                             | 预览页面渲染完成时触发                                                                                                                         |
 | `error` | `(errorDescription: string, errorCode?: number)` | `Office`文件加载失败时触发（`errorDescription`是错误信息，`errorCode`是[错误代码](https://github.com/ONLYOFFICE/sdkjs/blob/master/common/errorCodes.js)） |
 
-#### 预览图
+#### 示例
+
+使用[`Microsoft Office Online`](https://learn.microsoft.com/zh-cn/office365/servicedescriptions/office-online-service-description/office-online-service-description)
+
+![预览图](docs-images/office-viewer-microsoft.webp)
+
+```vue
+<template>
+  <office-viewer src="https://disk.sample.cat/samples/docx/sample5.doc" mode="microsoft" class="pangju-wh-100" />
+</template>
+
+<script setup>
+  import {OfficeViewer} from "@pangju/file-viewer";
+</script>
+```
+
+使用[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)
+
+![预览图](docs-images/office-viewer-onlyoffice.webp)
+
+```vue
+<template>
+  <office-viewer :src="officeUrl" title="Sample DOC" mode="onlyOffice" only-office-server-url="http://localhost:10000" class="pangju-wh-100"/>
+</template>
+
+<script setup>
+  import {OfficeViewer} from "@pangju/file-viewer";
+  import {ref} from "vue";
+
+  const officeUrl = ref({
+    url: "https://disk.sample.cat/samples/docx/sample5.doc",
+    mimeType: "application/msword",
+    key: "123"
+  })
+</script>
+```
 
 ### ModelViewer
 
@@ -679,7 +792,25 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 | `progress` | `(loadingProgress: number)`              | 模型加载时触发（`loadingProgress`为模型已加载进度百分比，例如：`0.9`）        |
 | `error`    | `(error?: Error, errorMessage?: string)` | 模型加载失败时触发（`error`和`errorMessage`来自`babylon-viewer`元素） |
 
-#### 预览图
+#### 示例
+
+![预览图](docs-images/model-viewer.webp)
+
+```vue
+<template>
+  <model-viewer :src="modelSrc" class="pangju-wh-100"/>
+</template>
+
+<script setup>
+  import {ModelViewer} from "@pangju/file-viewer";
+  import {ref} from "vue";
+
+  const modelSrc = ref({
+    url: 'https://threejs.org/examples/models/obj/male02/male02.obj',
+    mimeType: 'model/obj'
+  });
+</script>
+```
 
 ### UnknownViewer
 
@@ -687,12 +818,12 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 
 #### 属性
 
-| 属性         | 类型       | 默认值         | 说明             |
-|------------|----------|-------------|----------------|
-| `title`    | `string` | `不支持预览该文件`  | 标题             |
-| `src`      | `string` | `undefined` | 文件的`URL`       |
-| `filename` | `string` | `undefined` | 文件名称           |
-| `mimeType` | `string` | `undefined` | 文件的`MIME Type` |
+| 属性         | 类型       | 默认值          | 说明             |
+|------------|----------|--------------|----------------|
+| `title`    | `string` | `"不支持预览该文件"` | 标题             |
+| `src`      | `string` | `undefined`  | 文件的`URL`       |
+| `filename` | `string` | `undefined`  | 文件名称           |
+| `mimeType` | `string` | `undefined`  | 文件的`MIME Type` |
 
 #### 事件
 
@@ -700,7 +831,19 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 |---------|------|---------|
 | `ready` | `()` | 组件渲染时触发 |
 
-#### 预览图
+#### 示例
+
+![预览图](docs-images/unknown-viewer.webp)
+
+```vue
+<template>
+  <unknown-viewer src="https://disk.sample.cat/samples/pdf/sample-a4.pdf" filename="Sample A4 PDF" mimeType="application/pdf" class="pangju-wh-100"/>
+</template>
+
+<script setup>
+  import {UnknownViewer} from "@pangju/file-viewer";
+</script>
+```
 
 ### ErrorViewer
 
@@ -710,12 +853,24 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 
 | 属性         | 类型       | 默认值         | 说明             |
 |------------|----------|-------------|----------------|
-| `reason`   | `string` | `文件预览失败`    | 错误原因（用于展示）     |
+| `reason`   | `string` | `"文件预览失败"`  | 错误原因（用于展示）     |
 | `filename` | `string` | `undefined` | 文件名称           |
 | `src`      | `string` | `undefined` | 文件的`URL`       |
 | `mimeType` | `string` | `undefined` | 文件的`MIME Type` |
 
-#### 预览图
+#### 示例
+
+![预览图](docs-images/error-viewer.webp)
+
+```vue
+<template>
+  <error-viewer src="https://disk.sample.cat/samples/pdf/sample-a4.pdf" filename="Sample A4 PDF" mimeType="application/pdf" class="pangju-wh-100"/>
+</template>
+
+<script setup>
+  import {ErrorViewer} from "@pangju/file-viewer";
+</script>
+```
 
 ## 📄 开源协议
 

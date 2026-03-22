@@ -72,7 +72,7 @@ onUpdated(() => {
       margin-bottom: 15px;
 
       .title {
-        width: 65px;
+        width: 80px;
         font-weight: bold;
         word-break: keep-all;
       }

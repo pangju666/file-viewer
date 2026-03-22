@@ -12,6 +12,7 @@ import {
   fileTypeFromStream,
 } from "file-type";
 import "@/assets/css/file-viewer.css";
+import { Image } from "@vicons/ionicons5";
 
 const props = withDefaults(
   defineProps<
@@ -61,6 +62,8 @@ const props = withDefaults(
     coverLazy: undefined,
     coverFallbackSrc: undefined,
     coverFallbackIcon: undefined,
+    coverPlaceholderSrc: undefined,
+    coverPlaceholderIcon: undefined,
     cardSize: undefined,
     cardHoverable: undefined,
     cardBordered: undefined,
@@ -100,6 +103,8 @@ const previewProps = computed(() => {
     coverLazy,
     coverFallbackSrc,
     coverFallbackIcon,
+    coverPlaceholderSrc,
+    coverPlaceholderIcon,
     cardSize,
     cardHoverable,
     cardBordered,
@@ -131,10 +136,7 @@ const listProps = computed(() => {
     enableJson,
     enableDxf,
     customViewerMatcher,
-    jsonContentLoader,
-    textContentLoader,
-    markdownContentLoader,
-    viewerOptions,
+    viewerProps,
     ...options
   } = props;
   return options;

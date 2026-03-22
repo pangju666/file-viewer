@@ -41,13 +41,8 @@ watch(
   () => props.src,
   (val) => {
     viewer?.destroy();
-    if (!val) {
-      return;
-    }
 
-    if (imageRef.value) {
-      initViewer();
-    } else {
+    if (val && imageRef.value) {
       nextTick(() => {
         initViewer();
       });
@@ -80,9 +75,11 @@ const initViewer = () => {
 };
 
 onMounted(() => {
-  nextTick(() => {
-    initViewer();
-  });
+  if (props.src) {
+    nextTick(() => {
+      initViewer();
+    });
+  }
 });
 
 onUnmounted(() => {

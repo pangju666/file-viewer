@@ -35,6 +35,7 @@ watch(
   () => props.src,
   (newVal: UrlWithFileEncoding | string) => {
     content.value = {};
+
     if (newVal) {
       getContent(newVal);
     }
@@ -46,7 +47,7 @@ const bindVueJsonViewerProps = computed(() => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { value, ...options } = props.viewerOptions ?? {};
+  const { value, ...options } = props.jsonViewerProps ?? {};
   return options;
 });
 

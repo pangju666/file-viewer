@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import {
   getFileEncodingFromUrl,
   getResult,
@@ -28,11 +28,12 @@ watch(
   () => props.src,
   (newVal: UrlWithFileEncoding | string) => {
     content.value = "";
+
     if (newVal) {
       getContent(newVal);
     }
   },
-  { deep: true, immediate: true },
+  { deep: true },
 );
 
 const content = ref<string>();
@@ -63,6 +64,12 @@ const getContent = async (src: UrlWithFileEncoding | string) => {
     }
   }
 };
+
+onMounted(() => {
+  if (props.src) {
+    getContent(props.src);
+  }
+});
 </script>
 
 <template>

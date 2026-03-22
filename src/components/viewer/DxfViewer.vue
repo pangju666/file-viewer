@@ -5,7 +5,6 @@ import { Color } from "three";
 import { utf8Charset } from "@/utils/constants.ts";
 import type { DxfPreviewOptions } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
-import RobotoLightItalicFont from "@/assets/fonts/Roboto-LightItalic.ttf";
 
 const props = withDefaults(
   defineProps<
@@ -17,7 +16,7 @@ const props = withDefaults(
     showProgressBar: true,
     showLayerList: true,
     layerListWidth: 300,
-    fonts: () => [RobotoLightItalicFont],
+    fonts: () => [],
     dxfViewerOptions: () => ({
       fileEncoding: utf8Charset,
       clearColor: new Color("#fff"),

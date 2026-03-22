@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { MusicalNote } from "@vicons/ionicons5";
+import { MusicalNotes } from "@vicons/ionicons5";
 import type { AudioPreviewOptions } from "@/types/options.ts";
 import "@/assets/css/file-viewer.css";
 
@@ -14,11 +14,11 @@ const props = withDefaults(
   >(),
   {
     title: undefined,
-    cover: undefined,
+    cover: "cover",
     coverHeight: 180,
     coverObjectFit: "cover",
     coverFallbackSrc: undefined,
-    coverFallbackIcon: MusicalNote,
+    coverFallbackIcon: MusicalNotes,
     autoplay: false,
     controls: true,
   },

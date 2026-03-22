@@ -50,6 +50,8 @@ withDefaults(
   max-width: 100%;
 
   .descriptions {
+    margin: 0 auto;
+    max-width: 80%;
     font-size: 16px;
 
     .description-item {
@@ -57,7 +59,7 @@ withDefaults(
       margin-bottom: 15px;
 
       .title {
-        width: 65px;
+        width: 80px;
         font-weight: bold;
         word-break: keep-all;
       }

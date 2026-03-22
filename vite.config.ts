@@ -51,7 +51,7 @@ export default defineConfig({
       formats: ["es", "cjs"],
     },
     rollupOptions: {
-      external: ["vue", "vue-router", /^node:.*/],
+      external: ["vue", /^node:.*/],
       output: {
         exports: "named",
         globals: {

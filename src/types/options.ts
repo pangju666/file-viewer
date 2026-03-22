@@ -30,7 +30,7 @@ export type DxfPreviewOptions = {
   showProgressBar?: boolean;
   showLayerList?: boolean;
   layerListWidth?: number | string;
-  fonts?: string[] | null;
+  fonts?: string[];
   dxfViewerOptions?: DxfViewerOptions;
 };
 
@@ -48,8 +48,7 @@ export type JsonPreviewOptions = {
 
 export type MarkdownPreviewOptions = {
   showCatalog?: boolean;
-  catalogWidth?: string | number;
-  id?: string;
+  catalogWidth?: number;
   mdPreviewProps?: MarkdownViewerOptions;
   contentLoader?: (
     url: string,
@@ -107,6 +106,8 @@ export type FileListProps = {
   coverLazy?: boolean;
   coverFallbackSrc?: string;
   coverFallbackIcon?: Component;
+  coverPlaceholderSrc?: string;
+  coverPlaceholderIcon?: Component;
   cardSize?: "small" | "medium" | "large" | "huge";
   cardHoverable?: boolean;
   cardBordered?: boolean;

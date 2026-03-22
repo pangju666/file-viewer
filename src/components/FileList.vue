@@ -16,7 +16,9 @@ const props = withDefaults(defineProps<FileListProps>(), {
   coverObjectFit: "fill",
   coverFallbackSrc: undefined,
   coverFallbackIcon: Image,
-  coverLazy: true,
+  coverPlaceholderSrc: undefined,
+  coverPlaceholderIcon: Image,
+  coverLazy: false,
   types: undefined,
   cardSize: "small",
   cardHoverable: true,
@@ -178,13 +180,13 @@ const filterFileItems = (keyword?: string, types?: string[]) => {
   });
 };
 
-const existFileType = (file?: FileItem) => {
-  if (!file?.type) {
+const existFileType = (fileItem?: FileItem) => {
+  if (!fileItem?.type) {
     return false;
-  } else if (typeof file.type === "string") {
-    return file.type;
+  } else if (typeof fileItem.type === "string") {
+    return fileItem.type;
   } else {
-    return file.type?.label;
+    return fileItem.type?.label;
   }
 };
 
@@ -196,6 +198,10 @@ const existFileTag = (tag?: FileTag) => {
   } else {
     return tag.value;
   }
+};
+
+const getCoverSrc = (fileItem?: FileItem) => {
+  return fileItem?.cover ?? null;
 };
 
 const handleScrollLoad = () => {
@@ -345,7 +351,7 @@ defineExpose({
                     preview-disabled
                     :object-fit="coverObjectFit"
                     :height="coverHeight"
-                    :src="fileItem?.cover"
+                    :src="getCoverSrc(fileItem)"
                   >
                     <template #error>
                       <img
@@ -358,6 +364,19 @@ defineExpose({
                         v-else
                         :size="coverHeight"
                         :component="coverFallbackIcon"
+                      />
+                    </template>
+                    <template #placeholder>
+                      <img
+                        v-if="coverPlaceholderSrc"
+                        :src="coverPlaceholderSrc"
+                        :height="coverHeight"
+                        :style="{ objectFit: coverObjectFit }"
+                      />
+                      <n-icon
+                        v-else
+                        :size="coverHeight"
+                        :component="coverPlaceholderIcon"
                       />
                     </template>
                   </n-image>

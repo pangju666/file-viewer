@@ -16,7 +16,7 @@ const props = withDefaults(
   {
     token: undefined,
     title: undefined,
-    id: "only-office-editor",
+    id: "only-office-pdf-editor",
     region: "zh-CN",
     mode: "pdfjs",
     onlyOfficeServerUrl: undefined,
@@ -32,10 +32,16 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    if (props.mode === "onlyOffice" && typeof newVal === "string") {
+    if (
+      props.mode === "onlyOffice" &&
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      (!newVal?.url || !newVal?.mimeType || !newVal?.key)
+    ) {
       emits("error", undefinedFileErrorMessage);
     }
   },
+  { immediate: true },
 );
 
 const pdfjsViewUrl = computed(() => {
@@ -73,7 +79,7 @@ const onlyOfficeConfig = computed(() => ({
         visible: false,
       },
     },
-    lang: props.language ?? "zh",
+    region: props.region ?? "zh-CN",
     mode: "view",
   },
   events: {
@@ -101,18 +107,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <document-editor
-    v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
-    :id="id"
-    :document-server-url="onlyOfficeServerUrl"
-    :config="onlyOfficeConfig"
-  />
-  <iframe
-    v-else
-    :src="pdfjsViewUrl"
-    width="100%"
-    height="100%"
-    style="padding: 0; margin: 0; border: none"
-    @load="$emit('ready')"
-  />
+  <div style="overflow: hidden">
+    <document-editor
+      v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
+      :id="id"
+      :document-server-url="onlyOfficeServerUrl"
+      :config="onlyOfficeConfig"
+    />
+    <iframe
+      v-else
+      :src="pdfjsViewUrl"
+      width="100%"
+      height="100%"
+      style="padding: 0; margin: 0; border: none"
+      @load="$emit('ready')"
+    />
+  </div>
 </template>
