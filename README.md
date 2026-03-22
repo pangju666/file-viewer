@@ -161,8 +161,8 @@ const fileTypes = [
 export type FileItem = {
     source: string | File | Blob; // 源：URL、File 对象或 Blob
     mimeType?: string;           // MIME 类型（undefined 或为 null 时尝试使用 Blob 或 File 类型的 type 属性获取）
-    id?: string;                // 唯一标识符
-    name?: string;              // 名称（未定义时尝试使用 File 类型的 name 属性获取）
+    id?: string;                // 唯一标识符，如果是pdf或office文件且需要使用onlyoffice预览，建议设置id
+    name?: string;              // 文件名称（未定义时尝试使用 File 类型的 name 属性获取）
     type?: string | { label: string; value: string }; // 类型
     cover?: string;             // 封面图 URL
     size?: number;              // 大小（单位：字节）（undefined 或为 null 时尝试使用 Blob 或 File 类型的 size 属性获取）
@@ -648,20 +648,20 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 >
 > 使用[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)模式需要自己部署服务端环境。
 >
-> `mode`为`onlyOffice`时，`key`必须唯一（如果不存在唯一标识符，则可以使用[`nanoid`](https://www.npmjs.com/package/nanoid)来生成唯一标识符）。
+> `mode`为`onlyOffice`时，`key`必须唯一（如果未定义`key`，则默认使用(https://www.npmjs.com/package/nanoid)来生成一个唯一标识符）。
 
 #### 属性
 
-| 属性                    | 类型                                       | 默认值                                                  | 说明                                                                                                                                    |
-|-----------------------|------------------------------------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `src`                 | `string \| { url: string; key: string }` | `undefined`                                          | `Pdf`文件的`URL`（`mode`为`onlyOffice`时需要传入`{ url: string; key: string }`类型）                                                               |
-| `title`               | `string`                                 | `undefined`                                          | `Pdf`文件的标题（仅在`mode`为`onlyOffice`时生效）                                                                                                  |
-| `id`                  | `string`                                 | `"only-office-pdf-editor"`                           | `DocumentEditor`的`id`                                                                                                                 |
-| `token`               | `string`                                 | `undefined`                                          | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
-| `mode`                | `"pdfjs" \| "onlyOffice"`                | `"pdfjs"`                                            | `pdfjs`使用`iframe`调用`PDF.js Viewer`实现，`onlyOffice`使用`OnlyOffice`实现                                                                     |
-| `region`              | `string`                                 | `"zh-CN"`                                            | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
-| `pdfjsViewBaseUrl`    | `string`                                 | `"https://mozilla.github.io/pdf.js/web/viewer.html"` | `PDF.js Viewer`地址（最好改成自己部署的地址，或`public`目录下的路径）                                                                                        |
-| `onlyOfficeServerUrl` | `string`                                 | `undefined`                                          | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
+| 属性                    | 类型                                        | 默认值                                                  | 说明                                                                                                                                    |
+|-----------------------|-------------------------------------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `src`                 | `string \| { url: string; key?: string }` | `undefined`                                          | `Pdf`文件的`URL`（`mode`为`onlyOffice`时需要传入`{ url: string; key: string }`类型）                                                               |
+| `title`               | `string`                                  | `undefined`                                          | `Pdf`文件的标题（仅在`mode`为`onlyOffice`时生效）                                                                                                  |
+| `id`                  | `string`                                  | `"only-office-editor"`                               | `DocumentEditor`的`id`                                                                                                                 |
+| `token`               | `string`                                  | `undefined`                                          | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
+| `mode`                | `"pdfjs" \| "onlyOffice"`                 | `"pdfjs"`                                            | `pdfjs`使用`iframe`调用`PDF.js Viewer`实现，`onlyOffice`使用`OnlyOffice`实现                                                                     |
+| `region`              | `string`                                  | `"zh-CN"`                                            | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
+| `pdfjsViewBaseUrl`    | `string`                                  | `"https://mozilla.github.io/pdf.js/web/viewer.html"` | `PDF.js Viewer`地址（最好改成自己部署的地址，或`public`目录下的路径）                                                                                        |
+| `onlyOfficeServerUrl` | `string`                                  | `undefined`                                          | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
 
 #### 事件
 
@@ -714,21 +714,21 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 > 💡 **提示**：
 >
 > 使用[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)模式需要自己部署服务端环境。
-> 
-> `mode`为`onlyOffice`时，`key`必须唯一（如果不存在唯一标识符，则可以使用[`nanoid`](https://www.npmjs.com/package/nanoid)来生成唯一标识符）。
+>
+> `mode`为`onlyOffice`时，`key`必须唯一（如果未定义`key`，则默认使用(https://www.npmjs.com/package/nanoid)来生成一个唯一标识符）。
 
 #### 属性
 
-| 属性                     | 类型                                                         | 默认值                                                | 说明                                                                                                                                    |
-|------------------------|------------------------------------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `src`                  | `string \| { url: string; mimeType: string; key: string }` | `undefined`                                        | `Office`文件的`URL`（`mode`为`onlyOffice`时需要传入`{ url: string; mimeType: string; key: string }`类型）                                          |
-| `title`                | `string`                                                   | `undefined`                                        | `Office`文件的标题（仅在`mode`为`onlyOffice`时生效）                                                                                               |
-| `id`                   | `string`                                                   | `"only-office-editor"`                             | `DocumentEditor`的`id`                                                                                                                 |
-| `token`                | `string`                                                   | `undefined`                                        | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
-| `mode`                 | `"microsoft" \| "onlyOffice"`                              | `"microsoft"`                                      | `microsoft`使用`iframe`调用`Microsoft Office Online`实现，`onlyOffice`使用`OnlyOffice`实现                                                       |
-| `region`               | `string`                                                   | `"zh-CN"`                                          | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
-| `microsoftViewBaseUrl` | `string`                                                   | `"https://view.officeapps.live.com/op/embed.aspx"` | `Microsoft Office Online`地址（一般不需要改）                                                                                                   |
-| `onlyOfficeServerUrl`  | `string`                                                   | `undefined`                                        | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
+| 属性                     | 类型                                                          | 默认值                                                | 说明                                                                                                                                    |
+|------------------------|-------------------------------------------------------------|----------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| `src`                  | `string \| { url: string; mimeType: string; key?: string }` | `undefined`                                        | `Office`文件的`URL`（`mode`为`onlyOffice`时需要传入`{ url: string; mimeType: string; key: string }`类型）                                          |
+| `title`                | `string`                                                    | `undefined`                                        | `Office`文件的标题（仅在`mode`为`onlyOffice`时生效）                                                                                               |
+| `id`                   | `string`                                                    | `"only-office-editor"`                             | `DocumentEditor`的`id`                                                                                                                 |
+| `token`                | `string`                                                    | `undefined`                                        | [`OnlyOffice`令牌配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/#token)                                            |
+| `mode`                 | `"microsoft" \| "onlyOffice"`                               | `"microsoft"`                                      | `microsoft`使用`iframe`调用`Microsoft Office Online`实现，`onlyOffice`使用`OnlyOffice`实现                                                       |
+| `region`               | `string`                                                    | `"zh-CN"`                                          | [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)                                    |
+| `microsoftViewBaseUrl` | `string`                                                    | `"https://view.officeapps.live.com/op/embed.aspx"` | `Microsoft Office Online`地址（一般不需要改）                                                                                                   |
+| `onlyOfficeServerUrl`  | `string`                                                    | `undefined`                                        | [`OnlyOffice`服务端地址](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)，例如：`http://localhost:10000` |
 
 #### 事件
 

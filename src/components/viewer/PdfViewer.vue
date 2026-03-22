@@ -4,7 +4,12 @@ import type { PdfUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { PdfPreviewOptions } from "@/types/options.ts";
 import { DocumentEditor } from "@onlyoffice/document-editor-vue";
-import { undefinedFileErrorMessage } from "@/utils/constants.ts";
+import {
+  filenameAlphabet,
+  undefinedFileErrorMessage,
+  undefinedKeyErrorMessage,
+} from "@/utils/constants.ts";
+import { customAlphabet, nanoid } from "nanoid";
 
 const props = withDefaults(
   defineProps<
@@ -16,8 +21,9 @@ const props = withDefaults(
   {
     token: undefined,
     title: undefined,
-    id: "only-office-pdf-editor",
+    id: "only-office-editor",
     region: "zh-CN",
+    lang: "zh",
     mode: "pdfjs",
     onlyOfficeServerUrl: undefined,
     pdfjsViewBaseUrl: "https://mozilla.github.io/pdf.js/web/viewer.html",
@@ -32,16 +38,18 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    if (
-      props.mode === "onlyOffice" &&
+    if (props.mode === "onlyOffice") {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      (!newVal?.url || !newVal?.mimeType || !newVal?.key)
-    ) {
-      emits("error", undefinedFileErrorMessage);
+      if (!newVal?.url) {
+        emits("error", undefinedFileErrorMessage);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+      } else if (!newVal?.key) {
+        emits("error", undefinedKeyErrorMessage);
+      }
     }
   },
-  { immediate: true },
 );
 
 const pdfjsViewUrl = computed(() => {
@@ -60,8 +68,8 @@ const onlyOfficeConfig = computed(() => ({
     fileType: "pdf",
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    key: props.src?.key,
-    title: props.title ?? "",
+    key: props.src?.key ?? nanoid(),
+    title: props.title ?? `${customAlphabet(filenameAlphabet)}.pdf`,
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     url: props.src?.url,
@@ -82,7 +90,8 @@ const onlyOfficeConfig = computed(() => ({
         visible: false,
       },
     },
-    region: props.region ?? "zh-CN",
+    lang: props.lang,
+    region: props.region,
     mode: "view",
   },
   events: {

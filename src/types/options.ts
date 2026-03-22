@@ -73,6 +73,7 @@ export type OfficePreviewOptions = {
   token?: string;
   mode?: "microsoft" | "onlyOffice";
   region?: string;
+  lang?: string;
   microsoftViewBaseUrl?: string;
   onlyOfficeServerUrl?: string;
 };
@@ -82,6 +83,7 @@ export type PdfPreviewOptions = {
   token?: string;
   mode?: "pdfjs" | "onlyOffice";
   region?: string;
+  lang?: string;
   pdfjsViewBaseUrl?: string;
   onlyOfficeServerUrl?: string;
 };

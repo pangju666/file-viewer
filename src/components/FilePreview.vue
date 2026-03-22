@@ -69,10 +69,11 @@ watch(
       hasError.value = false;
       errorReason.value = undefined;
       viewerError.value = undefined;
-      emits("loading-start");
     } else {
       hasError.value = true;
       errorReason.value = undefinedFileErrorMessage;
+
+      emits("loading-error");
       return;
     }
 
@@ -91,6 +92,8 @@ watch(
       isBlob.value = true;
       fileUrl.value = URL.createObjectURL(newVal.source);
     }
+
+    emits("loading-start");
   },
 );
 
@@ -222,19 +225,19 @@ const handleViewerReady = () => {
 };
 
 const setError = (reason?: string, error?: unknown) => {
-  emits("loading-error");
-
   errorReason.value = reason;
   viewerError.value = error;
   hasError.value = true;
+
+  emits("loading-error");
 };
 
 const handleViewerError = (e?: unknown) => {
-  emits("loading-error");
-
   errorReason.value = undefined;
   viewerError.value = e;
   hasError.value = true;
+
+  emits("loading-error");
 };
 
 const handleAudioViewerError = (error: MediaError) => {
@@ -311,10 +314,11 @@ const matchCustomViewer = (file: FileItem) => {
 
 onMounted(() => {
   if (props.file?.source && props.file?.mimeType) {
-    emits("loading-start");
   } else {
     hasError.value = true;
     errorReason.value = undefinedFileErrorMessage;
+
+    emits("loading-error");
     return;
   }
 
@@ -325,6 +329,7 @@ onMounted(() => {
     isBlob.value = true;
     fileUrl.value = URL.createObjectURL(props.file.source);
   }
+  emits("loading-start");
 });
 
 defineExpose({

@@ -37,10 +37,10 @@ export type UrlWithFileEncoding = {
 };
 
 export type OnlyOfficeUrl = UrlWithMimeType & {
-  key: string;
+  key?: string;
 };
 
 export type PdfUrl = {
   url: string;
-  key: string;
+  key?: string;
 };

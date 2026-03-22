@@ -4,7 +4,12 @@ import type { OnlyOfficeUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { OfficePreviewOptions } from "@/types/options.ts";
 import { DocumentEditor } from "@onlyoffice/document-editor-vue";
-import { undefinedFileErrorMessage } from "@/utils/constants.ts";
+import {
+  filenameAlphabet,
+  undefinedFileErrorMessage,
+  undefinedKeyErrorMessage,
+} from "@/utils/constants.ts";
+import { customAlphabet, nanoid } from "nanoid";
 
 const props = withDefaults(
   defineProps<
@@ -18,6 +23,7 @@ const props = withDefaults(
     title: undefined,
     id: "only-office-editor",
     region: "zh-CN",
+    lang: "zh",
     mode: "microsoft",
     onlyOfficeServerUrl: undefined,
     //microsoftViewBaseUrl: "https://view.officeapps.live.com/op/view.aspx",
@@ -33,16 +39,18 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    if (
-      props.mode === "onlyOffice" &&
+    if (props.mode === "onlyOffice") {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      (!newVal?.url || !newVal?.mimeType || !newVal?.key)
-    ) {
-      emits("error", undefinedFileErrorMessage);
+      if (!newVal?.url || !newVal?.mimeType) {
+        emits("error", undefinedFileErrorMessage);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+      } else if (!newVal?.key) {
+        emits("error", undefinedKeyErrorMessage);
+      }
     }
   },
-  { immediate: true },
 );
 
 const microsoftViewUrl = computed(() => {
@@ -65,8 +73,10 @@ const onlyOfficeConfig = computed(() => ({
     fileType: getFileType(props.src?.mimeType),
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    key: props.src?.key,
-    title: props.title ?? "",
+    key: props.src?.key ?? nanoid(),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    title: props.title ?? generateFilename(props.src?.mimeType),
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     url: props.src?.url,
@@ -87,7 +97,8 @@ const onlyOfficeConfig = computed(() => ({
         visible: false,
       },
     },
-    region: props.region ?? "zh-CN",
+    lang: props.lang,
+    region: props.region,
     mode: "view",
   },
   events: {
@@ -132,6 +143,23 @@ const getFileType = (mimeType: string) => {
       return "pptx";
     case "application/vnd.ms-powerpoint":
       return "ppt";
+  }
+};
+
+const generateFilename = (mimeType: string) => {
+  switch (mimeType) {
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      return `${customAlphabet(filenameAlphabet)}.docx`;
+    case "application/msword":
+      return `${customAlphabet(filenameAlphabet)}.doc`;
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      return `${customAlphabet(filenameAlphabet)}.xlsx`;
+    case "application/vnd.ms-excel":
+      return `${customAlphabet(filenameAlphabet)}.xls`;
+    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+      return `${customAlphabet(filenameAlphabet)}.pptx`;
+    case "application/vnd.ms-powerpoint":
+      return `${customAlphabet(filenameAlphabet)}.ppt`;
   }
 };
 

@@ -96,6 +96,10 @@ const previewProps = computed(() => {
     defaultSplitSize,
     autoDetectType,
     detectFileType,
+    showLoading,
+    loadingText,
+    loadingSize,
+    /* File List 属性 */
     title,
     data,
     showDescriptions,
@@ -133,6 +137,10 @@ const listProps = computed(() => {
     defaultSplitSize,
     autoDetectType,
     detectFileType,
+    showLoading,
+    loadingText,
+    loadingSize,
+    /* File Preview 属性 */
     enableImage,
     enableVideo,
     enableAudio,
