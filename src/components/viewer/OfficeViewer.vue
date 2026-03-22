@@ -71,6 +71,9 @@ const onlyOfficeConfig = computed(() => ({
     // @ts-ignore
     url: props.src?.url,
     permissions: {
+      copy: true,
+      download: true,
+      print: true,
       chat: false,
       comment: false,
     },
