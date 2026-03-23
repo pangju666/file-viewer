@@ -11,7 +11,10 @@
     "prepare": "husky"
   },
   "files": [
-    "dist"
+    "dist",
+    "docs-images",
+    "README.md",
+    "LICENSE"
   ],
   "type": "module",
   "main": "./dist/index.cjs.js",
