@@ -16,7 +16,7 @@
 | **DXF矢量图**     | .dxf                                                                                    | 
 | **JSON**       | .json                                                                                   |                                                                                                                                                                                    
 | **Markdown文档** | .md                                                                                     |                                                                                                                                                                                                
-| **纯文本**        | .txt, .js, .ts, .css, .html 等                                                           |
+| **纯文本**        | .txt                                                                                    |
 
 ## 在线示例
 
