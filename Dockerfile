@@ -1,15 +1,27 @@
-FROM nginx:stable-alpine
+# 第一阶段：构建前端
+FROM node:20.20 AS builder
 
-# 设置工作目录
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-# 从构建阶段复制 dist 目录
-# 注意：Vite/Vue CLI 默认输出目录通常是 dist
-COPY --from=builder /app/dist/app .
+# 安装依赖
+COPY package*.json ./
+RUN npm install
 
-# (可选) 复制 Nginx 配置文件以支持 History 模式
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# 拷贝项目文件
+COPY . .
 
-EXPOSE 80 443
+# 构建
+RUN npm run build
+
+# 第二阶段：Nginx部署
+FROM nginx:alpine
+
+# 删除默认配置
+RUN rm -rf /usr/share/nginx/html/*
+
+# 拷贝构建结果（注意路径）
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
