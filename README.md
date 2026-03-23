@@ -20,6 +20,8 @@
 
 ## 在线示例
 
+![预览图](docs-images/file-viewer.webp)
+
 [在线示例](https://pangju666.github.io/file-viewer-demo/)
 
 [示例源码](https://github.com/pangju666/file-viewer-demo/blob/master/src/components/FileView.vue)
@@ -56,6 +58,10 @@ app.mount('#app')
 你也可以在组件中直接引入：
 
 ```vue
+<template>
+  <file-viewer :data="fileItems"/>
+</template>
+
 <script setup>
   import {FileViewer} from '@pangju/file-viewer'
   import '@pangju/file-viewer/index.css'
@@ -114,11 +120,10 @@ app.mount('#app')
     },
   ]);
 </script>
-
-<template>
-  <file-viewer :data="fileItems"/>
-</template>
 ```
+
+<details>
+<summary>展开查看示例</summary>
 
 ## 数据结构
 
@@ -235,6 +240,14 @@ const fileItems = [
 ```
 
 </details>
+
+<details>
+<summary>展开查看组件说明</summary>
+
+</details>
+
+<details>
+<summary>展开查看示例</summary>
 
 ## 🧩 组件
 
@@ -875,6 +888,10 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
   import {ErrorViewer} from "@pangju/file-viewer";
 </script>
 ```
+
+</details>
+
+</details>
 
 ## 📄 开源协议
 
