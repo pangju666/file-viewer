@@ -67,11 +67,60 @@ app.mount('#app')
   import '@pangju/file-viewer/index.css'
   import {ref} from "vue";
 
-  const fileItems = ref([/*...文件数据*/]);
+  const fileItems = ref([{
+    source: "https://disk.sample.cat/samples/pdf/sample-a4.pdf",
+    mimeType: "application/pdf",
+    name: "Sample A4 PDF",
+    type: "PDF文档",
+    cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+    tags: ["测试文件", "示例PDF"],
+    size: 10000000,
+    descriptions: [
+      {
+        name: "创建事件",
+        value: "2026-3-18",
+      },
+      {
+        name: "创建作者",
+        value: "胖橘",
+      },
+    ],
+  },
+    {
+      source: "https://disk.sample.cat/samples/png/monalisa-1200x1200.png",
+      mimeType: "application/pdf",
+      name: "Monalisa 1200x1200",
+      type: {
+        label: "图像",
+        value: "image",
+      },
+      cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
+      tags: [
+        {
+          value: "测试文件",
+          type: "info",
+        },
+        {
+          value: "测试文件",
+          type: "success",
+        }
+      ],
+      size: 10000000,
+      descriptions: [
+        {
+          name: "创建事件",
+          value: "2026-3-18",
+        },
+        {
+          name: "创建作者",
+          value: "胖橘",
+        },
+      ],
+    }]);
 </script>
 ```
 
-异步导入数据，数据结构：[`FileItem`](#fileitem)
+分页导入数据，数据结构：[`FileItem`](#fileitem)
 
 ```vue
 <template>
@@ -87,7 +136,7 @@ app.mount('#app')
       types,
       keyword,
   ) => {
-    //...从服务端请求文件数据
+    return [/*...从服务端获取分页数据*/]
   };
 </script>
 ```
