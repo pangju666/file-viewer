@@ -20,6 +20,10 @@
 
 ## 在线示例
 
+[在线示例](https://pangju666.github.io/file-viewer-demo/)
+
+[示例源码](https://github.com/pangju666/file-viewer-demo/blob/master/src/components/FileView.vue)
+
 ## 📦 安装
 
 ```bash
