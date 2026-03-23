@@ -646,7 +646,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 
 > 💡 **提示**：
 >
-> 使用`pdfjs`模式最好在项目的`public`目录放一份自己构建的代码，或者用`nginx`配置一份自己构建的版本。
+> 使用`pdfjs`模式最好在项目的`public`目录放一份自己构建的代码（可以使用我在样式项目中的构建，[传送门](https://github.com/pangju666/file-viewer-demo/tree/master/public/pdfjs)）。
 >
 > 使用[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)模式需要自己部署服务端环境。
 >
