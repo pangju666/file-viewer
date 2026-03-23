@@ -55,7 +55,7 @@ app.mount('#app')
 
 ### 局部引入
 
-你也可以在组件中直接引入：
+一次型导入数据，数据结构：[`FileItem`](#fileitem)
 
 ```vue
 <template>
@@ -67,65 +67,35 @@ app.mount('#app')
   import '@pangju/file-viewer/index.css'
   import {ref} from "vue";
 
-  const fileItems = ref([
-    {
-      source: "https://disk.sample.cat/samples/pdf/sample-a4.pdf",
-      mimeType: "application/pdf",
-      name: "Sample A4 PDF",
-      type: "PDF文档",
-      cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-      tags: ["测试文件", "示例PDF"],
-      size: 10000000,
-      descriptions: [
-        {
-          name: "创建事件",
-          value: "2026-3-18",
-        },
-        {
-          name: "创建作者",
-          value: "胖橘",
-        },
-      ],
-    },
-    {
-      source: "https://disk.sample.cat/samples/png/monalisa-1200x1200.png",
-      mimeType: "application/pdf",
-      name: "Monalisa 1200x1200",
-      type: {
-        label: "图像",
-        value: "image",
-      },
-      cover: "https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg",
-      tags: [
-        {
-          value: "测试文件",
-          type: "info",
-        },
-        {
-          value: "测试文件",
-          type: "success",
-        }
-      ],
-      size: 10000000,
-      descriptions: [
-        {
-          name: "创建事件",
-          value: "2026-3-18",
-        },
-        {
-          name: "创建作者",
-          value: "胖橘",
-        },
-      ],
-    },
-  ]);
+  const fileItems = ref([/*...文件数据*/]);
 </script>
 ```
 
-<details>
-<summary>展开查看示例</summary>
+异步导入数据，数据结构：[`FileItem`](#fileitem)
+
+```vue
+<template>
+  <file-viewer :on-load="onLoad"/>
+</template>
+
+<script setup>
+  import {FileViewer} from '@pangju/file-viewer'
+  import '@pangju/file-viewer/index.css'
+
+  const onLoad = (
+      page,
+      types,
+      keyword,
+  ) => {
+    //...从服务端请求文件数据
+  };
+</script>
+```
 
 ## 数据结构
+
+<details>
+<summary>展开查看详情</summary>
 
 ### FileType
 
@@ -138,9 +108,6 @@ export type FileType = { label: string; value: string; } | string;
 > 💡 **提示**：
 > 
 > `label`用于定义文件类型的显示文本，未定义则直接使用`value`作为显示文本。
-
-<details>
-<summary>展开查看示例</summary>
 
 #### 示例
 ```javascript
@@ -155,8 +122,6 @@ const fileTypes = [
     "图片"  // 图片作为显示文本和值
 ]
 ```
-
-</details>
 
 ### FileItem
 
@@ -179,9 +144,6 @@ export type FileItem = {
 > 💡 **提示**：
 >
 > 内置的`Pdf`和`Office`预览组件只支持公网`URL`，所以无法使用`File`或`Blob`类型作为文件源（`FileItem.source`）。
-
-<details>
-<summary>展开查看示例</summary>
 
 #### 示例
 ```javascript
@@ -241,15 +203,10 @@ const fileItems = [
 
 </details>
 
-<details>
-<summary>展开查看组件说明</summary>
-
-</details>
-
-<details>
-<summary>展开查看示例</summary>
-
 ## 🧩 组件
+
+<details>
+<summary>展开查看详情</summary>
 
 ### FileViewer
 
@@ -888,8 +845,6 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
   import {ErrorViewer} from "@pangju/file-viewer";
 </script>
 ```
-
-</details>
 
 </details>
 
