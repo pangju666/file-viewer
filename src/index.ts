@@ -83,8 +83,8 @@ export type {
 } from "./types/options.ts";
 
 export {
-  undefinedFileErrorMessage,
-  undefinedKeyErrorMessage,
+  undefinedSourceMessage,
+  undefinedMimeTypeMessage,
   filenameAlphabet,
   supportedOfficeMimeTypes,
   dxfMimeType,

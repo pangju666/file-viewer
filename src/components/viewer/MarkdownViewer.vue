@@ -35,7 +35,7 @@ watch(
   (newVal: UrlWithFileEncoding | string) => {
     content.value = "";
 
-    if (newVal) {
+    if (typeof newVal === "string" || newVal?.url) {
       getContent(newVal);
     }
   },
@@ -85,7 +85,7 @@ onMounted(() => {
     editorRef.value?.toggleCatalog(true);
   }
 
-  if (props.src) {
+  if (typeof props.src === "string" || props?.src?.url) {
     getContent(props.src);
   }
 });
