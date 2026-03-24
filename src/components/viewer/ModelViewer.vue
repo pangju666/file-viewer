@@ -27,7 +27,7 @@ const emits = defineEmits<{
 watch(
   () => props.src,
   (newVal) => {
-    if (newVal) {
+    if (typeof newVal === "string" || newVal?.url) {
       source.value = getSrcFromUrl(newVal);
 
       if (typeof newVal === "string") {
@@ -100,8 +100,12 @@ const handleViewerReady = () => {
 };
 
 onMounted(() => {
-  if (props.src && typeof props.src !== "string") {
-    extension.value = getExtension(props.src?.mimeType);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  if (props.src?.mimeType) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    extension.value = getExtension(props.src.mimeType);
   }
 });
 </script>

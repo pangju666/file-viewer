@@ -19,3 +19,4 @@
 *.icc   binary
 *.pfb   binary
 *.wasm  binary
+*.webp  binary

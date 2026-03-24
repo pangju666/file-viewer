@@ -1,14 +1,10 @@
 <script lang="ts" setup>
-import { computed, onMounted, watch } from "vue";
+import { computed, onMounted } from "vue";
 import type { OnlyOfficeUrl } from "@/types/file.ts";
 import "@/assets/css/file-viewer.css";
 import type { OfficePreviewOptions } from "@/types/options.ts";
 import { DocumentEditor } from "@onlyoffice/document-editor-vue";
-import {
-  filenameAlphabet,
-  undefinedFileErrorMessage,
-  undefinedKeyErrorMessage,
-} from "@/utils/constants.ts";
+import { filenameAlphabet } from "@/utils/constants.ts";
 import { customAlphabet, nanoid } from "nanoid";
 
 const props = withDefaults(
@@ -35,23 +31,6 @@ const emits = defineEmits<{
   (e: "ready"): void;
   (e: "error", errorDescription: string, errorCode?: number): void;
 }>();
-
-watch(
-  () => props.src,
-  (newVal) => {
-    if (props.mode === "onlyOffice") {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      if (!newVal?.url || !newVal?.mimeType) {
-        emits("error", undefinedFileErrorMessage);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-      } else if (!newVal?.key) {
-        emits("error", undefinedKeyErrorMessage);
-      }
-    }
-  },
-);
 
 const microsoftViewUrl = computed(() => {
   if (typeof props.src === "string") {
@@ -149,17 +128,17 @@ const getFileType = (mimeType: string) => {
 const generateFilename = (mimeType: string) => {
   switch (mimeType) {
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return `${customAlphabet(filenameAlphabet)}.docx`;
+      return `${customAlphabet(filenameAlphabet)()}.docx`;
     case "application/msword":
-      return `${customAlphabet(filenameAlphabet)}.doc`;
+      return `${customAlphabet(filenameAlphabet)()}.doc`;
     case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-      return `${customAlphabet(filenameAlphabet)}.xlsx`;
+      return `${customAlphabet(filenameAlphabet)()}.xlsx`;
     case "application/vnd.ms-excel":
-      return `${customAlphabet(filenameAlphabet)}.xls`;
+      return `${customAlphabet(filenameAlphabet)()}.xls`;
     case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
-      return `${customAlphabet(filenameAlphabet)}.pptx`;
+      return `${customAlphabet(filenameAlphabet)()}.pptx`;
     case "application/vnd.ms-powerpoint":
-      return `${customAlphabet(filenameAlphabet)}.ppt`;
+      return `${customAlphabet(filenameAlphabet)()}.ppt`;
   }
 };
 
@@ -176,13 +155,18 @@ onMounted(() => {
 <template>
   <div style="overflow: hidden">
     <document-editor
-      v-if="mode === 'onlyOffice' && onlyOfficeServerUrl"
+      v-if="
+        mode === 'onlyOffice' &&
+        onlyOfficeServerUrl &&
+        src?.url &&
+        src?.mimeType
+      "
       :id="id"
       :document-server-url="onlyOfficeServerUrl"
       :config="onlyOfficeConfig"
     />
     <iframe
-      v-else
+      v-else-if="src"
       :src="microsoftViewUrl"
       width="100%"
       height="100%"

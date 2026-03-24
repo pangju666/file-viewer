@@ -68,7 +68,7 @@ const initPlayer = () => {
 watch(
   () => props.src,
   (newVal) => {
-    if (newVal) {
+    if (typeof newVal === "string" || newVal?.url) {
       if (!videoPlayer) {
         initPlayer();
       } else {
@@ -89,7 +89,7 @@ onMounted(() => {
     return;
   }
 
-  if (props.src) {
+  if (typeof props.src === "string" || props?.src?.url) {
     initPlayer();
   }
 

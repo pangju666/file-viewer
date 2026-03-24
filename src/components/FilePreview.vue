@@ -12,7 +12,8 @@ import {
   jsonMimeType,
   utf8Charset,
   mimeTypeWithCharsetRegex,
-  undefinedFileErrorMessage,
+  undefinedSourceMessage,
+  undefinedMimeTypeMessage,
 } from "@/utils/constants.ts";
 import type { FileItem } from "@/types/file.ts";
 import { isTargetMimeType, isTextMimeType } from "@/utils/utils.ts";
@@ -71,7 +72,11 @@ watch(
       viewerError.value = undefined;
     } else {
       hasError.value = true;
-      errorReason.value = undefinedFileErrorMessage;
+      if (!newVal?.source) {
+        errorReason.value = undefinedSourceMessage;
+      } else if (!newVal?.mimeType) {
+        errorReason.value = undefinedMimeTypeMessage;
+      }
 
       emits("loading-error");
       return;
@@ -313,10 +318,15 @@ const matchCustomViewer = (file: FileItem) => {
 };
 
 onMounted(() => {
-  if (props.file?.source && props.file?.mimeType) {
-  } else {
+  if (!props.file?.source) {
     hasError.value = true;
-    errorReason.value = undefinedFileErrorMessage;
+    errorReason.value = undefinedSourceMessage;
+
+    emits("loading-error");
+    return;
+  } else if (!props.file?.mimeType) {
+    hasError.value = true;
+    errorReason.value = undefinedMimeTypeMessage;
 
     emits("loading-error");
     return;
@@ -357,7 +367,7 @@ defineExpose({
         :mime-type="fileMimeType"
       />
     </slot>
-    <div v-else class="pangju-wh-100">
+    <div v-if="fileUrl && !hasError" class="pangju-wh-100">
       <slot
         v-if="matchCustomViewer(file)"
         name="custom"
