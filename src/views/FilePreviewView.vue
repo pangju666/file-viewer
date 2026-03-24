@@ -64,7 +64,7 @@ const viewerOptions = ref({
     id: import.meta.env.VITE_ONLY_OFFICE_ID,
     token: import.meta.env.VITE_ONLY_OFFICE_TOKEN ?? undefined,
     mode: import.meta.env.VITE_PDF_VIEWER_MODE,
-    language: import.meta.env.VITE_PDF_VIEWER_LANGUAGE,
+    lang: import.meta.env.VITE_PDF_VIEWER_LANGUAGE,
     region: import.meta.env.VITE_PDF_VIEWER_REGION,
     pdfjsViewBaseUrl: import.meta.env.VITE_PDF_VIEWER_PDFJS_VIEW_BASE_URL,
     onlyOfficeServerUrl:
@@ -74,7 +74,7 @@ const viewerOptions = ref({
     id: import.meta.env.VITE_ONLY_OFFICE_ID,
     token: import.meta.env.VITE_ONLY_OFFICE_TOKEN ?? undefined,
     mode: import.meta.env.VITE_OFFICE_VIEWER_MODE,
-    language: import.meta.env.VITE_OFFICE_VIEWER_LANGUAGE,
+    lang: import.meta.env.VITE_OFFICE_VIEWER_LANGUAGE,
     region: import.meta.env.VITE_OFFICE_VIEWER_REGION,
     microsoftViewBaseUrl: import.meta.env
       .VITE_OFFICE_VIEWER_MICROSOFT_VIEW_BASE_URL,
