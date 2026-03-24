@@ -3,8 +3,8 @@ import type { RouteRecordRaw } from "vue-router";
 
 const routes: RouteRecordRaw[] = [
   {
-    path: "/preview",
-    name: "FilePreviewView",
+    path: "/",
+    name: "Preview",
     props: (route) => ({
       id: route.query.id
         ? decodeURIComponent(route.query.id as string)

@@ -20,7 +20,7 @@
 
 ## 在线预览
 
-[在线示例](https://pangju666.github.io/file-viewer/preview?src=https%3a%2f%2fraw.githubusercontent.com%2fgdsestimating%2fdxf-parser%2frefs%2fheads%2fmaster%2fsamples%2fdata%2fapi-cw750-details.dxf&type=image%2fvnd.dxf)
+[在线示例](https://pangju666.github.io/file-viewer?src=https%3a%2f%2fraw.githubusercontent.com%2fgdsestimating%2fdxf-parser%2frefs%2fheads%2fmaster%2fsamples%2fdata%2fapi-cw750-details.dxf&type=image%2fvnd.dxf)
 
 ## 🚀 快速开始
 
@@ -43,16 +43,16 @@ pnpm run dev
 pnpm run build
 ```
 
-构建产物位于 `dist` 目录。你可以将其部署到 Nginx 或任何静态文件服务器上。
+构建产物位于 `docs` 目录。你可以将其部署到 Nginx 或任何静态文件服务器上。
 
 ## 📖 使用指南
 
-项目部署后，可以通过访问 `/preview` 路由并携带参数来预览文件。
+项目部署后，可以通过携带参数来预览文件。
 
 ### 预览 URL 示例
 
 ```text
-http://your-domain/file-viewer/preview?src={file_url}&type={mime_type}&name={filename}
+http://your-domain/file-viewer?src={file_url}&type={mime_type}&name={filename}
 ```
 
 > **注意**：默认 `base` 路径为 `/file-viewer`，请根据 `vite.config.ts` 中的配置进行调整。
