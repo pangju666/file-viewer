@@ -1,4 +1,4 @@
-# @pangju/file-viewer
+# @pangju666/file-viewer
 
 基于 `Vue 3` 和 [`Naive UI`](https://www.naiveui.com/zh-CN/os-theme/docs/introduction)
 打造的高集成度文件预览组件，致力于集成各类常用格式的预览能力，提供统一且高度可定制的交互体验。
@@ -29,11 +29,11 @@
 ## 📦 安装
 
 ```bash
-pnpm add @pangju/file-viewer
+pnpm add @pangju666/file-viewer
 
-yarn add @pangju/file-viewer
+yarn add @pangju666/file-viewer
 
-npm install @pangju/file-viewer
+npm install @pangju666/file-viewer
 ```
 
 ## 🚀 快速开始
@@ -45,8 +45,8 @@ npm install @pangju/file-viewer
 ```javascript
 import {createApp} from 'vue'
 import App from './App.vue'
-import FileViewer from '@pangju/file-viewer'
-import '@pangju/file-viewer/index.css'
+import FileViewer from '@pangju666/file-viewer'
+import '@pangju666/file-viewer/index.css'
 
 const app = createApp(App)
 app.use(FileViewer)
@@ -63,8 +63,8 @@ app.mount('#app')
 </template>
 
 <script setup>
-  import {FileViewer} from '@pangju/file-viewer'
-  import '@pangju/file-viewer/index.css'
+  import {FileViewer} from '@pangju666/file-viewer'
+  import '@pangju666/file-viewer/index.css'
   import {ref} from "vue";
 
   const fileItems = ref([{
@@ -128,8 +128,8 @@ app.mount('#app')
 </template>
 
 <script setup>
-  import {FileViewer} from '@pangju/file-viewer'
-  import '@pangju/file-viewer/index.css'
+  import {FileViewer} from '@pangju666/file-viewer'
+  import '@pangju666/file-viewer/index.css'
 
   const onLoad = (
       page,
@@ -575,7 +575,7 @@ const fileItems = [
 </template>
 
 <script setup>
-import {DxfViewer} from "@pangju/file-viewer";
+import {DxfViewer} from "@pangju666/file-viewer";
 import {ref} from "vue";
 
 import HanaMinAFont from "@/assets/fonts/HanaMinA.ttf";
@@ -703,7 +703,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 </template>
 
 <script setup>
-  import {PdfViewer} from "@pangju/file-viewer";
+  import {PdfViewer} from "@pangju666/file-viewer";
 </script>
 ```
 
@@ -717,7 +717,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 </template>
 
 <script setup>
-  import {PdfViewer} from "@pangju/file-viewer";
+  import {PdfViewer} from "@pangju666/file-viewer";
   import {ref} from "vue";
 
   const pdfUrl = ref({
@@ -770,7 +770,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 </template>
 
 <script setup>
-  import {OfficeViewer} from "@pangju/file-viewer";
+  import {OfficeViewer} from "@pangju666/file-viewer";
 </script>
 ```
 
@@ -784,7 +784,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 </template>
 
 <script setup>
-  import {OfficeViewer} from "@pangju/file-viewer";
+  import {OfficeViewer} from "@pangju666/file-viewer";
   import {ref} from "vue";
 
   const officeUrl = ref({
@@ -825,7 +825,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 </template>
 
 <script setup>
-  import {ModelViewer} from "@pangju/file-viewer";
+  import {ModelViewer} from "@pangju666/file-viewer";
   import {ref} from "vue";
 
   const modelSrc = ref({
@@ -864,7 +864,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 </template>
 
 <script setup>
-  import {UnknownViewer} from "@pangju/file-viewer";
+  import {UnknownViewer} from "@pangju666/file-viewer";
 </script>
 ```
 
@@ -891,7 +891,7 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 </template>
 
 <script setup>
-  import {ErrorViewer} from "@pangju/file-viewer";
+  import {ErrorViewer} from "@pangju666/file-viewer";
 </script>
 ```
 
