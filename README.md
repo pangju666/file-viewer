@@ -902,3 +902,6 @@ PDF预览组件，使用[PDF.js Viewer](https://learn.microsoft.com/zh-cn/office
 ## 📄 开源协议
 
 [Apache 2.0 License](LICENSE)
+
+---
+感谢所有为项目做出贡献的开发者，以及项目所使用的开源框架和工具。
