@@ -1,5 +1,5 @@
 # 第一阶段：构建前端
-FROM node:20.20 AS builder
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/node:20.20.0 AS builder
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ ARG VITE_PDF_VIEWER_PDFJS_VIEW_BASE_URL="pdfjs/web/viewer.html"
 
 # 安装依赖
 COPY package*.json ./
-RUN npm install
+RUN npm install --registry=https://registry.npmmirror.com
 
 # 拷贝项目文件
 COPY . .
@@ -39,7 +39,7 @@ RUN VITE_ONLY_OFFICE_ID=${VITE_ONLY_OFFICE_ID} \
     npm run build
 
 # 第二阶段：Nginx部署
-FROM nginx:stable-alpine
+FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/nginx:stable-alpine
 
 # 删除默认配置
 RUN rm -rf /usr/share/nginx/html/*
