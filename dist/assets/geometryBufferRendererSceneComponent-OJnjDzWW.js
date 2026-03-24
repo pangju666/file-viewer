@@ -1,0 +1,325 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/geometry.vertex-D46YIDB4.js","assets/FilePreviewView-DHNTJ5Ma.js","assets/index-ORjAvF2u.js","assets/index-93U01NgF.css","assets/FilePreviewView-DntQczUz.css","assets/bonesDeclaration-Btw-XBKZ.js","assets/instancesVertex-BQYCQK63.js","assets/morphTargetsVertexDeclaration-gUMootm8.js","assets/instancesDeclaration-YXy6hSbA.js","assets/sceneUboDeclaration-klrhxkT7.js","assets/clipPlaneVertex-HXakZNU_.js","assets/morphTargetsVertex-JzcUOkan.js","assets/bonesVertex-Df226wIh.js","assets/bakedVertexAnimation-BwzQrrqa.js","assets/bumpVertex-BDLdRsBm.js","assets/geometry.fragment-Nxf9W0js.js","assets/clipPlaneFragment-DvJg0BOp.js","assets/bumpFragment-BUrk_8XZ.js","assets/samplerFragmentDeclaration-BF1E3AmV.js","assets/helperFunctions-JM9422k6.js"])))=>i.map(i=>d[i]);
+import{G as _,g as W,H as p,J as Y,K,N as q,W as J,M as Z,T as X,o as Q,X as ee,Y as te,Z as ie,h as y,$ as se,i as re,j as A,k as B}from"./FilePreviewView-DHNTJ5Ma.js";import{ar as C}from"./index-ORjAvF2u.js";import"./clipPlaneFragment-DhcaARS0.js";import"./bumpFragment-v-DZcRAE.js";import"./helperFunctions-CVX-_NMR.js";import"./bakedVertexAnimation-Bl-yDG1I.js";import"./morphTargetsVertex-DCv3Iufz.js";import"./instancesDeclaration-CnQRnv_3.js";import"./sceneUboDeclaration-CW4MJ4VT.js";import"./clipPlaneVertex-Z5N--8ci.js";import"./bumpVertex-vpWbrVA_.js";const w="mrtFragmentDeclaration",ne=`#if defined(WEBGL2) || defined(WEBGPU) || defined(NATIVE)
+layout(location=0) out vec4 glFragData[{X}];
+#endif
+`;_.IncludesShadersStore[w]||(_.IncludesShadersStore[w]=ne);const D="geometryPixelShader",G=`#extension GL_EXT_draw_buffers : require
+#if defined(BUMP) || !defined(NORMAL)
+#extension GL_OES_standard_derivatives : enable
+#endif
+precision highp float;
+#ifdef BUMP
+varying mat4 vWorldView;varying vec3 vNormalW;
+#else
+varying vec3 vNormalV;
+#endif
+varying vec4 vViewPos;
+#if defined(POSITION) || defined(BUMP)
+varying vec3 vPositionW;
+#endif
+#if defined(VELOCITY) || defined(VELOCITY_LINEAR)
+varying vec4 vCurrentPosition;varying vec4 vPreviousPosition;
+#endif
+#ifdef NEED_UV
+varying vec2 vUV;
+#endif
+#ifdef BUMP
+uniform vec3 vBumpInfos;uniform vec2 vTangentSpaceParams;
+#endif
+#if defined(REFLECTIVITY)
+#if defined(ORMTEXTURE) || defined(SPECULARGLOSSINESSTEXTURE) || defined(REFLECTIVITYTEXTURE)
+uniform sampler2D reflectivitySampler;varying vec2 vReflectivityUV;
+#else
+#ifdef METALLIC_TEXTURE
+uniform sampler2D metallicSampler;varying vec2 vMetallicUV;
+#endif
+#ifdef ROUGHNESS_TEXTURE
+uniform sampler2D roughnessSampler;varying vec2 vRoughnessUV;
+#endif
+#endif
+#ifdef ALBEDOTEXTURE
+varying vec2 vAlbedoUV;uniform sampler2D albedoSampler;
+#endif
+#ifdef REFLECTIVITYCOLOR
+uniform vec3 reflectivityColor;
+#endif
+#ifdef ALBEDOCOLOR
+uniform vec3 albedoColor;
+#endif
+#ifdef METALLIC
+uniform float metallic;
+#endif
+#if defined(ROUGHNESS) || defined(GLOSSINESS)
+uniform float glossiness;
+#endif
+#endif
+#if defined(ALPHATEST) && defined(NEED_UV)
+uniform sampler2D diffuseSampler;
+#endif
+#include<clipPlaneFragmentDeclaration>
+#include<mrtFragmentDeclaration>[SCENE_MRT_COUNT]
+#include<bumpFragmentMainFunctions>
+#include<bumpFragmentFunctions>
+#include<helperFunctions>
+void main() {
+#include<clipPlaneFragment>
+#ifdef ALPHATEST
+if (texture2D(diffuseSampler,vUV).a<0.4)
+discard;
+#endif
+vec3 normalOutput;
+#ifdef BUMP
+vec3 normalW=normalize(vNormalW);
+#include<bumpFragment>
+#ifdef NORMAL_WORLDSPACE
+normalOutput=normalW;
+#else
+normalOutput=normalize(vec3(vWorldView*vec4(normalW,0.0)));
+#endif
+#elif defined(HAS_NORMAL_ATTRIBUTE)
+normalOutput=normalize(vNormalV);
+#elif defined(POSITION)
+normalOutput=normalize(-cross(dFdx(vPositionW),dFdy(vPositionW)));
+#endif
+#ifdef ENCODE_NORMAL
+normalOutput=normalOutput*0.5+0.5;
+#endif
+#ifdef DEPTH
+gl_FragData[DEPTH_INDEX]=vec4(vViewPos.z/vViewPos.w,0.0,0.0,1.0);
+#endif
+#ifdef NORMAL
+gl_FragData[NORMAL_INDEX]=vec4(normalOutput,1.0);
+#endif
+#ifdef SCREENSPACE_DEPTH
+gl_FragData[SCREENSPACE_DEPTH_INDEX]=vec4(gl_FragCoord.z,0.0,0.0,1.0);
+#endif
+#ifdef POSITION
+gl_FragData[POSITION_INDEX]=vec4(vPositionW,1.0);
+#endif
+#ifdef VELOCITY
+vec2 a=(vCurrentPosition.xy/vCurrentPosition.w)*0.5+0.5;vec2 b=(vPreviousPosition.xy/vPreviousPosition.w)*0.5+0.5;vec2 velocity=abs(a-b);velocity=vec2(pow(velocity.x,1.0/3.0),pow(velocity.y,1.0/3.0))*sign(a-b)*0.5+0.5;gl_FragData[VELOCITY_INDEX]=vec4(velocity,0.0,1.0);
+#endif
+#ifdef VELOCITY_LINEAR
+vec2 velocity=vec2(0.5)*((vPreviousPosition.xy/vPreviousPosition.w) -
+(vCurrentPosition.xy/vCurrentPosition.w));gl_FragData[VELOCITY_LINEAR_INDEX]=vec4(velocity,0.0,1.0);
+#endif
+#ifdef REFLECTIVITY
+vec4 reflectivity=vec4(0.0,0.0,0.0,1.0);
+#ifdef METALLICWORKFLOW
+float metal=1.0;float roughness=1.0;
+#ifdef ORMTEXTURE
+metal*=texture2D(reflectivitySampler,vReflectivityUV).b;roughness*=texture2D(reflectivitySampler,vReflectivityUV).g;
+#else
+#ifdef METALLIC_TEXTURE
+metal*=texture2D(metallicSampler,vMetallicUV).r;
+#endif
+#ifdef ROUGHNESS_TEXTURE
+roughness*=texture2D(roughnessSampler,vRoughnessUV).r;
+#endif
+#endif
+#ifdef METALLIC
+metal*=metallic;
+#endif
+#ifdef ROUGHNESS
+roughness*=(1.0-glossiness); 
+#endif
+reflectivity.a-=roughness;vec3 color=vec3(1.0);
+#ifdef ALBEDOTEXTURE
+color=texture2D(albedoSampler,vAlbedoUV).rgb;
+#ifdef GAMMAALBEDO
+color=toLinearSpace(color);
+#endif
+#endif
+#ifdef ALBEDOCOLOR
+color*=albedoColor.xyz;
+#endif
+reflectivity.rgb=mix(vec3(0.04),color,metal);
+#else
+#if defined(SPECULARGLOSSINESSTEXTURE) || defined(REFLECTIVITYTEXTURE)
+reflectivity=texture2D(reflectivitySampler,vReflectivityUV);
+#ifdef GAMMAREFLECTIVITYTEXTURE
+reflectivity.rgb=toLinearSpace(reflectivity.rgb);
+#endif
+#else 
+#ifdef REFLECTIVITYCOLOR
+reflectivity.rgb=toLinearSpace(reflectivityColor.xyz);reflectivity.a=1.0;
+#endif
+#endif
+#ifdef GLOSSINESSS
+reflectivity.a*=glossiness; 
+#endif
+#endif
+gl_FragData[REFLECTIVITY_INDEX]=reflectivity;
+#endif
+}
+`;_.ShadersStore[D]||(_.ShadersStore[D]=G);const ae={name:D,shader:G},oe=Object.freeze(Object.defineProperty({__proto__:null,geometryPixelShader:ae},Symbol.toStringTag,{value:"Module"})),H="geometryVertexDeclaration",le="uniform mat4 viewProjection;uniform mat4 view;";_.IncludesShadersStore[H]||(_.IncludesShadersStore[H]=le);const k="geometryUboDeclaration",de=`#include<sceneUboDeclaration>
+`;_.IncludesShadersStore[k]||(_.IncludesShadersStore[k]=de);const F="geometryVertexShader",z=`precision highp float;
+#include<bonesDeclaration>
+#include<bakedVertexAnimationDeclaration>
+#include<morphTargetsVertexGlobalDeclaration>
+#include<morphTargetsVertexDeclaration>[0..maxSimultaneousMorphTargets]
+#include<instancesDeclaration>
+#include<__decl__geometryVertex>
+#include<clipPlaneVertexDeclaration>
+attribute vec3 position;
+#ifdef HAS_NORMAL_ATTRIBUTE
+attribute vec3 normal;
+#endif
+#ifdef NEED_UV
+varying vec2 vUV;
+#ifdef ALPHATEST
+uniform mat4 diffuseMatrix;
+#endif
+#ifdef BUMP
+uniform mat4 bumpMatrix;varying vec2 vBumpUV;
+#endif
+#ifdef REFLECTIVITY
+uniform mat4 reflectivityMatrix;uniform mat4 albedoMatrix;varying vec2 vReflectivityUV;varying vec2 vAlbedoUV;
+#endif
+#ifdef METALLIC_TEXTURE
+varying vec2 vMetallicUV;uniform mat4 metallicMatrix;
+#endif
+#ifdef ROUGHNESS_TEXTURE
+varying vec2 vRoughnessUV;uniform mat4 roughnessMatrix;
+#endif
+#ifdef UV1
+attribute vec2 uv;
+#endif
+#ifdef UV2
+attribute vec2 uv2;
+#endif
+#endif
+#ifdef BUMP
+varying mat4 vWorldView;
+#endif
+#ifdef BUMP
+varying vec3 vNormalW;
+#else
+varying vec3 vNormalV;
+#endif
+varying vec4 vViewPos;
+#if defined(POSITION) || defined(BUMP)
+varying vec3 vPositionW;
+#endif
+#if defined(VELOCITY) || defined(VELOCITY_LINEAR)
+uniform mat4 previousViewProjection;varying vec4 vCurrentPosition;varying vec4 vPreviousPosition;
+#endif
+#define CUSTOM_VERTEX_DEFINITIONS
+void main(void)
+{vec3 positionUpdated=position;
+#ifdef HAS_NORMAL_ATTRIBUTE
+vec3 normalUpdated=normal;
+#else
+vec3 normalUpdated=vec3(0.0,0.0,0.0);
+#endif
+#ifdef UV1
+vec2 uvUpdated=uv;
+#endif
+#ifdef UV2
+vec2 uv2Updated=uv2;
+#endif
+#include<morphTargetsVertexGlobal>
+#include<morphTargetsVertex>[0..maxSimultaneousMorphTargets]
+#include<instancesVertex>
+#if (defined(VELOCITY) || defined(VELOCITY_LINEAR)) && !defined(BONES_VELOCITY_ENABLED)
+vCurrentPosition=viewProjection*finalWorld*vec4(positionUpdated,1.0);vPreviousPosition=previousViewProjection*finalPreviousWorld*vec4(positionUpdated,1.0);
+#endif
+#include<bonesVertex>
+#include<bakedVertexAnimation>
+vec4 worldPos=vec4(finalWorld*vec4(positionUpdated,1.0));
+#ifdef BUMP
+vWorldView=view*finalWorld;mat3 normalWorld=mat3(finalWorld);vNormalW=normalize(normalWorld*normalUpdated);
+#else
+#ifdef NORMAL_WORLDSPACE
+vNormalV=normalize(vec3(finalWorld*vec4(normalUpdated,0.0)));
+#else
+vNormalV=normalize(vec3((view*finalWorld)*vec4(normalUpdated,0.0)));
+#endif
+#endif
+vViewPos=view*worldPos;
+#if (defined(VELOCITY) || defined(VELOCITY_LINEAR)) && defined(BONES_VELOCITY_ENABLED)
+vCurrentPosition=viewProjection*finalWorld*vec4(positionUpdated,1.0);
+#if NUM_BONE_INFLUENCERS>0
+mat4 previousInfluence;previousInfluence=mPreviousBones[int(matricesIndices[0])]*matricesWeights[0];
+#if NUM_BONE_INFLUENCERS>1
+previousInfluence+=mPreviousBones[int(matricesIndices[1])]*matricesWeights[1];
+#endif
+#if NUM_BONE_INFLUENCERS>2
+previousInfluence+=mPreviousBones[int(matricesIndices[2])]*matricesWeights[2];
+#endif
+#if NUM_BONE_INFLUENCERS>3
+previousInfluence+=mPreviousBones[int(matricesIndices[3])]*matricesWeights[3];
+#endif
+#if NUM_BONE_INFLUENCERS>4
+previousInfluence+=mPreviousBones[int(matricesIndicesExtra[0])]*matricesWeightsExtra[0];
+#endif
+#if NUM_BONE_INFLUENCERS>5
+previousInfluence+=mPreviousBones[int(matricesIndicesExtra[1])]*matricesWeightsExtra[1];
+#endif
+#if NUM_BONE_INFLUENCERS>6
+previousInfluence+=mPreviousBones[int(matricesIndicesExtra[2])]*matricesWeightsExtra[2];
+#endif
+#if NUM_BONE_INFLUENCERS>7
+previousInfluence+=mPreviousBones[int(matricesIndicesExtra[3])]*matricesWeightsExtra[3];
+#endif
+vPreviousPosition=previousViewProjection*finalPreviousWorld*previousInfluence*vec4(positionUpdated,1.0);
+#else
+vPreviousPosition=previousViewProjection*finalPreviousWorld*vec4(positionUpdated,1.0);
+#endif
+#endif
+#if defined(POSITION) || defined(BUMP)
+vPositionW=worldPos.xyz/worldPos.w;
+#endif
+gl_Position=viewProjection*finalWorld*vec4(positionUpdated,1.0);
+#include<clipPlaneVertex>
+#ifdef NEED_UV
+#ifdef UV1
+#if defined(ALPHATEST) && defined(ALPHATEST_UV1)
+vUV=vec2(diffuseMatrix*vec4(uvUpdated,1.0,0.0));
+#else
+vUV=uvUpdated;
+#endif
+#ifdef BUMP_UV1
+vBumpUV=vec2(bumpMatrix*vec4(uvUpdated,1.0,0.0));
+#endif
+#ifdef REFLECTIVITY_UV1
+vReflectivityUV=vec2(reflectivityMatrix*vec4(uvUpdated,1.0,0.0));
+#else
+#ifdef METALLIC_UV1
+vMetallicUV=vec2(metallicMatrix*vec4(uvUpdated,1.0,0.0));
+#endif
+#ifdef ROUGHNESS_UV1
+vRoughnessUV=vec2(roughnessMatrix*vec4(uvUpdated,1.0,0.0));
+#endif
+#endif
+#ifdef ALBEDO_UV1
+vAlbedoUV=vec2(albedoMatrix*vec4(uvUpdated,1.0,0.0));
+#endif
+#endif
+#ifdef UV2
+#if defined(ALPHATEST) && defined(ALPHATEST_UV2)
+vUV=vec2(diffuseMatrix*vec4(uv2Updated,1.0,0.0));
+#else
+vUV=uv2Updated;
+#endif
+#ifdef BUMP_UV2
+vBumpUV=vec2(bumpMatrix*vec4(uv2Updated,1.0,0.0));
+#endif
+#ifdef REFLECTIVITY_UV2
+vReflectivityUV=vec2(reflectivityMatrix*vec4(uv2Updated,1.0,0.0));
+#else
+#ifdef METALLIC_UV2
+vMetallicUV=vec2(metallicMatrix*vec4(uv2Updated,1.0,0.0));
+#endif
+#ifdef ROUGHNESS_UV2
+vRoughnessUV=vec2(roughnessMatrix*vec4(uv2Updated,1.0,0.0));
+#endif
+#endif
+#ifdef ALBEDO_UV2
+vAlbedoUV=vec2(albedoMatrix*vec4(uv2Updated,1.0,0.0));
+#endif
+#endif
+#endif
+#include<bumpVertex>
+}
+`;_.ShadersStore[F]||(_.ShadersStore[F]=z);const fe={name:F,shader:z},ue=Object.freeze(Object.defineProperty({__proto__:null,geometryVertexShader:fe},Symbol.toStringTag,{value:"Module"})),j=["world","mBones","viewProjection","diffuseMatrix","view","previousWorld","previousViewProjection","mPreviousBones","bumpMatrix","reflectivityMatrix","albedoMatrix","reflectivityColor","albedoColor","metallic","glossiness","vTangentSpaceParams","vBumpInfos","morphTargetInfluences","morphTargetCount","morphTargetTextureInfo","morphTargetTextureIndices","boneTextureWidth"];se(j);class o{get normalsAreUnsigned(){return this._normalsAreUnsigned}_linkPrePassRenderer(t){this._linkedWithPrePass=!0,this._prePassRenderer=t,this._multiRenderTarget&&(this._multiRenderTarget.onClearObservable.clear(),this._multiRenderTarget.onClearObservable.add(()=>{}))}_unlinkPrePassRenderer(){this._linkedWithPrePass=!1,this._createRenderTargets()}_resetLayout(){this._enableDepth=!0,this._enableNormal=!0,this._enablePosition=!1,this._enableReflectivity=!1,this._enableVelocity=!1,this._enableVelocityLinear=!1,this._enableScreenspaceDepth=!1,this._attachmentsFromPrePass=[]}_forceTextureType(t,f){t===o.POSITION_TEXTURE_TYPE?(this._positionIndex=f,this._enablePosition=!0):t===o.VELOCITY_TEXTURE_TYPE?(this._velocityIndex=f,this._enableVelocity=!0):t===o.VELOCITY_LINEAR_TEXTURE_TYPE?(this._velocityLinearIndex=f,this._enableVelocityLinear=!0):t===o.REFLECTIVITY_TEXTURE_TYPE?(this._reflectivityIndex=f,this._enableReflectivity=!0):t===o.DEPTH_TEXTURE_TYPE?(this._depthIndex=f,this._enableDepth=!0):t===o.NORMAL_TEXTURE_TYPE?(this._normalIndex=f,this._enableNormal=!0):t===o.SCREENSPACE_DEPTH_TEXTURE_TYPE&&(this._screenspaceDepthIndex=f,this._enableScreenspaceDepth=!0)}_setAttachments(t){this._attachmentsFromPrePass=t}_linkInternalTexture(t){this._multiRenderTarget.setInternalTexture(t,0,!1)}get renderList(){return this._multiRenderTarget.renderList}set renderList(t){this._multiRenderTarget.renderList=t}get isSupported(){return this._multiRenderTarget.isSupported}getTextureIndex(t){switch(t){case o.POSITION_TEXTURE_TYPE:return this._positionIndex;case o.VELOCITY_TEXTURE_TYPE:return this._velocityIndex;case o.VELOCITY_LINEAR_TEXTURE_TYPE:return this._velocityLinearIndex;case o.REFLECTIVITY_TEXTURE_TYPE:return this._reflectivityIndex;case o.DEPTH_TEXTURE_TYPE:return this._depthIndex;case o.NORMAL_TEXTURE_TYPE:return this._normalIndex;case o.SCREENSPACE_DEPTH_TEXTURE_TYPE:return this._screenspaceDepthIndex;default:return-1}}get enableDepth(){return this._enableDepth}set enableDepth(t){this._enableDepth=t,this._linkedWithPrePass||(this.dispose(),this._createRenderTargets())}get enableNormal(){return this._enableNormal}set enableNormal(t){this._enableNormal=t,this._linkedWithPrePass||(this.dispose(),this._createRenderTargets())}get enablePosition(){return this._enablePosition}set enablePosition(t){this._enablePosition=t,this._linkedWithPrePass||(this.dispose(),this._createRenderTargets())}get enableVelocity(){return this._enableVelocity}set enableVelocity(t){this._enableVelocity=t,t||(this._previousTransformationMatrices={}),this._linkedWithPrePass||(this.dispose(),this._createRenderTargets()),this._scene.needsPreviousWorldMatrices=t}get enableVelocityLinear(){return this._enableVelocityLinear}set enableVelocityLinear(t){this._enableVelocityLinear=t,this._linkedWithPrePass||(this.dispose(),this._createRenderTargets())}get enableReflectivity(){return this._enableReflectivity}set enableReflectivity(t){this._enableReflectivity=t,this._linkedWithPrePass||(this.dispose(),this._createRenderTargets())}get enableScreenspaceDepth(){return this._enableScreenspaceDepth}set enableScreenspaceDepth(t){this._enableScreenspaceDepth=t,this._linkedWithPrePass||(this.dispose(),this._createRenderTargets())}get scene(){return this._scene}get ratio(){return typeof this._ratioOrDimensions=="object"?1:this._ratioOrDimensions}get shaderLanguage(){return this._shaderLanguage}constructor(t,f=1,i=15,e){this._previousTransformationMatrices={},this._previousBonesTransformationMatrices={},this.excludedSkinnedMeshesFromVelocity=[],this.renderTransparentMeshes=!0,this.generateNormalsInWorldSpace=!1,this._normalsAreUnsigned=!1,this._resizeObserver=null,this._enableDepth=!0,this._enableNormal=!0,this._enablePosition=!1,this._enableVelocity=!1,this._enableVelocityLinear=!1,this._enableReflectivity=!1,this._enableScreenspaceDepth=!1,this._clearColor=new W(0,0,0,0),this._clearDepthColor=new W(0,0,0,1),this._positionIndex=-1,this._velocityIndex=-1,this._velocityLinearIndex=-1,this._reflectivityIndex=-1,this._depthIndex=-1,this._normalIndex=-1,this._screenspaceDepthIndex=-1,this._linkedWithPrePass=!1,this.useSpecificClearForDepthTexture=!1,this._shaderLanguage=0,this._shadersLoaded=!1,this._scene=t,this._ratioOrDimensions=f,this._useUbo=t.getEngine().supportsUniformBuffers,this._depthFormat=i,this._textureTypesAndFormats=e||{},this._initShaderSourceAsync(),o._SceneComponentInitialization(this._scene),this._createRenderTargets()}async _initShaderSourceAsync(){this._scene.getEngine().isWebGPU&&!o.ForceGLSL?(this._shaderLanguage=1,await Promise.all([C(()=>import("./geometry.vertex-D46YIDB4.js"),__vite__mapDeps([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14])),C(()=>import("./geometry.fragment-Nxf9W0js.js"),__vite__mapDeps([15,1,2,3,4,16,17,18,19]))])):await Promise.all([C(()=>Promise.resolve().then(()=>ue),void 0),C(()=>Promise.resolve().then(()=>oe),void 0)]),this._shadersLoaded=!0}isReady(t,f){if(!this._shadersLoaded)return!1;const i=t.getMaterial();if(i&&i.disableDepthWrite)return!1;const e=[],h=[p.PositionKind],c=t.getMesh();c.isVerticesDataPresent(p.NormalKind)&&(e.push("#define HAS_NORMAL_ATTRIBUTE"),h.push(p.NormalKind));let x=!1,S=!1;const U=!1;if(i){let n=!1;if(i.needAlphaTestingForMesh(c)&&i.getAlphaTestTexture()&&(e.push("#define ALPHATEST"),e.push(`#define ALPHATEST_UV${i.getAlphaTestTexture().coordinatesIndex+1}`),n=!0),(i.bumpTexture||i.normalTexture||i.geometryNormalTexture)&&Y.BumpTextureEnabled){const a=i.bumpTexture||i.normalTexture||i.geometryNormalTexture;e.push("#define BUMP"),e.push(`#define BUMP_UV${a.coordinatesIndex+1}`),n=!0}if(this._enableReflectivity){let a=!1;if(i.getClassName()==="PBRMetallicRoughnessMaterial")i.metallicRoughnessTexture&&(e.push("#define ORMTEXTURE"),e.push(`#define REFLECTIVITY_UV${i.metallicRoughnessTexture.coordinatesIndex+1}`),e.push("#define METALLICWORKFLOW"),n=!0,a=!0),i.metallic!=null&&(e.push("#define METALLIC"),e.push("#define METALLICWORKFLOW"),a=!0),i.roughness!=null&&(e.push("#define ROUGHNESS"),e.push("#define METALLICWORKFLOW"),a=!0),a&&(i.baseTexture&&(e.push("#define ALBEDOTEXTURE"),e.push(`#define ALBEDO_UV${i.baseTexture.coordinatesIndex+1}`),i.baseTexture.gammaSpace&&e.push("#define GAMMAALBEDO"),n=!0),i.baseColor&&e.push("#define ALBEDOCOLOR"));else if(i.getClassName()==="PBRSpecularGlossinessMaterial")i.specularGlossinessTexture?(e.push("#define SPECULARGLOSSINESSTEXTURE"),e.push(`#define REFLECTIVITY_UV${i.specularGlossinessTexture.coordinatesIndex+1}`),n=!0,i.specularGlossinessTexture.gammaSpace&&e.push("#define GAMMAREFLECTIVITYTEXTURE")):i.specularColor&&e.push("#define REFLECTIVITYCOLOR"),i.glossiness!=null&&e.push("#define GLOSSINESS");else if(i.getClassName()==="PBRMaterial")i.metallicTexture&&(e.push("#define ORMTEXTURE"),e.push(`#define REFLECTIVITY_UV${i.metallicTexture.coordinatesIndex+1}`),e.push("#define METALLICWORKFLOW"),n=!0,a=!0),i.metallic!=null&&(e.push("#define METALLIC"),e.push("#define METALLICWORKFLOW"),a=!0),i.roughness!=null&&(e.push("#define ROUGHNESS"),e.push("#define METALLICWORKFLOW"),a=!0),a?(i.albedoTexture&&(e.push("#define ALBEDOTEXTURE"),e.push(`#define ALBEDO_UV${i.albedoTexture.coordinatesIndex+1}`),i.albedoTexture.gammaSpace&&e.push("#define GAMMAALBEDO"),n=!0),i.albedoColor&&e.push("#define ALBEDOCOLOR")):(i.reflectivityTexture?(e.push("#define SPECULARGLOSSINESSTEXTURE"),e.push(`#define REFLECTIVITY_UV${i.reflectivityTexture.coordinatesIndex+1}`),i.reflectivityTexture.gammaSpace&&e.push("#define GAMMAREFLECTIVITYTEXTURE"),n=!0):i.reflectivityColor&&e.push("#define REFLECTIVITYCOLOR"),i.microSurface!=null&&e.push("#define GLOSSINESS"));else if(i.getClassName()==="StandardMaterial")i.specularTexture&&(e.push("#define REFLECTIVITYTEXTURE"),e.push(`#define REFLECTIVITY_UV${i.specularTexture.coordinatesIndex+1}`),i.specularTexture.gammaSpace&&e.push("#define GAMMAREFLECTIVITYTEXTURE"),n=!0),i.specularColor&&e.push("#define REFLECTIVITYCOLOR");else if(i.getClassName()==="OpenPBRMaterial"){const d=i;e.push("#define METALLICWORKFLOW"),a=!0,e.push("#define METALLIC"),e.push("#define ROUGHNESS"),d._useRoughnessFromMetallicTextureGreen&&d.baseMetalnessTexture?(e.push("#define ORMTEXTURE"),e.push(`#define REFLECTIVITY_UV${d.baseMetalnessTexture.coordinatesIndex+1}`),n=!0):d.baseMetalnessTexture?(e.push("#define METALLIC_TEXTURE"),e.push(`#define METALLIC_UV${d.baseMetalnessTexture.coordinatesIndex+1}`),n=!0):d.specularRoughnessTexture&&(e.push("#define ROUGHNESS_TEXTURE"),e.push(`#define ROUGHNESS_UV${d.specularRoughnessTexture.coordinatesIndex+1}`),n=!0),d.baseColorTexture&&(e.push("#define ALBEDOTEXTURE"),e.push(`#define ALBEDO_UV${d.baseColorTexture.coordinatesIndex+1}`),d.baseColorTexture.gammaSpace&&e.push("#define GAMMAALBEDO"),n=!0),d.baseColor&&e.push("#define ALBEDOCOLOR")}}n&&(e.push("#define NEED_UV"),c.isVerticesDataPresent(p.UVKind)&&(h.push(p.UVKind),e.push("#define UV1"),x=!0),c.isVerticesDataPresent(p.UV2Kind)&&(h.push(p.UV2Kind),e.push("#define UV2"),S=!0))}this._enableDepth&&(e.push("#define DEPTH"),e.push("#define DEPTH_INDEX "+this._depthIndex)),this._enableNormal&&(e.push("#define NORMAL"),e.push("#define NORMAL_INDEX "+this._normalIndex)),this._enablePosition&&(e.push("#define POSITION"),e.push("#define POSITION_INDEX "+this._positionIndex)),this._enableVelocity&&(e.push("#define VELOCITY"),e.push("#define VELOCITY_INDEX "+this._velocityIndex),this.excludedSkinnedMeshesFromVelocity.indexOf(c)===-1&&e.push("#define BONES_VELOCITY_ENABLED")),this._enableVelocityLinear&&(e.push("#define VELOCITY_LINEAR"),e.push("#define VELOCITY_LINEAR_INDEX "+this._velocityLinearIndex),this.excludedSkinnedMeshesFromVelocity.indexOf(c)===-1&&e.push("#define BONES_VELOCITY_ENABLED")),this._enableReflectivity&&(e.push("#define REFLECTIVITY"),e.push("#define REFLECTIVITY_INDEX "+this._reflectivityIndex)),this._enableScreenspaceDepth&&this._screenspaceDepthIndex!==-1&&(e.push("#define SCREENSPACE_DEPTH_INDEX "+this._screenspaceDepthIndex),e.push("#define SCREENSPACE_DEPTH")),this.generateNormalsInWorldSpace&&e.push("#define NORMAL_WORLDSPACE"),this._normalsAreUnsigned&&e.push("#define ENCODE_NORMAL"),c.useBones&&c.computeBonesUsingShaders&&c.skeleton?(h.push(p.MatricesIndicesKind),h.push(p.MatricesWeightsKind),c.numBoneInfluencers>4&&(h.push(p.MatricesIndicesExtraKind),h.push(p.MatricesWeightsExtraKind)),e.push("#define NUM_BONE_INFLUENCERS "+c.numBoneInfluencers),e.push("#define BONETEXTURE "+c.skeleton.isUsingTextureForMatrices),e.push("#define BonesPerMesh "+(c.skeleton.bones.length+1))):(e.push("#define NUM_BONE_INFLUENCERS 0"),e.push("#define BONETEXTURE false"),e.push("#define BonesPerMesh 0"));const b=c.morphTargetManager?K(c.morphTargetManager,e,h,c,!0,!0,!1,x,S,U):0;f&&(e.push("#define INSTANCES"),q(h,this._enableVelocity||this._enableVelocityLinear),t.getRenderingMesh().hasThinInstances&&e.push("#define THIN_INSTANCES")),this._linkedWithPrePass?e.push("#define SCENE_MRT_COUNT "+this._attachmentsFromPrePass.length):e.push("#define SCENE_MRT_COUNT "+this._multiRenderTarget.textures.length),J(i,this._scene,e);const M=this._scene.getEngine(),P=t._getDrawWrapper(void 0,!0),V=P.defines,m=e.join(`
+`);return V!==m&&P.setEffect(M.createEffect("geometry",{attributes:h,uniformsNames:j,samplers:["diffuseSampler","bumpSampler","reflectivitySampler","albedoSampler","morphTargets","boneSampler"],defines:m,onCompiled:null,fallbacks:null,onError:null,uniformBuffersNames:["Scene"],indexParameters:{buffersCount:this._multiRenderTarget.textures.length-1,maxSimultaneousMorphTargets:b},shaderLanguage:this.shaderLanguage},M),m),P.effect.isReady()}getGBuffer(){return this._multiRenderTarget}get samples(){return this._multiRenderTarget.samples}set samples(t){this._multiRenderTarget.samples=t}dispose(){this._resizeObserver&&(this._scene.getEngine().onResizeObservable.remove(this._resizeObserver),this._resizeObserver=null),this._multiRenderTarget?.renderTarget&&this.scene.getEngine()._currentRenderTarget===this._multiRenderTarget.renderTarget&&this.scene.getEngine().unBindFramebuffer(this._multiRenderTarget?.renderTarget),this.getGBuffer().dispose()}_assignRenderTargetIndices(){const t=[],f=[];let i=0;return this._enableDepth&&(this._depthIndex=i,i++,t.push("gBuffer_Depth"),f.push(this._textureTypesAndFormats[o.DEPTH_TEXTURE_TYPE])),this._enableNormal&&(this._normalIndex=i,i++,t.push("gBuffer_Normal"),f.push(this._textureTypesAndFormats[o.NORMAL_TEXTURE_TYPE])),this._enablePosition&&(this._positionIndex=i,i++,t.push("gBuffer_Position"),f.push(this._textureTypesAndFormats[o.POSITION_TEXTURE_TYPE])),this._enableVelocity&&(this._velocityIndex=i,i++,t.push("gBuffer_Velocity"),f.push(this._textureTypesAndFormats[o.VELOCITY_TEXTURE_TYPE])),this._enableVelocityLinear&&(this._velocityLinearIndex=i,i++,t.push("gBuffer_VelocityLinear"),f.push(this._textureTypesAndFormats[o.VELOCITY_LINEAR_TEXTURE_TYPE])),this._enableReflectivity&&(this._reflectivityIndex=i,i++,t.push("gBuffer_Reflectivity"),f.push(this._textureTypesAndFormats[o.REFLECTIVITY_TEXTURE_TYPE])),this._enableScreenspaceDepth&&(this._screenspaceDepthIndex=i,i++,t.push("gBuffer_ScreenspaceDepth"),f.push(this._textureTypesAndFormats[o.SCREENSPACE_DEPTH_TEXTURE_TYPE])),[i,t,f]}_createRenderTargets(){const t=this._scene.getEngine(),[f,i,e]=this._assignRenderTargetIndices();let h=0;t._caps.textureFloat&&t._caps.textureFloatLinearFiltering?h=1:t._caps.textureHalfFloat&&t._caps.textureHalfFloatLinearFiltering&&(h=2);const c=this._ratioOrDimensions.width!==void 0?this._ratioOrDimensions:{width:t.getRenderWidth()*this._ratioOrDimensions,height:t.getRenderHeight()*this._ratioOrDimensions},g=[],x=[];for(const n of e)n?(g.push(n.textureType),x.push(n.textureFormat)):(g.push(h),x.push(5));if(this._normalsAreUnsigned=g[o.NORMAL_TEXTURE_TYPE]===11||g[o.NORMAL_TEXTURE_TYPE]===13,this._multiRenderTarget=new Z("gBuffer",c,f,this._scene,{generateMipMaps:!1,generateDepthTexture:!0,types:g,formats:x,depthTextureFormat:this._depthFormat},i.concat("gBuffer_DepthBuffer")),!this.isSupported)return;this._multiRenderTarget.wrapU=X.CLAMP_ADDRESSMODE,this._multiRenderTarget.wrapV=X.CLAMP_ADDRESSMODE,this._multiRenderTarget.refreshRate=1,this._multiRenderTarget.renderParticles=!1,this._multiRenderTarget.renderList=null;const S=[!0],U=[!1],b=[!0];for(let n=1;n<f;++n)S.push(!0),b.push(!1),U.push(!0);const M=t.buildTextureLayout(S),P=t.buildTextureLayout(U),V=t.buildTextureLayout(b);this._multiRenderTarget.onClearObservable.add(n=>{n.bindAttachments(this.useSpecificClearForDepthTexture?P:M),n.clear(this._clearColor,!0,!0,!0),this.useSpecificClearForDepthTexture&&(n.bindAttachments(V),n.clear(this._clearDepthColor,!0,!0,!0)),n.bindAttachments(M)}),this._resizeObserver=t.onResizeObservable.add(()=>{if(this._multiRenderTarget){const n=this._ratioOrDimensions.width!==void 0?this._ratioOrDimensions:{width:t.getRenderWidth()*this._ratioOrDimensions,height:t.getRenderHeight()*this._ratioOrDimensions};this._multiRenderTarget.resize(n)}});const m=n=>{const a=n.getRenderingMesh(),d=n.getEffectiveMesh(),T=this._scene,u=T.getEngine(),s=n.getMaterial();if(!s)return;if(d._internalAbstractMeshDataInfo._isActiveIntermediate=!1,(this._enableVelocity||this._enableVelocityLinear)&&!this._previousTransformationMatrices[d.uniqueId]&&(this._previousTransformationMatrices[d.uniqueId]={world:Q.Identity(),viewProjection:T.getTransformMatrix()},a.skeleton)){const v=a.skeleton.getTransformMatrices(a);this._previousBonesTransformationMatrices[a.uniqueId]=this._copyBonesTransformationMatrices(v,new Float32Array(v.length))}const R=a._getInstancesRenderList(n._id,!!n.getReplacementMesh());if(R.mustReturn)return;const I=u.getCaps().instancedArrays&&(R.visibleInstances[n._id]!==null||a.hasThinInstances),O=d.getWorldMatrix();if(this.isReady(n,I)){const v=n._getDrawWrapper();if(!v)return;const r=v.effect;u.enableEffect(v),I||a._bind(n,r,s.fillMode),this._useUbo?(ee(r,this._scene.getSceneUniformBuffer()),this._scene.finalizeSceneUbo()):(r.setMatrix("viewProjection",T.getTransformMatrix()),r.setMatrix("view",T.getViewMatrix()));let L;if(!a._instanceDataStorage.isFrozen&&(s.backFaceCulling||s.sideOrientation!==null)){const l=d._getWorldMatrixDeterminant();L=s._getEffectiveOrientation(a),l<0&&(L=L===y.ClockWiseSideOrientation?y.CounterClockWiseSideOrientation:y.ClockWiseSideOrientation)}else L=a._effectiveSideOrientation;if(s._preBind(v,L),s.needAlphaTestingForMesh(d)){const l=s.getAlphaTestTexture();l&&(r.setTexture("diffuseSampler",l),r.setMatrix("diffuseMatrix",l.getTextureMatrix()))}if((s.bumpTexture||s.normalTexture||s.geometryNormalTexture)&&T.getEngine().getCaps().standardDerivatives&&Y.BumpTextureEnabled){const l=s.bumpTexture||s.normalTexture||s.geometryNormalTexture;r.setFloat3("vBumpInfos",l.coordinatesIndex,1/l.level,s.parallaxScaleBias),r.setMatrix("bumpMatrix",l.getTextureMatrix()),r.setTexture("bumpSampler",l),r.setFloat2("vTangentSpaceParams",s.invertNormalMapX?-1:1,s.invertNormalMapY?-1:1)}if(this._enableReflectivity){if(s.getClassName()==="PBRMetallicRoughnessMaterial")s.metallicRoughnessTexture!==null&&(r.setTexture("reflectivitySampler",s.metallicRoughnessTexture),r.setMatrix("reflectivityMatrix",s.metallicRoughnessTexture.getTextureMatrix())),s.metallic!==null&&r.setFloat("metallic",s.metallic),s.roughness!==null&&r.setFloat("glossiness",1-s.roughness),s.baseTexture!==null&&(r.setTexture("albedoSampler",s.baseTexture),r.setMatrix("albedoMatrix",s.baseTexture.getTextureMatrix())),s.baseColor!==null&&r.setColor3("albedoColor",s.baseColor);else if(s.getClassName()==="PBRSpecularGlossinessMaterial")s.specularGlossinessTexture!==null?(r.setTexture("reflectivitySampler",s.specularGlossinessTexture),r.setMatrix("reflectivityMatrix",s.specularGlossinessTexture.getTextureMatrix())):s.specularColor!==null&&r.setColor3("reflectivityColor",s.specularColor),s.glossiness!==null&&r.setFloat("glossiness",s.glossiness);else if(s.getClassName()==="PBRMaterial")s.metallicTexture!==null&&(r.setTexture("reflectivitySampler",s.metallicTexture),r.setMatrix("reflectivityMatrix",s.metallicTexture.getTextureMatrix())),s.metallic!==null&&r.setFloat("metallic",s.metallic),s.roughness!==null&&r.setFloat("glossiness",1-s.roughness),s.roughness!==null||s.metallic!==null||s.metallicTexture!==null?(s.albedoTexture!==null&&(r.setTexture("albedoSampler",s.albedoTexture),r.setMatrix("albedoMatrix",s.albedoTexture.getTextureMatrix())),s.albedoColor!==null&&r.setColor3("albedoColor",s.albedoColor)):(s.reflectivityTexture!==null?(r.setTexture("reflectivitySampler",s.reflectivityTexture),r.setMatrix("reflectivityMatrix",s.reflectivityTexture.getTextureMatrix())):s.reflectivityColor!==null&&r.setColor3("reflectivityColor",s.reflectivityColor),s.microSurface!==null&&r.setFloat("glossiness",s.microSurface));else if(s.getClassName()==="StandardMaterial")s.specularTexture!==null&&(r.setTexture("reflectivitySampler",s.specularTexture),r.setMatrix("reflectivityMatrix",s.specularTexture.getTextureMatrix())),s.specularColor!==null&&r.setColor3("reflectivityColor",s.specularColor);else if(s.getClassName()==="OpenPBRMaterial"){const l=s;l._useRoughnessFromMetallicTextureGreen&&l.baseMetalnessTexture?(r.setTexture("reflectivitySampler",l.baseMetalnessTexture),r.setMatrix("reflectivityMatrix",l.baseMetalnessTexture.getTextureMatrix())):l.baseMetalnessTexture?(r.setTexture("metallicSampler",l.baseMetalnessTexture),r.setMatrix("metallicMatrix",l.baseMetalnessTexture.getTextureMatrix())):l.specularRoughnessTexture&&(r.setTexture("roughnessSampler",l.specularRoughnessTexture),r.setMatrix("roughnessMatrix",l.specularRoughnessTexture.getTextureMatrix())),r.setFloat("metallic",l.baseMetalness),r.setFloat("glossiness",1-l.specularRoughness),l.baseColorTexture!==null&&(r.setTexture("albedoSampler",l.baseColorTexture),r.setMatrix("albedoMatrix",l.baseColorTexture.getTextureMatrix())),l.baseColor!==null&&r.setColor3("albedoColor",l.baseColor)}}if(te(r,s,this._scene),a.useBones&&a.computeBonesUsingShaders&&a.skeleton){const l=a.skeleton;if(l.isUsingTextureForMatrices&&r.getUniformIndex("boneTextureWidth")>-1){const N=l.getTransformMatrixTexture(a);r.setTexture("boneSampler",N),r.setFloat("boneTextureWidth",4*(l.bones.length+1))}else r.setMatrices("mBones",a.skeleton.getTransformMatrices(a));(this._enableVelocity||this._enableVelocityLinear)&&r.setMatrices("mPreviousBones",this._previousBonesTransformationMatrices[a.uniqueId])}ie(a,r),a.morphTargetManager&&a.morphTargetManager.isUsingTextureForTargets&&a.morphTargetManager._bind(r),(this._enableVelocity||this._enableVelocityLinear)&&(r.setMatrix("previousWorld",this._previousTransformationMatrices[d.uniqueId].world),r.setMatrix("previousViewProjection",this._previousTransformationMatrices[d.uniqueId].viewProjection)),I&&a.hasThinInstances&&r.setMatrix("world",O),a._processRendering(d,n,r,s.fillMode,R,I,(l,N)=>{l||r.setMatrix("world",N)})}(this._enableVelocity||this._enableVelocityLinear)&&(this._previousTransformationMatrices[d.uniqueId].world=O.clone(),this._previousTransformationMatrices[d.uniqueId].viewProjection=this._scene.getTransformMatrix().clone(),a.skeleton&&this._copyBonesTransformationMatrices(a.skeleton.getTransformMatrices(a),this._previousBonesTransformationMatrices[d.uniqueId]))};this._multiRenderTarget.customIsReadyFunction=(n,a,d)=>{if((d||a===0)&&n.subMeshes)for(let T=0;T<n.subMeshes.length;++T){const u=n.subMeshes[T],s=u.getMaterial(),R=u.getRenderingMesh();if(!s)continue;const I=R._getInstancesRenderList(u._id,!!u.getReplacementMesh()),O=t.getCaps().instancedArrays&&(I.visibleInstances[u._id]!==null||R.hasThinInstances);if(!this.isReady(u,O))return!1}return!0},this._multiRenderTarget.customRenderFunction=(n,a,d,T)=>{let u;if(this._linkedWithPrePass){if(!this._prePassRenderer.enabled)return;this._scene.getEngine().bindAttachments(this._attachmentsFromPrePass)}if(T.length){for(t.setColorWrite(!1),u=0;u<T.length;u++)m(T.data[u]);t.setColorWrite(!0)}for(u=0;u<n.length;u++)m(n.data[u]);for(t.setDepthWrite(!1),u=0;u<a.length;u++)m(a.data[u]);if(this.renderTransparentMeshes)for(u=0;u<d.length;u++)m(d.data[u]);t.setDepthWrite(!0)}}_copyBonesTransformationMatrices(t,f){for(let i=0;i<t.length;i++)f[i]=t[i];return f}}o.ForceGLSL=!1;o.DEPTH_TEXTURE_TYPE=0;o.NORMAL_TEXTURE_TYPE=1;o.POSITION_TEXTURE_TYPE=2;o.VELOCITY_TEXTURE_TYPE=3;o.REFLECTIVITY_TEXTURE_TYPE=4;o.SCREENSPACE_DEPTH_TEXTURE_TYPE=5;o.VELOCITY_LINEAR_TEXTURE_TYPE=6;o._SceneComponentInitialization=E=>{throw re("GeometryBufferRendererSceneComponent")};Object.defineProperty(B.prototype,"geometryBufferRenderer",{get:function(){return this._geometryBufferRenderer},set:function(E){E&&E.isSupported&&(this._geometryBufferRenderer=E)},enumerable:!0,configurable:!0});B.prototype.enableGeometryBufferRenderer=function(E=1,t=15,f){return this._geometryBufferRenderer?this._geometryBufferRenderer:(this._geometryBufferRenderer=new o(this,E,t,f),this._geometryBufferRenderer.isSupported||(this._geometryBufferRenderer=null),this._geometryBufferRenderer)};B.prototype.disableGeometryBufferRenderer=function(){this._geometryBufferRenderer&&(this._geometryBufferRenderer.dispose(),this._geometryBufferRenderer=null)};class ${constructor(t){this.name=A.NAME_GEOMETRYBUFFERRENDERER,this.scene=t}register(){this.scene._gatherRenderTargetsStage.registerStep(A.STEP_GATHERRENDERTARGETS_GEOMETRYBUFFERRENDERER,this,this._gatherRenderTargets)}rebuild(){}dispose(){}_gatherRenderTargets(t){this.scene._geometryBufferRenderer&&t.push(this.scene._geometryBufferRenderer.getGBuffer())}}o._SceneComponentInitialization=E=>{let t=E._getComponent(A.NAME_GEOMETRYBUFFERRENDERER);t||(t=new $(E),E._addComponent(t))};const Se=Object.freeze(Object.defineProperty({__proto__:null,GeometryBufferRendererSceneComponent:$},Symbol.toStringTag,{value:"Module"}));export{o as G,Se as g};

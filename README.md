@@ -1,115 +1,98 @@
-[中文](README.md) | [English](README_EN.md)
+# @pangju666/file-viewer
 
-<p align="center">
-  <a href="https://github.com/pangju666/file-viewer/releases">
-    <img alt="GitHub release" src="https://img.shields.io/github/release/pangju666/file-viewer.svg?style=flat-square&include_prereleases" />
-  </a>
+基于 Vue 3 和 Naive UI 打造的高集成度文件预览服务，致力于集成各类常用格式文件的预览能力，提供统一且高度可定制的预览体验。
 
-  <a href="https://www.apache.org/licenses/LICENSE-2.0">
-    <img alt="code style" src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square">
-  </a>
-</p>
+## 📂 支持的文件类型
 
-# 介绍
+| 类型             | 后缀                                                                                      | 
+|----------------|-----------------------------------------------------------------------------------------|
+| **图片**         | .jpg, .jpeg, .jpe, .jfif, .png, .gif, .bmp, .dib, .webp, .svg, .avif, ico               |                                                                                                                                                                                                          |
+| **视频**         | .mp4, .m4v, .webm, .ogv, .m3u8, .mpd                                                    |                                                                                                                                                                                                                           |
+| **音频**         | .mp3, .mp2, .mp1, .mpga, .m4a, .mp4, .aac, .ogg, .oga, .wav, .wave, .webm, .opus, .flac |                                                                                                                                                                
+| **PDF文档**      | .pdf                                                                                    |                                                                                          
+| **Office**     | .doc, .docx, .xls, .xlsx, .ppt, .pptx                                                   | 
+| **3D 模型**      | .glb, .gltf, .obj, .stl                                                                 | 
+| **DXF矢量图**     | .dxf                                                                                    | 
+| **JSON**       | .json                                                                                   |                                                                                                                                                                                    
+| **Markdown文档** | .md                                                                                     |                                                                                                                                                                                                
+| **纯文本**        | .txt                                                                                    |
 
-简单封装的文件预览服务，通过nginx部署到本地后，可以作为服务使用参数来访问
 
-# 使用说明
+## 在线预览
 
-## 本地预览
+[在线示例](https://pangju666.github.io/file-viewer/preview?src=https%3a%2f%2fraw.githubusercontent.com%2fgdsestimating%2fdxf-parser%2frefs%2fheads%2fmaster%2fsamples%2fdata%2fapi-cw750-details.dxf&type=image%2fvnd.dxf)
 
-```
-npm run dev
-```
+## 🚀 快速开始
 
-## 打包部署
+### 1. 安装依赖
 
-```
-npm run build
-将dist目录部署到nginx即可
-```
-
-# 使用示例
-
-```
-127.0.0.1:5173?url={文件url}&type={文件mime-type}&name={文件名}
+```bash
+pnpm install
 ```
 
-| 参数   | 说明    | 必填 | URL编码 | 示例                          | 备注           |
-|------|-------|----|-------|-----------------------------|--------------|
-| url  | 文件url | 是  | 是     | http://xxxx.com/xxxxxx.jpeg | 最好是公网链接      |
-| type | 文件类型  | 否  | 是     | image/jpeg                  | 不传的话会下载文件推导  |
-| name | 文件名   | 否  | 是     | demo.jpg                    | 不传的话则默认为null |
+### 2. 本地开发
 
-# 文件类型
-
-## 特殊类型注意事项
-
-### OFFICE
-
-- 需要部署[onlyOffice](https://www.onlyoffice.com/zh/download-community.aspx)，否则调用微软的在线文档预览服务
-- **name**参数、**type**为必填
-
-### PDF
-
-- 需要部署**pdfjs**，将**lib**包中的**pdfjs**目录通过**nginx**部署
-- 配置.env文件中的**VITE_PDF_VIEWER_URL**值，配置为部署后的域名地址
-- 将以下代码解注释
-
-```javascript
-  /*if (mimeType.value === "application/pdf") {
-  location.href = `${
-            import.meta.env.VITE_PDF_VIEWER_URL
-        }?file=${encodeURIComponent(fileUrl.value)}`;
-  }*/
+```bash
+pnpm run dev
 ```
 
-### KML
+### 3. 构建与部署
 
-- 配置.env文件中的**VITE_CESIUM_TOKEN**值，配置为自己[Cesium](https://ion.cesium.com/tokens?page=1)账号的**TOKEN**
+```bash
+# 构建生产版本
+pnpm run build
+```
 
-### 全景图
+构建产物位于 `dist` 目录。你可以将其部署到 Nginx 或任何静态文件服务器上。
 
-- 增加sphere参数为true，例如 127.0.0.1:5173?url={文件url}&type={文件mime-type}&name={文件名}&sphere=true
-- file url 格式修改为：{左侧切片图片地址},{前侧切片图片地址},{右侧切片图片地址},{后侧切片图片地址},{上侧切片图片地址},{下侧切片图片地址}
-- 六个方向的图片地址要用,分隔
+## 📖 使用指南
 
-### OBJ模型
+项目部署后，可以通过访问 `/preview` 路由并携带参数来预览文件。
 
-- file url 为模型root地址，例如：http://xxxxx.com/{文件md5}
-  - 结构地址：http://xxxxx.com/{文件md5}/{文件名称}.obj
-  - 材质地址：http://xxxxx.com/{文件md5}/{文件名称}.mtl
-  - 贴图地址：http://xxxxx.com/{文件md5}/{文件名称}.jpeg
-- **name**参数、**type**为必填
+### 预览 URL 示例
 
-## 支持文件类型
+```text
+http://your-domain/file-viewer/preview?src={file_url}&type={mime_type}&name={filename}
+```
 
-| 文件类型                                                                      | 文件后缀     | 分类    |
-|---------------------------------------------------------------------------|----------|-------|
-| application/vnd.openxmlformats-officedocument.wordprocessingml.document   | docx     | 文档    |
-| application/vnd.openxmlformats-officedocument.spreadsheetml.sheet         | xlsx     | 文档    |
-| application/vnd.openxmlformats-officedocument.presentationml.presentation | pptx     | 文档    |
-| application/msword                                                        | doc      | 文档    |
-| application/vnd.ms-excel                                                  | xls      | 文档    |
-| application/vnd.ms-powerpoint                                             | ppt      | 文档    |
-| audio/mpeg                                                                | mp3      | 音频    |
-| audio/wav                                                                 | wav      | 音频    |
-| audio/ogg                                                                 | ogg      | 音频    |
-| audio/x-aac                                                               | aac      | 音频    |
-| audio/x-flac                                                              | flac     | 音频    |
-| video/mp4                                                                 | mp4      | 视频    |
-| video/ogg                                                                 | ogg      | 视频    |
-| video/webm                                                                | webm     | 视频    |
-| model/obj                                                                 | obj      | 模型    |
-| model/gltf-binary                                                         | glb      | 模型    |
-| model/x.stl-binary                                                        | stl      | 模型    |
-| text/x-web-markdown                                                       | md       | 文档    |
-| application/vnd.google-earth.kml+xml                                      | kml      | 地理文件  |
-| image/vnd.dxf                                                             | dxf      | 工程设计图 |
-| application/json                                                          | json     | 文本    |
-| text/*                                                                    | txt      | 图像    |
-| image/jpeg                                                                | jpeg、jpg | 图像    |
-| image/png                                                                 | png      | 图像    |
-| image/gif                                                                 | gif      | 图像    |
-| image/webp                                                                | webp     | 图像    |
-| image/svg+xml                                                             | svg      | 图像    |
+> **注意**：默认 `base` 路径为 `/file-viewer`，请根据 `vite.config.ts` 中的配置进行调整。
+
+### URL 参数说明
+
+> **注意**：所有参数值均需要进行**URL 编码**，以避免特殊字符导致解析异常。
+
+| 参数     | 说明                                 | 是否必填 |
+|--------|------------------------------------|------|
+| `src`  | 文件的`URL`地址（需支持跨域或同源）               | 是    |
+| `type` | 文件的`MIME 类型`（若不传，组件会尝试通过请求文件头自动检测） | 否    |
+| `name` | 文件名称                               | 否    |
+| `id`   | 文件唯一标识符                            | 否    |
+
+## ⚙️ 环境变量配置
+
+可以在 `.env` 文件中配置以下参数，以调整预览服务的行为：
+
+### OnlyOffice 配置
+- `VITE_ONLY_OFFICE_ID`: [`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)编辑器实例的唯一 ID（默认：`only-office-editor`）。
+- `VITE_ONLY_OFFICE_TOKEN`: [`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)服务端所需的验证 Token（可选）。
+- `VITE_ONLY_OFFICE_SERVER_URL`: [`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)服务端的 API 地址（例如：`http://localhost:10000` ）。
+
+### Office 预览配置
+- `VITE_OFFICE_VIEWER_MODE`: `Office`文件的预览模式，可选值：
+    - `microsoft`: 使用`Microsoft Office Online`预览（文件的`URL`需可公网访问）。
+    - `onlyOffice`: 使用私有化的[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)服务预览。
+- `VITE_OFFICE_VIEWER_LANGUAGE`: [`OnlyOffice`语言配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#lang)（默认：`zh`）。
+- `VITE_OFFICE_VIEWER_REGION`: [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)（默认：`zh-CN`）。
+- `VITE_OFFICE_VIEWER_MICROSOFT_VIEW_BASE_URL`: `Microsoft Office`在线预览地址（正常不需要改这个，例如：`https://view.officeapps.live.com/op/embed.aspx` ）。
+
+### PDF 预览配置
+- `VITE_PDF_VIEWER_MODE`: `PDF`文件的预览模式，可选值：
+    - `pdfjs`: 使用内置的`pdf.js`预览。
+    - `onlyOffice`: 使用私有化的[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)服务预览。
+- `VITE_PDF_VIEWER_LANGUAGE`: [`OnlyOffice`语言配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#lang)（默认：`zh`）。
+- `VITE_PDF_VIEWER_REGION`: [`OnlyOffice`地区配置](https://api.onlyoffice.com/zh-CN/docs/docs-api/usage-api/config/editor/#region)（默认：`zh-CN`）。
+- `VITE_PDF_VIEWER_PDFJS_VIEW_BASE_URL`: PDF.js 服务地址（正常不需要改这个，例如：`https://mozilla.github.io/pdf.js/web/viewer.html` ）。
+
+## 📄 许可证
+
+[Apache-2.0](LICENSE)
