@@ -23,32 +23,6 @@ export async function getResult<T>(
   return value as T;
 }
 
-export function downloadFile(url: string, filename: string): void {
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.target = "_blank";
-  a.click();
-  a.remove();
-}
-
-export function formatFileSize(fileSize: number): string {
-  const num = 1024.0;
-  if (fileSize < num) {
-    return fileSize + "B";
-  }
-  if (fileSize < Math.pow(num, 2)) {
-    return (fileSize / num).toFixed(2) + "KB";
-  }
-  if (fileSize < Math.pow(num, 3)) {
-    return (fileSize / Math.pow(num, 2)).toFixed(2) + "MB";
-  }
-  if (fileSize < Math.pow(num, 4)) {
-    return (fileSize / Math.pow(num, 3)).toFixed(2) + "G";
-  }
-  return (fileSize / Math.pow(num, 4)).toFixed(2) + "T";
-}
-
 export function isTargetMimeType(
   targetMimeType: string,
   fileMimeType?: string,

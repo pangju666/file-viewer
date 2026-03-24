@@ -7,7 +7,6 @@ import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 import viteCompression from "vite-plugin-compression";
 
 export default defineConfig({
-  base: "/file-viewer",
   resolve: {
     alias: {
       "~": resolve(__dirname, "./"),
@@ -41,7 +40,6 @@ export default defineConfig({
     viteCompression({ algorithm: "gzip" }),
   ],
   build: {
-    outDir: "docs",
     sourcemap: false,
   },
 });
