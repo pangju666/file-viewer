@@ -41,6 +41,7 @@ export default defineConfig({
     viteCompression({ algorithm: "gzip" }),
   ],
   build: {
+    outDir: "docs",
     sourcemap: false,
   },
 });

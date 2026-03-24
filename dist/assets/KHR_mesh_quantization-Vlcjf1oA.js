@@ -1,1 +1,0 @@
-import{bR as n,bQ as i}from"./FilePreviewView-DHNTJ5Ma.js";import"./index-ORjAvF2u.js";const s="KHR_mesh_quantization";class o{constructor(e){this.name=s,this.enabled=e.isExtensionUsed(s)}dispose(){}}n(s);i(s,!0,t=>new o(t));export{o as KHR_mesh_quantization};
