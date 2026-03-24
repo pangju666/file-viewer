@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@babylonjs/viewer':
-        specifier: ^8.54.1
-        version: 8.54.1(@babylonjs/core@8.54.1)(@babylonjs/loaders@8.54.1(@babylonjs/core@8.54.1)(babylonjs-gltf2interface@8.54.1))
+        specifier: ^8.56.2
+        version: 8.56.2(@babylonjs/core@8.54.1)(@babylonjs/loaders@8.54.1(@babylonjs/core@8.54.1)(babylonjs-gltf2interface@8.54.1))
       '@onlyoffice/document-editor-vue':
         specifier: ^1.6.1
         version: 1.6.1(vue@3.5.30(typescript@5.9.3))
@@ -21,13 +21,13 @@ importers:
         specifier: ^1.0.46
         version: 1.0.46
       file-type:
-        specifier: ^21.3.3
-        version: 21.3.3
+        specifier: ^21.3.4
+        version: 21.3.4
       md-editor-v3:
-        specifier: ^6.4.0
-        version: 6.4.0(vue@3.5.30(typescript@5.9.3))
+        specifier: ^6.4.1
+        version: 6.4.1(vue@3.5.30(typescript@5.9.3))
       naive-ui:
-        specifier: ^2.43.2
+        specifier: ^2.44.1
         version: 2.44.1(vue@3.5.30(typescript@5.9.3))
       nanoid:
         specifier: ^5.1.7
@@ -42,7 +42,7 @@ importers:
         specifier: ^1.11.7
         version: 1.11.7
       vue:
-        specifier: ^3.5.29
+        specifier: ^3.5.30
         version: 3.5.30(typescript@5.9.3)
       vue3-json-viewer:
         specifier: ^2.4.1
@@ -166,8 +166,8 @@ packages:
       '@babylonjs/core': ^8.0.0
       babylonjs-gltf2interface: ^8.0.0
 
-  '@babylonjs/viewer@8.54.1':
-    resolution: {integrity: sha512-VtGaI0iEsbnr04HsxncAv6zw2/qDAwXx4cnLnI619ZcYB3DI4XhMxMjDHF5iWfj0ZU3+R8xkhGO7XWcVQrA2uA==}
+  '@babylonjs/viewer@8.56.2':
+    resolution: {integrity: sha512-c7wYsI0ME369hf3fugfcaKWxe6rXkmMkvwYfyq/9DhMxRyQycVJlBCHZOD6Wu5s5Y1T9mwH0IxAN7l4h+0KRiA==}
     peerDependencies:
       '@babylonjs/core': ^8.0.0
       '@babylonjs/loaders': ^8.0.0
@@ -962,8 +962,8 @@ packages:
   '@vavt/copy2clipboard@1.0.3':
     resolution: {integrity: sha512-HtG48r2FBYp9eRvGB3QGmtRBH1zzRRAVvFbGgFstOwz4/DDaNiX0uZc3YVKPydqgOav26pibr9MtoCaWxn7aeA==}
 
-  '@vavt/util@2.1.1':
-    resolution: {integrity: sha512-QYn/B2qiQhAGZVBoe5/6pPcA3NiGcxIm9htpVBjcdIOZQaWe+8kE/akEgLPrHxv5dbQQawnyHBokadW1d1z1tw==}
+  '@vavt/util@2.1.2':
+    resolution: {integrity: sha512-L3UbSJthJwr3wq0x93O5TrCepimrmVZaIl2ciZbeL18G5++gBhJXNhcH7RcVk/6rr3SavWOvwhig0mqRLoR7dw==}
 
   '@vicons/ionicons5@0.13.0':
     resolution: {integrity: sha512-zvZKBPjEXKN7AXNo2Na2uy+nvuv6SP4KAMQxpKL2vfHMj0fSvuw7JZcOPCjQC3e7ayssKnaoFVAhbYcW6v41qQ==}
@@ -1480,8 +1480,8 @@ packages:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
 
-  file-type@21.3.3:
-    resolution: {integrity: sha512-pNwbwz8c3aZ+GvbJnIsCnDjKvgCZLHxkFWLEFxU3RMa+Ey++ZSEfisvsWQMcdys6PpxQjWUOIDi1fifXsW3YRg==}
+  file-type@21.3.4:
+    resolution: {integrity: sha512-Ievi/yy8DS3ygGvT47PjSfdFoX+2isQueoYP1cntFW1JLYAuS4GD7NUPGg4zv2iZfV52uDyk5w5Z0TdpRS6Q1g==}
     engines: {node: '>=20'}
 
   fill-range@7.1.1:
@@ -1819,8 +1819,8 @@ packages:
   mathml-tag-names@4.0.0:
     resolution: {integrity: sha512-aa6AU2Pcx0VP/XWnh8IGL0SYSgQHDT6Ucror2j2mXeFAlN3ahaNs8EZtG1YiticMkSLj3Gt6VPFfZogt7G5iFQ==}
 
-  md-editor-v3@6.4.0:
-    resolution: {integrity: sha512-gd2COD1cYsvC9KyKODxqC2fmWWCM1uamvPWQLl9fdcUieUyvP8BY9ANOIrxkjdJ5W6f7JcAuAsgiUyJmlMOyzQ==}
+  md-editor-v3@6.4.1:
+    resolution: {integrity: sha512-rVYCiA243Xm5zI8p7O4CztAtQ6eA7K5h4O6pilKKMgSfJJFtE7zFp9ivfia/+ITtXe4BWoty8ADjqcdzpp6zVw==}
     peerDependencies:
       vue: ^3.5.3
 
@@ -2623,7 +2623,7 @@ snapshots:
       '@babylonjs/core': 8.54.1
       babylonjs-gltf2interface: 8.54.1
 
-  '@babylonjs/viewer@8.54.1(@babylonjs/core@8.54.1)(@babylonjs/loaders@8.54.1(@babylonjs/core@8.54.1)(babylonjs-gltf2interface@8.54.1))':
+  '@babylonjs/viewer@8.56.2(@babylonjs/core@8.54.1)(@babylonjs/loaders@8.54.1(@babylonjs/core@8.54.1)(babylonjs-gltf2interface@8.54.1))':
     dependencies:
       '@babylonjs/core': 8.54.1
       '@babylonjs/loaders': 8.54.1(@babylonjs/core@8.54.1)(babylonjs-gltf2interface@8.54.1)
@@ -3516,7 +3516,7 @@ snapshots:
 
   '@vavt/copy2clipboard@1.0.3': {}
 
-  '@vavt/util@2.1.1': {}
+  '@vavt/util@2.1.2': {}
 
   '@vicons/ionicons5@0.13.0': {}
 
@@ -4081,7 +4081,7 @@ snapshots:
     dependencies:
       flat-cache: 4.0.1
 
-  file-type@21.3.3:
+  file-type@21.3.4:
     dependencies:
       '@tokenizer/inflate': 0.4.1
       strtok3: 10.3.4
@@ -4421,7 +4421,7 @@ snapshots:
 
   mathml-tag-names@4.0.0: {}
 
-  md-editor-v3@6.4.0(vue@3.5.30(typescript@5.9.3)):
+  md-editor-v3@6.4.1(vue@3.5.30(typescript@5.9.3)):
     dependencies:
       '@codemirror/autocomplete': 6.20.1
       '@codemirror/commands': 6.10.3
@@ -4434,7 +4434,7 @@ snapshots:
       '@lezer/highlight': 1.2.3
       '@types/markdown-it': 14.1.2
       '@vavt/copy2clipboard': 1.0.3
-      '@vavt/util': 2.1.1
+      '@vavt/util': 2.1.2
       codemirror: 6.0.2
       lru-cache: 11.2.7
       lucide-vue-next: 0.543.0(vue@3.5.30(typescript@5.9.3))

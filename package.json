@@ -10,6 +10,22 @@
     "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix",
     "prepare": "husky"
   },
+  "description": "基于 Vue3 和 Naive UI 的高集成度文件预览组件",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/pangju666/file-viewer/issues"
+  },
+  "homepage": "https://github.com/pangju666/file-viewer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pangju666/file-viewer.git"
+  },
+  "keywords": [
+    "vue",
+    "viewer",
+    "preview",
+    "file"
+  ],
   "files": [
     "dist",
     "docs-images",
@@ -29,16 +45,16 @@
     "./index.css": "./dist/file-viewer.css"
   },
   "peerDependencies": {
-    "vue": "^3.5.29"
+    "vue": "^3.5.30"
   },
   "dependencies": {
-    "@babylonjs/viewer": "^8.54.1",
+    "@babylonjs/viewer": "^8.56.2",
     "@onlyoffice/document-editor-vue": "^1.6.1",
     "@vicons/ionicons5": "^0.13.0",
     "dxf-viewer": "^1.0.46",
-    "file-type": "^21.3.3",
-    "md-editor-v3": "^6.4.0",
-    "naive-ui": "^2.43.2",
+    "file-type": "^21.3.4",
+    "md-editor-v3": "^6.4.1",
+    "naive-ui": "^2.44.1",
     "nanoid": "^5.1.7",
     "three": "^0.161.0",
     "video.js": "^8.23.7",
