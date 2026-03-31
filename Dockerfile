@@ -44,7 +44,7 @@ FROM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/nginx:stable-alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # 拷贝构建结果（注意路径）
-COPY --from=builder /app/docs /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 RUN sed -i '/index  index.html index.htm;/a \        try_files $uri $uri/ /index.html;' /etc/nginx/conf.d/default.conf
 
