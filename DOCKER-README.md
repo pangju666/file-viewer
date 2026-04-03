@@ -21,7 +21,7 @@
 ## 快速使用
 ### docker部署
 ```
-docker run --name=file-viewer -d -p 80:80 snowy109/file-viewer:v1.0.0
+docker run --name=file-viewer -d -p 80:80 ccr.ccs.tencentyun.com/snowy-468/file-viewer:v1.0.0
 ```
 ### 📖 使用指南
 
