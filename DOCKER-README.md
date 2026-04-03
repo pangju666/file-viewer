@@ -21,7 +21,7 @@
 ## 快速使用
 ### docker部署
 ```
-docker run --name=file-viewer -d -p 80:80 ccr.ccs.tencentyun.com/snowy-468/file-viewer:v1.0.0
+docker run --name=file-viewer -d -p 80:80 snowy109/file-viewer:v1.0.0
 ```
 ### 📖 使用指南
 
@@ -46,7 +46,13 @@ http://your-domain/preview?src={file_url}&type={mime_type}&name={filename}
 
 
 ## 自定义
-如果你不想使用公网的*onlyoffice、pdfjs*，可以自己修改Dockerfile文件特点参数，使用自己部署的*onlyoffice、pdfjs相应地址*,请在Dockerfile修改对应参数
+如果你不想使用公网的*onlyoffice、pdfjs*，可以把项目拉下来，自行打包
+### 打包命令
+```
+docker build -t your_image:v1 --build-arg VITE_OFFICE_VIEWER_MICROSOFT_VIEW_BASE_URL=office_url .
+```
+更多参数请看下面，
+
 ### Office 预览配置
 - `VITE_OFFICE_VIEWER_MODE`: `Office`文件的预览模式，可选值：
     - `microsoft`: 使用`Microsoft Office Online`预览（文件的`URL`需可公网访问）。
