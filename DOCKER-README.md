@@ -21,6 +21,9 @@
 ## 快速使用
 ### docker部署
 ```
+# 国外
+docker run --name=file-viewer -d -p 80:80 snowy109/file-viewer:v1.0.0
+# 国内
 docker run --name=file-viewer -d -p 80:80 ccr.ccs.tencentyun.com/snowy-468/file-viewer:v1.0.0
 ```
 ### 📖 使用指南
@@ -54,6 +57,9 @@ docker build -t your_image:v1 --build-arg VITE_OFFICE_VIEWER_MICROSOFT_VIEW_BASE
 更多参数请看下面，
 
 ### Office 预览配置
+- `VITE_ONLY_OFFICE_ID`: `Only-office`的id配置
+- `VITE_ONLY_OFFICE_TOKEN`: `Only-office`的token密钥
+- `VITE_ONLY_OFFICE_SERVER_URL`: `Only-office`服务地址
 - `VITE_OFFICE_VIEWER_MODE`: `Office`文件的预览模式，可选值：
     - `microsoft`: 使用`Microsoft Office Online`预览（文件的`URL`需可公网访问）。
     - `onlyOffice`: 使用私有化的[`OnlyOffice`](https://api.onlyoffice.com/zh-CN/docs/docs-api/get-started/installation/self-hosted/)服务预览。
