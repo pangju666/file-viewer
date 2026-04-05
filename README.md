@@ -1,4 +1,5 @@
 # @pangju666/file-viewer
+快速使用[docker服务版](./DOCKER-README.md)
 
 基于 Vue 3 和 Naive UI 打造的高集成度文件预览服务，致力于集成各类常用格式文件的预览能力，提供统一且高度可定制的预览体验。
 

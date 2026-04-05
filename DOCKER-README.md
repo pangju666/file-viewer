@@ -49,7 +49,7 @@ http://your-domain/preview?src={file_url}&type={mime_type}&name={filename}
 
 
 ## 自定义
-如果你不想使用公网的*onlyoffice、pdfjs*，可以把项目拉下来，自行打包
+如果你不想使用公网的*onlyoffice、pdfjs*，可以把项目拉下来，选择docker分支，自行打包
 ### 打包命令
 ```
 docker build -t your_image:v1 --build-arg VITE_OFFICE_VIEWER_MICROSOFT_VIEW_BASE_URL=office_url .
