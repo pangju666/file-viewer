@@ -32,7 +32,6 @@ jobs:
         with: 
           context: .
           push: true
-          tags:
-            - ccr.ccs.tencentyun.com/snowy-468/file-viewer:${{ steps.vars.outputs.tag }}
+          tags: ccr.ccs.tencentyun.com/snowy-468/file-viewer:${{ steps.vars.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
