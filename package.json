@@ -9,8 +9,7 @@
     "type-check": "vue-tsc --noEmit",
     "prettier": "prettier --write ./**/*.{html,vue,js,ts,json,md}",
     "eslint": "eslint . --fix",
-    "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix",
-    "prepare": "husky"
+    "stylelint": "stylelint ./**/*.{css,less,vue,html} --fix"
   },
   "type": "module",
   "license": "Apache-2.0",
@@ -49,9 +48,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.4.0",
-    "husky": "^9.1.7",
     "less": "^4.5.1",
-    "lint-staged": "^16.3.1",
     "prettier": "^3.8.1",
     "stylelint": "^17.0.0",
     "stylelint-config-recommended-less": "^4.0.1",
@@ -66,17 +63,5 @@
     "vite-plugin-compression": "^0.5.1",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.2.5"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts,vue}": [
-      "pnpm run eslint",
-      "pnpm run stylelint",
-      "pnpm run prettier"
-    ]
   }
 }
