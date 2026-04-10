@@ -1,21 +1,17 @@
 name: Docker Build and Push CI
 
-on: 
+on:
   push:
     tags:
-     - 'docker-v*'
+      - 'docker-v*'
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: checkout code
         uses: actions/checkout@v4
-      
-      - name: Get the version
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -26,12 +22,13 @@ jobs:
           registry: ccr.ccs.tencentyun.com
           username: ${{ secrets.TENCENT_USERNAME }}
           password: ${{ secrets.TENCENT_PASSWORD }}
-      
+
       - name: Build and Push
         uses: docker/build-push-action@v5
-        with: 
+        with:
           context: .
           push: true
-          tags: ccr.ccs.tencentyun.com/snowy-468/file-viewer:${{ steps.get_version.outputs.tag }}
+          # 自动获取标签名，如 docker-v1.0.1
+          tags: ccr.ccs.tencentyun.com/snowy-468/file-viewer:${{ github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
