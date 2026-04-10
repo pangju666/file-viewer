@@ -20,7 +20,7 @@
 
 ## 快速使用
 ### docker部署
-```
+```shell
 # 国外
 docker run --name=file-viewer -d -p 80:80 snowy109/file-viewer:v1.0.0
 # 国内
@@ -33,7 +33,11 @@ docker run --name=file-viewer -d -p 80:80 ccr.ccs.tencentyun.com/snowy-468/file-
 #### 预览 URL 示例
 
 ```text
-http://your-domain/preview?src={file_url}&type={mime_type}&name={filename}
+http://your_domain/preview?src={file_url}&type={mime_type}&name={filename}
+
+# 例子
+http://your_domain/preview?src=https%3A%2F%2Fdisk.sample.cat%2Fsamples%2Fjpg%2Fmonalisa-1200x1200.jpg&type=image%2Fjpeg
+
 ```
 
 #### URL 参数说明

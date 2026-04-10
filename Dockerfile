@@ -48,6 +48,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 
 RUN sed -i '/index  index.html index.htm;/a \        try_files $uri $uri/ /index.html;' /etc/nginx/conf.d/default.conf
 
+RUN sed -i 's/application\/javascript  js;/application\/javascript  js mjs;/' /etc/nginx/mime.types
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
